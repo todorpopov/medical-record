@@ -10,7 +10,8 @@ This project is built as a part of the "CSCB869 Java Web Services" course at the
 The system follows the microservices architecture for designing distributed systems.
 
 Key technologies:
-- Backend: Java with Maven build system
+- Frontend: Angular
+- Backend: Java with the Maven build tool
 - Inter-service Communication: gRPC
 - Asynchronous Communication: RabbitMQ message queues
 - API Gateway: A Spring Boot RESTful HTTP API
@@ -35,8 +36,8 @@ Additionally, dependencies like the `PostgreSQL` server and the `RabbitMQ` serve
 `Helm` and `Helm charts`.
 
 List of all services:
- - An `Angular` frontend
- - An `API Gateway`
+ - A frontend service
+ - An `API Gateway` service
  - An `Auth` service
  - An `Appointments` service
  - A `Users` service
