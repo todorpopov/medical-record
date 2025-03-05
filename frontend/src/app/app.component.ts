@@ -3,10 +3,21 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  template: `
+    <div class="app-container">
+      <router-outlet></router-outlet>
+    </div>
+  `,
+  styles: [`
+    .app-container {
+      padding: 20px;
+      min-height: 100vh;
+      background-color:rgb(210, 210, 210);
+    }
+  `]
 })
 export class AppComponent {
-  title = 'frontend';
+  title = 'Medical Records App';
 }
