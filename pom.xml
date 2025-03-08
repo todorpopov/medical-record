@@ -4,7 +4,7 @@
   <artifactId>medical-record</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
-  
+
   <name>medical-record</name>
 
   <properties>
