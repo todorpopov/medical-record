@@ -15,7 +15,7 @@ public class GrpcServer {
 
     public void start() throws IOException, InterruptedException {
         Server server = ServerBuilder.forPort(9090)
-                .addService(new DoctorServiceImpl())
+                .addService(DoctorServiceImpl.getInstance())
                 .addService(healthStatusManager.getHealthService())
                 .build();
 
