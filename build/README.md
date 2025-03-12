@@ -9,8 +9,8 @@ This script is used to build the jar files for the different Maven submodules.
 To use the script, you need to have Python 3, Maven and a JDK (the project was build using JDK23, however, different
 versions have not been tested and may work as well) installed and added to your `PATH`.
 
-Run the script using the following command from the system root:
-  - `python3 /build/build_jar_files.py --modules 'specific modules separated by a single space'`
+Run the script using the following command from the project root:
+  - `python3 build/build_jar_files.py --modules 'specific modules separated by a single space'`
 
 The script has an optional `--modules` parameter. When it is not passed, the script will build all submodules one after
 the other. To specify the submodules you want to build, you need to pass them like this `--modules users api auth`.
