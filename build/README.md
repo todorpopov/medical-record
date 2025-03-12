@@ -29,3 +29,19 @@ Passing a combination of correct and incorrect modules will result in building o
 
 The module names are directly correlated to the module directory, so renaming the submodule directories will render this
 script unusable!
+
+## Script - `build_docker_images.py`
+This script is very similar to the `build_jar_files.py` script in terms of use. To run the script you need to enter the
+following command from project root:
+  - `python3 build/build_docker_images.py --modules 'specific modules separated by a single space'`
+
+Just like the `build_jar_files.py` script, this one has an optional `--modules` parameter. When not specified, the
+script will build all submodule Dockerfiles.
+
+The available modules are:
+  - `api`
+  - `appointments`
+  - `auth`
+  - `diagnoses`
+  - `users`
+  - `frontend`

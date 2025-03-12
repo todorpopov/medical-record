@@ -57,7 +57,7 @@ class DockerImageBuilder:
 
         args = parser.parse_args()
 
-        correct_modules = ["api", "appointments", "auth", "diagnoses", "users"]
+        correct_modules = ["api", "appointments", "auth", "diagnoses", "users", "frontend"]
         valid_modules = []
 
         if args.modules is None:
