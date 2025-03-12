@@ -1,0 +1,31 @@
+# System Tools
+This directory hosts a number of Python scripts for automating the building and deploying processes of different parts
+of the system. Below is the documentation of how to use the scripts, as well as what parameters do they expect, and what
+behavior to expect.
+
+## Script - `build_jar_files.py`
+This script is used to build the jar files for the different Maven submodules.
+
+To use the script, you need to have Python 3, Maven and a JDK (the project was build using JDK23, however, different
+versions have not been tested and may work as well) installed and added to your `PATH`.
+
+Run the script using the following command from the system root:
+  - `python3 /build/build_jar_files.py --modules 'specific modules separated by a single space'`
+
+The script has an optional `--modules` parameter. When it is not passed, the script will build all submodules one after
+the other. To specify the submodules you want to build, you need to pass them like this `--modules users api auth`.
+Modules need to be separated by a single space for the script to be able to recognize them.
+
+The available modules are:
+  - `api`
+  - `appointments`
+  - `auth`
+  - `diagnoses`
+  - `users`
+
+Passing incorrect modules will result in 0 build modules!
+
+Passing a combination of correct and incorrect modules will result in building only the correct ones!
+
+The module names are directly correlated to the module directory, so renaming the submodule directories will render this
+script unusable!

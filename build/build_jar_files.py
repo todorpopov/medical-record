@@ -55,7 +55,7 @@ class JarFileBuilder:
 
     def main(self):
         parser = argparse.ArgumentParser(description="Building Maven sub-module jar files")
-        parser.add_argument("--modules", nargs='+', help="Specific modules to build. Separate modules by a single comma!")
+        parser.add_argument("--modules", nargs='+', help="Specific modules to build. Separate modules by a single space!")
 
         args = parser.parse_args()
 
