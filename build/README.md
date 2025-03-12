@@ -11,6 +11,7 @@ versions have not been tested and may work as well) installed and added to your 
 
 Run the script using the following command from the project root:
   - `python3 build/build_jar_files.py --modules 'specific modules separated by a single space'`
+  - `python3 build/build_jar_files.py --modules auth appointments diagnoses`
 
 The script has an optional `--modules` parameter. When it is not passed, the script will build all submodules one after
 the other. To specify the submodules you want to build, you need to pass them like this `--modules users api auth`.
@@ -34,6 +35,7 @@ script unusable!
 This script is very similar to the `build_jar_files.py` script in terms of use. To run the script you need to enter the
 following command from project root:
   - `python3 build/build_docker_images.py --modules 'specific modules separated by a single space'`
+  - `python3 build/build_docker_images.py --modules api frontend users`
 
 Just like the `build_jar_files.py` script, this one has an optional `--modules` parameter. When not specified, the
 script will build all submodule Dockerfiles.
