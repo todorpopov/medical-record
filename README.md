@@ -18,7 +18,6 @@ Key technologies:
 - Database: PostgreSQL
 - Containerization: Docker
 - Orchestration: Kubernetes
-- K8S Package Management: Helm
 
 Apart from the frontend, all services are built using `Java`. `Maven` is used as a build tool. All services live
 within their own `Maven` project, and all projects live under a parent `Maven` project as a multi-module setup.
@@ -32,8 +31,8 @@ The frontend communicates with the services through a `RESTful HTTP API` gateway
 Services that require data persistence use a common `PostgreSQL` server instance with independent databases inside.
 
 The services are containerized in `Docker` containers. All containers are orchestrated using `Kubernetes`.
-Additionally, dependencies like the `PostgreSQL` server and the `RabbitMQ` server are added to the cluster using
-`Helm` and `Helm charts`.
+Additionally, dependencies like the `PostgreSQL` server and the `RabbitMQ` server are also added to the cluster using
+manifests.
 
 List of all services:
  - A frontend service
@@ -46,7 +45,7 @@ List of all services:
 ## Architecture
 Here is an image of what the system's architecture looks like
 
-![image-of-system-architecture](docs/architecture.png)
+![image-of-systems-design](docs/system-design.png)
 
 ## Architecture Q&A
 
@@ -68,12 +67,7 @@ can trigger the parallel execution of different processes inside multiple servic
 ### Why use Kubernetes?
 My best option would have been to use Docker Compose for defining and running multiple Docker containers for each
 of the services. However, Kubernetes is the de-facto standard for deploying and orchestrating distributed systems.
-The point of using a Kubernetes cluster is mainly for learning purposes. 
-
-### Why adding Helm on top of Kubernetes?
-Helm makes adding external dependencies to the cluster much easier. Installing and running a PostgreSQL database
-takes only a few Helm commands. Apart from this, Helm allows for the creation of `charts` which can contain
-required configurations, which allow for easily running the whole system altogether.
+The point of using a Kubernetes cluster is mainly for learning purposes.
 
 ### Why choose Angular over React?
 React is much simpler to use than Angular. For the purpose of this application, React with React Router would have
