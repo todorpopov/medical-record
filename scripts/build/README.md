@@ -1,7 +1,8 @@
-# System Tools
-This directory hosts a number of Python scripts for automating the building and deploying processes of different parts
-of the system. Below is the documentation of how to use the scripts, as well as what parameters do they expect, and what
-behavior to expect.
+# Build Scripts
+This directory hosts all build scripts. These scripts are used for building different parts of the system, so that
+everything can be conveniently bootstraped through only a few commands.
+
+Scripts are designed for both CLI usage, as well as programatically importing and running the different classes.
 
 ## Script - `build_jar_files.py`
 This script is used to build the jar files for the different Maven submodules.
@@ -10,8 +11,8 @@ To use the script, you need to have Python 3, Maven and a JDK (the project was b
 versions have not been tested and may work as well) installed and added to your `PATH`.
 
 Run the script using the following command from the project root:
-  - `python3 build/build_jar_files.py --modules 'specific modules separated by a single space'`
-  - `python3 build/build_jar_files.py --modules auth appointments diagnoses`
+  - `python3 scripts/build/build_jar_files.py --modules 'specific modules separated by a single space'`
+  - `python3 scripts/build/build_jar_files.py --modules auth appointments diagnoses`
 
 The script has an optional `--modules` parameter. When it is not passed, the script will build all submodules one after
 the other. To specify the submodules you want to build, you need to pass them like this `--modules users api auth`.
@@ -34,8 +35,8 @@ script unusable!
 ## Script - `build_docker_images.py`
 This script is very similar to the `build_jar_files.py` script in terms of use. To run the script you need to enter the
 following command from project root:
-  - `python3 build/build_docker_images.py --modules 'specific modules separated by a single space'`
-  - `python3 build/build_docker_images.py --modules api frontend users`
+  - `python3 scripts/build/build_docker_images.py --modules 'specific modules separated by a single space'`
+  - `python3 scripts/build/build_docker_images.py --modules api frontend users`
 
 Just like the `build_jar_files.py` script, this one has an optional `--modules` parameter. When not specified, the
 script will build all submodule Dockerfiles.

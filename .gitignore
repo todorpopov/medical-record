@@ -7,6 +7,7 @@
 /bazel-out
 .angular/
 target/
+__pycache__/
 
 # Node
 node_modules/
