@@ -5,7 +5,7 @@ import com.medrec.grpc.Users;
 import com.google.protobuf.Empty;
 import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.doctor.DoctorRepository;
-import com.medrec.persistence.doctor.ResponseMessage;
+import com.medrec.persistence.ResponseMessage;
 import io.grpc.stub.StreamObserver;
 
 import java.util.List;

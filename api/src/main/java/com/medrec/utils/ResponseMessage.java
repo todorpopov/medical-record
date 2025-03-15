@@ -1,4 +1,4 @@
-package com.medrec.persistence.doctor;
+package com.medrec.utils;
 
 public class ResponseMessage {
     private boolean isSuccessful;
@@ -23,5 +23,10 @@ public class ResponseMessage {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "isSuccessful=" + isSuccessful + ", message='" + message;
     }
 }

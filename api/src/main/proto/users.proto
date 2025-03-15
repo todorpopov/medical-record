@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+package com.medrec.grpc;
+
+service DoctorService {
+  rpc CreateDoctor (Doctor) returns (isSuccessfulResponse);
+  rpc GetDoctorById (google.protobuf.Int32Value) returns (Doctor);
+  rpc GetAllDoctors (google.protobuf.Empty) returns (DoctorList);
+  rpc UpdateDoctor (Doctor) returns (Doctor);
+  rpc DeleteDoctorById (google.protobuf.Int32Value) returns (isSuccessfulResponse);
+}
+
+message Doctor {
+  optional int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string password = 5;
+  bool isGp = 6;
+  int32 specialtyId = 7;
+}
+
+message isSuccessfulResponse {
+  bool isSuccessful = 1;
+  optional string message = 2;
+}
+
+message DoctorList {
+  repeated Doctor doctors = 1;
+}

@@ -1,6 +1,7 @@
 package com.medrec.persistence.doctor;
 
 import com.medrec.persistence.DBUtils;
+import com.medrec.persistence.ResponseMessage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
