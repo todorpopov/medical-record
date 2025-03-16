@@ -99,10 +99,16 @@
   <build>
     <pluginManagement>
       <plugins>
+        <!-- This plugin is used to package the Spring Boot API gateway, with all of its additional resource files into a jar -->
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
           <version>${spring.boot.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>${maven.shade.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>

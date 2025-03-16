@@ -4,10 +4,7 @@
 
 <hibernate-configuration>
     <session-factory>
-        <property name="connection.url">jdbc:postgresql://localhost:5432/users</property> <!-- BD Mane -->
         <property name="connection.driver_class">org.postgresql.Driver</property> <!-- DB Driver -->
-        <property name="connection.username">admin</property> <!-- DB User -->
-        <property name="connection.password">admin</property> <!-- DB Password -->
 
         <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property> <!-- DB Dialect -->
         <property name="hibernate.hbm2ddl.auto">create</property><!-- create / create-drop / update -->

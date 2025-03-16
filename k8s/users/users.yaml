@@ -1,0 +1,66 @@
+# Users Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-service
+  namespace: medical-record
+  labels:
+    app: users-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-service
+  template:
+    metadata:
+      labels:
+        app: users-service
+    spec:
+      containers:
+        - name: users-service
+          image: users-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 9090
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          env:
+            - name: USERS_PORT
+              value: "9090"
+            - name: DB_URL
+              value: "jdbc:postgresql://postgres:5432/users"
+            - name: DB_USERNAME
+              value: "admin"
+            - name: DB_PASSWORD
+              value: "admin"
+          livenessProbe:
+            grpc:
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            grpc:
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+
+# Users Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+  namespace: medical-record
+spec:
+  selector:
+    app: users-service
+  ports:
+    - port: 9090
+      targetPort: 9090
+  type: ClusterIP

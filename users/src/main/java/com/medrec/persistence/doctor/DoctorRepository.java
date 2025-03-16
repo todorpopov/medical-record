@@ -33,7 +33,7 @@ public class DoctorRepository {
             tx.commit();
 
             this.logger.info(String.format("Doctor %s saved successfully", doctor.toString()));
-            return new ResponseMessage(true, null);
+            return new ResponseMessage(true, "Doctor saved successfully");
         } catch (Exception e) {
             this.logger.severe(String.format("Doctor %s save failed", doctor.toString()));
             return new ResponseMessage(false, e.getMessage());

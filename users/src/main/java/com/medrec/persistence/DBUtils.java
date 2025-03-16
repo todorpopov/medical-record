@@ -9,7 +9,13 @@ public class DBUtils {
 
     static {
         try {
-            sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+            Configuration configuration = new Configuration();
+
+            configuration.setProperty("hibernate.connection.url", System.getenv("DB_URL"));
+            configuration.setProperty("hibernate.connection.username", System.getenv("DB_USERNAME"));
+            configuration.setProperty("hibernate.connection.password", System.getenv("DB_PASSWORD"));
+
+            sessionFactory = configuration.configure("hibernate.cfg.xml").buildSessionFactory();
         } catch (Throwable ex) {
             System.err.println("Initial SessionFactory creation failed: " + ex);
             throw new ExceptionInInitializerError(ex);

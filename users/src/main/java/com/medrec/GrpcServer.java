@@ -14,7 +14,9 @@ public class GrpcServer {
     private final HealthStatusManager healthStatusManager = new HealthStatusManager();
 
     public void start() throws IOException, InterruptedException {
-        Server server = ServerBuilder.forPort(9090)
+        int port = Integer.parseInt(System.getenv("USERS_PORT"));
+
+        Server server = ServerBuilder.forPort(port)
                 .addService(DoctorServiceImpl.getInstance())
                 .addService(healthStatusManager.getHealthService())
                 .build();
@@ -22,7 +24,7 @@ public class GrpcServer {
         healthStatusManager.setStatus("users", HealthCheckResponse.ServingStatus.SERVING);
 
         server.start();
-        logger.info("gRPC server started on port 9090");
+        logger.info(String.format("gRPC server started on port %s", port));
 
         server.awaitTermination();
         logger.info("gRPC server terminated");
