@@ -7,9 +7,6 @@ WORKDIR /opt
 
 COPY /target/api-1.0.0.jar app.jar
 
-# Show all needed modules for the .jar file and pipe them into a text file
-RUN jdeps --print-module-deps --ignore-missing-deps app.jar > deps.txt
-
 # Create custom JRE using the modules from the text file
 RUN jlink \
 --compress 2 \
@@ -17,7 +14,7 @@ RUN jlink \
 --no-header-files \
 --no-man-pages \
 --output jre \
---add-modules $(cat deps.txt)
+--add-modules java.base,java.desktop,java.naming,java.management,java.security.jgss,java.instrument,java.sql,jdk.unsupported
 
 # Alpine is by far the best option to make the image size as small as possible
 FROM alpine:latest
@@ -25,6 +22,6 @@ FROM alpine:latest
 COPY --from=packager /opt/jre /opt/jre
 COPY --from=packager /opt/app.jar /opt/app.jar
 
-EXPOSE 9090
+EXPOSE 8080
 
 CMD ["/opt/jre/bin/java", "-jar", "/opt/app.jar"]
