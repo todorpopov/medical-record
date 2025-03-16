@@ -50,7 +50,7 @@ class AbstractModuleBuilder(ABC):
 
         self._logger.info(f"Modules passed: {args.modules}")
 
-        return self._validate_modules(self.correct_modules, args.modules)
+        return self._validate_modules(args.modules)
 
     def run_build_module_command(self, path):
         raise NotImplementedError("This method is not implemented in the abstract class. Please override it!")
