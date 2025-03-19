@@ -1,0 +1,85 @@
+<div class="signup-container">
+    <div class="signup-card">
+        <h2 class="signup-title">Register Patient Account</h2>
+
+        <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)" class="signup-form">
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                id="email" 
+                name="email"
+                type="email" 
+                [(ngModel)]="patient.email" 
+                #email="ngModel"
+                required
+                class="form-control"
+                >
+            </div>
+
+            <!-- First Name Input -->
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input 
+                id="firstName" 
+                name="firstName"
+                type="firstName" 
+                [(ngModel)]="patient.firstName" 
+                #firstName="ngModel"
+                required
+                class="form-control"
+                >
+            </div>
+
+            <!-- Last Name Input -->
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input 
+                id="lastName" 
+                name="lastName"
+                type="lastName" 
+                [(ngModel)]="patient.lastName" 
+                #lastName="ngModel"
+                required
+                class="form-control"
+                >
+            </div>
+
+            <!-- PIN Input -->
+            <div class="form-group">
+                <label for="lastName">PIN</label>
+                <input 
+                id="pin" 
+                name="pin"
+                type="pin" 
+                [(ngModel)]="patient.pin" 
+                #pin="ngModel"
+                required
+                class="form-control"
+                >
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                id="password" 
+                name="password"
+                type="password" 
+                [(ngModel)]="patient.password" 
+                #password="ngModel"
+                required
+                class="form-control"
+                >
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+                type="submit" 
+                class="signup-button" 
+                [disabled]="!signupForm.valid">
+                Sign Up
+            </button>
+        </form>
+    </div>
+</div>
