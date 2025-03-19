@@ -11,6 +11,7 @@ The system follows the microservices architecture for designing distributed syst
 
 Key technologies:
 - Frontend: Angular
+- Web Server: Nginx
 - Backend: Java with the Maven build tool
 - Inter-service Communication: gRPC
 - Asynchronous Communication: RabbitMQ message queues
@@ -26,7 +27,8 @@ The system uses event-driven techniques for asynchronous communication using `Ra
 
 Inter-service communication uses Google's implementation of `Remote Procedure Calls` - `gRPC`.
 
-The frontend communicates with the services through a `RESTful HTTP API` gateway.
+The frontend communicates with the services through a `RESTful HTTP API` gateway. `Nginx` is used as a web server, inside
+the Docker image, to serve the built Angular files to the client's browser.
 
 Services that require data persistence use a common `PostgreSQL` server instance with independent databases inside.
 
