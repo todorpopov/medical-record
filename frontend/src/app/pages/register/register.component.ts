@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
 import { Patient } from '../../common/patient.model';
+import {UsersService} from '../../services/users.service';
 
 @Component({
     standalone: true,
@@ -19,11 +19,11 @@ export class RegisterComponent {
         password: ''
     }
 
-    constructor(private authService: AuthService) {}
+    constructor(private usersService: UsersService) {}
 
     onSubmit(form: any) {
         if(form.valid) {
-            console.log("Patient created: ", this.patient)
+            this.usersService.registerPatient(this.patient)
         }
     }
 }

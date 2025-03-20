@@ -1,3 +1,4 @@
 export const environment = {
-    apiGatewayHost: "api-gateway" // process.env["API_GATEWAY_HOST"]
+    apiGatewayHost: "localhost",
+    apiGatewayPort: 31000
 };

@@ -17,6 +17,8 @@ public class UsersController {
     public UsersController(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
+
+    @CrossOrigin(origins = "http://localhost:4000")
     @PostMapping("create")
     private String createDoctor(@RequestBody Map<String, String> body) {
         Users.Doctor doctor = Users.Doctor.newBuilder()

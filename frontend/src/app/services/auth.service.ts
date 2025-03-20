@@ -7,13 +7,8 @@ import { environment } from '../../environments/environment';
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = `http://${environment.apiGatewayHost}/api/auth`
 
     constructor(
         private httpClient: HttpClient
     ) {}
-
-    public registerPatient(patient: Patient) {
-        this.httpClient.post(`${this.apiUrl}/register-patient`, patient)
-    }
 }
