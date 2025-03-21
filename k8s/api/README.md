@@ -11,3 +11,9 @@ the cluster needs to have the `medical-record` namespace applied beforehand.
 
 To apply the manifest to a Kubernetes cluster, use the following command from the project root:
 - `kubectl apply -n medical-record -f k8s/api/api.yaml`
+
+## NodePort Service
+Since the frontend is packaged into a build file and send to the client's browser, we need a way to be able to make
+requests to the API Gateway from outside the Kubernetes cluster. This is why the API Service manifest is of type
+`NodePort`. It assigns a public port to the Service, in this case `31000`, and forwards traffic from outside of the
+cluster, to the API.
