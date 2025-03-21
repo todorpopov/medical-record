@@ -4,6 +4,8 @@ import com.medrec.exceptions.DoctorIsNotGpException;
 import com.medrec.persistence.doctor.Doctor;
 import jakarta.persistence.*;
 
+import java.util.logging.Logger;
+
 @Entity
 public class Patient {
     @Id

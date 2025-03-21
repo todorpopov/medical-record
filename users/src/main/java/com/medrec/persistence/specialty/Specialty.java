@@ -23,6 +23,12 @@ public class Specialty {
     public Specialty() {
     }
 
+    public Specialty(int id, String specialtyName, String specialtyDescription) {
+        this.id = id;
+        this.specialtyName = specialtyName;
+        this.specialtyDescription = specialtyDescription;
+    }
+
     public Specialty(String specialtyName, String specialtyDescription) {
         this.specialtyName = specialtyName;
         this.specialtyDescription = specialtyDescription;

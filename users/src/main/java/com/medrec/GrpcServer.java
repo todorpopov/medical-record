@@ -1,8 +1,8 @@
 package com.medrec;
 
-import com.medrec.services.DoctorServiceImpl;
-import com.medrec.services.PatientServiceImpl;
-import com.medrec.services.SpecialtyServiceImpl;
+import com.medrec.services.DoctorService;
+import com.medrec.services.PatientService;
+import com.medrec.services.SpecialtyService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.health.v1.HealthCheckResponse;
@@ -23,9 +23,9 @@ public class GrpcServer {
 
         Server server = ServerBuilder.forPort(port)
                 .executor(executor)
-                .addService(DoctorServiceImpl.getInstance())
-                .addService(PatientServiceImpl.getInstance())
-                .addService(SpecialtyServiceImpl.getInstance())
+                .addService(DoctorService.getInstance())
+                .addService(PatientService.getInstance())
+                .addService(SpecialtyService.getInstance())
                 .addService(healthStatusManager.getHealthService())
                 .build();
 
