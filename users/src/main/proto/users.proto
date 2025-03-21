@@ -9,8 +9,24 @@ service DoctorService {
   rpc CreateDoctor (Doctor) returns (isSuccessfulResponse);
   rpc GetDoctorById (google.protobuf.Int32Value) returns (Doctor);
   rpc GetAllDoctors (google.protobuf.Empty) returns (DoctorList);
-  rpc UpdateDoctor (Doctor) returns (Doctor);
+  rpc UpdateDoctor (Doctor) returns (isSuccessfulResponse);
   rpc DeleteDoctorById (google.protobuf.Int32Value) returns (isSuccessfulResponse);
+}
+
+service PatientService {
+  rpc CreatePatient (Patient) returns (isSuccessfulResponse);
+  rpc GetPatientById (google.protobuf.Int32Value) returns (Patient);
+  rpc GetAllPatients (google.protobuf.Empty) returns (PatientList);
+  rpc UpdatePatient (Patient) returns (isSuccessfulResponse);
+  rpc DeletePatientById (google.protobuf.Int32Value) returns (isSuccessfulResponse);
+}
+
+service SpecialtyService {
+  rpc CreateSpecialty (Specialty) returns (isSuccessfulResponse);
+  rpc GetSpecialtyById (google.protobuf.Int32Value) returns (Specialty);
+  rpc GetAllSpecialties (google.protobuf.Empty) returns (SpecialtiesList);
+  rpc UpdateSpecialty (Specialty) returns (isSuccessfulResponse);
+  rpc DeleteSpecialtyById (google.protobuf.Int32Value) returns (isSuccessfulResponse);
 }
 
 message Doctor {
@@ -20,7 +36,23 @@ message Doctor {
   string email = 4;
   string password = 5;
   bool isGp = 6;
-  int32 specialtyId = 7;
+  Specialty specialty = 7;
+}
+
+message Patient {
+  optional int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string password = 5;
+  string pin = 6;
+  bool isHealthInsured = 7;
+}
+
+message Specialty {
+  optional int32 id = 1;
+  string specialtyName = 2;
+  string specialtyDescription = 3;
 }
 
 message isSuccessfulResponse {
@@ -30,4 +62,12 @@ message isSuccessfulResponse {
 
 message DoctorList {
   repeated Doctor doctors = 1;
+}
+
+message PatientList {
+  repeated Patient patients = 1;
+}
+
+message SpecialtiesList {
+  repeated Specialty specialties = 1;
 }

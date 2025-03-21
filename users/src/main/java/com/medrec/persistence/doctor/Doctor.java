@@ -1,6 +1,10 @@
 package com.medrec.persistence.doctor;
 
+import com.medrec.persistence.patient.Patient;
+import com.medrec.persistence.specialty.Specialty;
 import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 public class Doctor {
@@ -8,10 +12,10 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @Column(nullable = false, unique = true)
@@ -20,17 +24,25 @@ public class Doctor {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "specialty_id")
+    private Specialty specialty;
+
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private Set<Patient> patients;
+
+    @Column(name = "is_gp", nullable = false)
     private boolean isGp;
 
     public Doctor() {
     }
 
-    public Doctor(String firstName, String lastName, String email, String password, boolean isGp) {
+    public Doctor(String firstName, String lastName, String email, String password, Specialty specialty, boolean isGp) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.specialty = specialty;
         this.isGp = isGp;
     }
 
@@ -74,6 +86,22 @@ public class Doctor {
         this.password = password;
     }
 
+    public Specialty getSpecialty() {
+        return specialty;
+    }
+
+    public void setSpecialty(Specialty specialty) {
+        this.specialty = specialty;
+    }
+
+    public Set<Patient> getPatients() {
+        return patients;
+    }
+
+    public void setPatients(Set<Patient> patients) {
+        this.patients = patients;
+    }
+
     public boolean isGp() {
         return isGp;
     }
@@ -89,6 +117,7 @@ public class Doctor {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
+                ", specialty=" + specialty.getSpecialtyName() +
                 ", isGp=" + isGp +
                 '}';
     }
