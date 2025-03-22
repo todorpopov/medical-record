@@ -18,6 +18,8 @@
     <protobuf.version>3.25.1</protobuf.version>
     <maven.shade.version>3.5.1</maven.shade.version>
     <spring.boot.version>3.4.3</spring.boot.version>
+    <jwt.version>4.4.0</jwt.version>
+    <bcrypt.version>0.4</bcrypt.version>
   </properties>
 
   <!-- Define all dependencies that child modules can use -->
@@ -90,6 +92,20 @@
         <artifactId>spring-boot</artifactId>
         <version>${spring.boot.version}</version>
       </dependency>
+
+      <!-- JWT -->
+      <dependency>
+        <groupId>com.auth0</groupId>
+        <artifactId>java-jwt</artifactId>
+        <version>${jwt.version}</version>
+      </dependency>
+
+      <!-- Bcrypt -->
+      <dependency>
+        <groupId>org.mindrot</groupId>
+        <artifactId>jbcrypt</artifactId>
+        <version>${bcrypt.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -105,6 +121,8 @@
           <artifactId>spring-boot-maven-plugin</artifactId>
           <version>${spring.boot.version}</version>
         </plugin>
+
+        <!-- This plugin is used to package the Jars for all other services except for the API, singe Spring Boot needs custom dependencies -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
