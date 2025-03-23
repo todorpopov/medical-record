@@ -2,6 +2,7 @@ package com.medrec.services;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
+import com.google.protobuf.StringValue;
 import com.medrec.exceptions.DoctorIsNotGpException;
 import com.medrec.grpc.PatientServiceGrpc;
 import com.medrec.grpc.Users;
@@ -64,6 +65,25 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         int id = request.getValue();
         Patient patient = patientRepository.findById(id);
 
+        if (patient == null) {
+            responseObserver.onNext(Users.PatientResponse.newBuilder().setExists(false).build());
+        } else {
+            Users.PatientResponse patientResponse = Users.PatientResponse.newBuilder()
+                .setPatient(getGrpcPatientFromEntity(patient))
+                .setExists(true)
+                .build();
+            responseObserver.onNext(patientResponse);
+        }
+
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getPatientByEmail(StringValue request, StreamObserver<Users.PatientResponse> responseObserver) {
+        this.logger.info("Called RPC Get Patient By Email");
+
+        String email = request.getValue();
+        Patient patient = patientRepository.findByEmail(email);
         if (patient == null) {
             responseObserver.onNext(Users.PatientResponse.newBuilder().setExists(false).build());
         } else {

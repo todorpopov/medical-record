@@ -124,7 +124,7 @@ public class Patient {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", doctor_name=" + String.format("%s %s", doctor.getFirstName(), doctor.getLastName()) +
+                ", doctor=" + String.format("%s %s", doctor.getFirstName(), doctor.getLastName()) +
                 ", isHealthInsured=" + isHealthInsured +
                 '}';
     }

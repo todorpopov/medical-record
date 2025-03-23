@@ -3,8 +3,10 @@ package com.medrec.persistence.patient;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
 import com.medrec.persistence.ResponseMessage;
+import com.medrec.persistence.doctor.Doctor;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,23 @@ public class PatientRepository implements ICrudRepository<Patient> {
             this.logger.info(String.format("Patient %s found", patient.toString()));
         } catch (Exception e) {
             this.logger.severe(String.format("Patient %s findById failed", id));
+        }
+        return patient;
+    }
+
+    public Patient findByEmail(String email) {
+        Patient patient = null;
+        try (Session session = DBUtils.getCurrentSession()) {
+            Transaction tx = session.beginTransaction();
+            String hql = "from Doctor where email = :email";
+            Query query = session.createQuery("from Patient where email = :email")
+                .setParameter("email", email);
+            patient = (Patient) query.uniqueResult();
+            tx.commit();
+
+            this.logger.info(String.format("Doctor %s found", patient.toString()));
+        } catch (Exception e) {
+            this.logger.severe(String.format("Doctor %s findByEmail failed", email));
         }
         return patient;
     }

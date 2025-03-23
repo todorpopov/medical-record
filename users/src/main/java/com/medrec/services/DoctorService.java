@@ -8,6 +8,7 @@ import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.doctor.DoctorRepository;
 import com.medrec.persistence.specialty.Specialty;
 import com.google.protobuf.Int32Value;
+import com.google.protobuf.StringValue;
 import io.grpc.stub.StreamObserver;
 
 import java.util.List;
@@ -54,6 +55,25 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         int id = request.getValue();
         Doctor doctor = doctorRepository.findById(id);
 
+        if (doctor == null) {
+            responseObserver.onNext(Users.DoctorResponse.newBuilder().setExists(false).build());
+        } else {
+            Users.DoctorResponse doctorResponse = Users.DoctorResponse.newBuilder()
+                .setDoctor(getGrpcDoctorFromEntity(doctor))
+                .setExists(true)
+                .build();
+            responseObserver.onNext(doctorResponse);
+        }
+
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getDoctorByEmail(StringValue request, StreamObserver<Users.DoctorResponse> responseObserver) {
+        this.logger.info("Called RPC Get Doctor By Email");
+
+        String email = request.getValue();
+        Doctor doctor = doctorRepository.findByEmail(email);
         if (doctor == null) {
             responseObserver.onNext(Users.DoctorResponse.newBuilder().setExists(false).build());
         } else {
