@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
 
-package com.medrec.grpc;
+package com.medrec.grpc.users;
 
 service DoctorService {
   rpc CreateDoctor (Doctor) returns (isSuccessfulResponse);

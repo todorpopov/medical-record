@@ -2,8 +2,8 @@ package com.medrec.services;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
-import com.medrec.grpc.SpecialtyServiceGrpc;
-import com.medrec.grpc.Users;
+import com.medrec.grpc.users.SpecialtyServiceGrpc;
+import com.medrec.grpc.users.Users;
 import com.medrec.persistence.ResponseMessage;
 import com.medrec.persistence.specialty.Specialty;
 import com.medrec.persistence.specialty.SpecialtyRepository;

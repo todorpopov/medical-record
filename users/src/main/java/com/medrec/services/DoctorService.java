@@ -1,7 +1,7 @@
 package com.medrec.services;
 
-import com.medrec.grpc.DoctorServiceGrpc;
-import com.medrec.grpc.Users;
+import com.medrec.grpc.users.DoctorServiceGrpc;
+import com.medrec.grpc.users.Users;
 import com.google.protobuf.Empty;
 import com.medrec.persistence.ResponseMessage;
 import com.medrec.persistence.doctor.Doctor;
@@ -88,7 +88,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
     }
 
     @Override
-    public void getAllDoctors(Empty request, StreamObserver<com.medrec.grpc.Users.DoctorList> responseObserver) {
+    public void getAllDoctors(Empty request, StreamObserver<com.medrec.grpc.users.Users.DoctorList> responseObserver) {
         this.logger.info("Called RPC Get All Doctors");
 
         List<Doctor> doctors = doctorRepository.findAll();
