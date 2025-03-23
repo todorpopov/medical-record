@@ -5,6 +5,7 @@ JWT tokens.
 ## Sequences
 ### Log in Sequence
 To log into the system as either a `Doctor`, or a `Patient` the system will use the following sequence to manage the
-authentication of the input `email` and `password`, manage the authorization, and create a JWT token accordingly.
+authentication of the input `email` and `password`, manage the authorization, and create a JWT token accordingly. The
+JWT token is then stored inside the client's browser, using Local Storage.
 
 ![auth-log-in-sequence](../docs/auth/log-in-sequence.png)
