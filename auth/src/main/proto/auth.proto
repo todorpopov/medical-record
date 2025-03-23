@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "users.proto";
+
+package com.medrec.grpc.auth;
+
+service AuthService {
+  rpc RegisterPatient (com.medrec.grpc.users.Patient) returns (com.medrec.grpc.users.isSuccessfulResponse);
+  rpc RegisterDoctor (com.medrec.grpc.users.Doctor) returns (com.medrec.grpc.users.isSuccessfulResponse);
+  rpc LogPatientIn (LoginRequest) returns (LoginResponse);
+  rpc LogDoctorIn (LoginRequest) returns (LoginResponse);
+  rpc AuthorizeRequest (AuthorizationRequest) returns (AuthorizationResponse);
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  bool isSuccessful = 1;
+  optional string token = 2;
+  optional string role = 3;
+}
+
+message AuthorizationRequest {
+  string token = 1;
+  string requiredRole = 2;
+}
+
+message AuthorizationResponse {
+  bool isTokenAuthorized = 1;
+}

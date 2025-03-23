@@ -3,11 +3,12 @@ syntax = "proto3";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
 
-package com.medrec.grpc;
+package com.medrec.grpc.users;
 
 service DoctorService {
   rpc CreateDoctor (Doctor) returns (isSuccessfulResponse);
   rpc GetDoctorById (google.protobuf.Int32Value) returns (DoctorResponse);
+  rpc GetDoctorByEmail (google.protobuf.StringValue) returns (DoctorResponse);
   rpc GetAllDoctors (google.protobuf.Empty) returns (DoctorList);
   rpc UpdateDoctor (Doctor) returns (isSuccessfulResponse);
   rpc DeleteDoctorById (google.protobuf.Int32Value) returns (isSuccessfulResponse);
@@ -16,6 +17,7 @@ service DoctorService {
 service PatientService {
   rpc CreatePatient (Patient) returns (isSuccessfulResponse);
   rpc GetPatientById (google.protobuf.Int32Value) returns (PatientResponse);
+  rpc GetPatientByEmail (google.protobuf.StringValue) returns (PatientResponse);
   rpc GetAllPatients (google.protobuf.Empty) returns (PatientList);
   rpc UpdatePatient (Patient) returns (isSuccessfulResponse);
   rpc DeletePatientById (google.protobuf.Int32Value) returns (isSuccessfulResponse);

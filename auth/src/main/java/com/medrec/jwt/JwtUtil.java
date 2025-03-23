@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Date;
 import java.util.logging.Logger;
@@ -14,7 +15,6 @@ public class JwtUtil {
     private final Logger logger = Logger.getLogger(JwtUtil.class.getName());
 
     private final String SECRET = "this is the JWT secret, which should be stored secretly";
-    private final int TOKEN_VALIDITY = 1000 * 60 * 15; // 15 Minutes
 
     private JwtUtil() {}
 
@@ -28,6 +28,7 @@ public class JwtUtil {
     public String generateToken(String email, String role) {
         long now = System.currentTimeMillis();
 
+        int TOKEN_VALIDITY = 1000 * 60 * 15; // 15 Minutes
         return JWT.create()
             .withSubject(email)
             .withClaim("role", role)
@@ -36,14 +37,21 @@ public class JwtUtil {
             .sign(Algorithm.HMAC256(SECRET));
     }
 
-    public boolean isTokenValid(String token) {
+    public DecodedJWT verifyAndDecode(String token) {
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
-            verifier.verify(token);
-            return true;
+            return verifier.verify(token);
         } catch (JWTVerificationException e) {
             this.logger.severe(e.getMessage());
-            return false;
+            return null;
         }
+    }
+
+    public String getEmail(DecodedJWT decodedJWT) {
+        return decodedJWT.getSubject();
+    }
+
+    public String getRole(DecodedJWT decodedJWT) {
+        return decodedJWT.getClaim("role").asString();
     }
 }
