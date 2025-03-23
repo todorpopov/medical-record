@@ -1,4 +1,4 @@
-package com.medrec.repositories;
+package com.medrec.gateways;
 
 import com.medrec.grpc.DoctorServiceGrpc;
 import com.medrec.grpc.Users;
@@ -9,12 +9,14 @@ import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 @Repository
-public class UsersRepository {
+public class UsersGateway {
+    private final Logger logger = Logger.getLogger(UsersGateway.class.getName());
     private final ManagedChannel channel;
 
-    public UsersRepository() {
+    public UsersGateway() {
         int port = Integer.parseInt(System.getenv("USERS_PORT"));
         String host = System.getenv("USERS_HOST");
         channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
@@ -28,7 +30,7 @@ public class UsersRepository {
 
     @PreDestroy
     public void shutdown() {
-        System.out.println("Shutting down gRPC client channel...");
+        logger.info("Shutting down channel");
         try {
             channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {

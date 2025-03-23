@@ -9,4 +9,4 @@ The `Users` database design consists of the following tables:
   - `Specialty` - table for storing all different specialties a `Doctor` can specialize in.
 
 ## Diagram
-![image-of-users-database-diagram](../docs/users-database.png)
+![image-of-users-database-diagram](../docs/users/users-database.png)

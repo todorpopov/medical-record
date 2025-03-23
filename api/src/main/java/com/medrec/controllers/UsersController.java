@@ -1,7 +1,7 @@
 package com.medrec.controllers;
 
 import com.medrec.grpc.Users;
-import com.medrec.repositories.UsersRepository;
+import com.medrec.gateways.UsersGateway;
 import com.medrec.utils.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +11,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("api/users")
 public class UsersController {
-    private final UsersRepository usersRepository;
+    private final UsersGateway usersGateway;
 
     @Autowired
-    public UsersController(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    public UsersController(UsersGateway usersGateway) {
+        this.usersGateway = usersGateway;
     }
 
     @CrossOrigin(origins = "http://localhost:4000")
@@ -30,7 +30,7 @@ public class UsersController {
                 .setSpecialtyId(1)
                 .build();
 
-        ResponseMessage response = this.usersRepository.createDoctor(doctor);
+        ResponseMessage response = this.usersGateway.createDoctor(doctor);
         return response.toString();
     }
 }
