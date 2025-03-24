@@ -1,9 +1,11 @@
 package com.medrec.persistence.patient;
 
+import com.medrec.dtos.CreatePatientDoctorIdDTO;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
 import com.medrec.persistence.ResponseMessage;
 import com.medrec.persistence.doctor.Doctor;
+import com.medrec.persistence.doctor.DoctorRepository;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -14,6 +16,8 @@ import java.util.logging.Logger;
 
 public class PatientRepository implements ICrudRepository<Patient> {
     private static PatientRepository instance;
+
+    private final DoctorRepository doctorRepository = DoctorRepository.getInstance();
 
     private final Logger logger = Logger.getLogger(PatientRepository.class.getName());
 
@@ -41,6 +45,30 @@ public class PatientRepository implements ICrudRepository<Patient> {
             );
         } catch (Exception e) {
             this.logger.severe(String.format("Patient %s save failed", patient.toString()));
+            return new ResponseMessage(false, e.getMessage());
+        }
+    }
+
+    public ResponseMessage saveWithDoctorId(CreatePatientDoctorIdDTO dto) {
+        Doctor doctor = doctorRepository.findById(dto.getGpId());
+
+        if (doctor == null || !doctor.isGp()) {
+            return new ResponseMessage(false, "");
+        }
+
+        try (Session session = DBUtils.getCurrentSession()) {
+            Transaction tx = session.beginTransaction();
+            Patient patient = dto.createPatientWithDoctor(doctor);
+            session.persist(patient);
+            tx.commit();
+
+            this.logger.info(String.format("Patient %s saved successfully", patient.toString()));
+            return new ResponseMessage(
+                true,
+                String.format("%s %s created successfully!", patient.getFirstName(), patient.getLastName())
+            );
+        } catch (Exception e) {
+            this.logger.severe("Patient save failed");
             return new ResponseMessage(false, e.getMessage());
         }
     }

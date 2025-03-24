@@ -1,5 +1,6 @@
 package com.medrec.services;
 
+import com.medrec.dtos.CreateDoctorSpecialtyIdDTO;
 import com.medrec.grpc.users.DoctorServiceGrpc;
 import com.medrec.grpc.users.Users;
 import com.google.protobuf.Empty;
@@ -39,6 +40,28 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
 
         ResponseMessage message = doctorRepository.save(doctor);
 
+        responseObserver.onNext(
+            Users.isSuccessfulResponse.newBuilder()
+                .setIsSuccessful(message.isSuccessful())
+                .setMessage(message.getMessage())
+                .build()
+        );
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void createDoctorSpecialtyId(Users.DoctorSpecialtyId request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
+        this.logger.info("Called RPC Create Doctor- Specialty Id");
+        CreateDoctorSpecialtyIdDTO dto = new CreateDoctorSpecialtyIdDTO(
+            request.getFirstName(),
+            request.getLastName(),
+            request.getEmail(),
+            request.getPassword(),
+            request.getSpecialtyId(),
+            request.getIsGp()
+        );
+
+        ResponseMessage message = doctorRepository.saveWithSpecialtyId(dto);
         responseObserver.onNext(
             Users.isSuccessfulResponse.newBuilder()
                 .setIsSuccessful(message.isSuccessful())

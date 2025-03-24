@@ -3,6 +3,7 @@ package com.medrec.services;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
+import com.medrec.dtos.CreatePatientDoctorIdDTO;
 import com.medrec.exceptions.DoctorIsNotGpException;
 import com.medrec.grpc.users.PatientServiceGrpc;
 import com.medrec.grpc.users.Users;
@@ -56,6 +57,29 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         } finally {
             responseObserver.onCompleted();
         }
+    }
+
+    @Override
+    public void createPatientDoctorId(Users.PatientDoctorId request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
+        this.logger.info("Called RPC Create Patient - Doctor Id");
+        CreatePatientDoctorIdDTO dto = new CreatePatientDoctorIdDTO(
+            request.getFirstName(),
+            request.getLastName(),
+            request.getEmail(),
+            request.getEmail(),
+            request.getPin(),
+            request.getGpId(),
+            request.getIsHealthInsured()
+        );
+
+        ResponseMessage message = patientRepository.saveWithDoctorId(dto);
+        responseObserver.onNext(
+            Users.isSuccessfulResponse.newBuilder()
+                .setIsSuccessful(message.isSuccessful())
+                .setMessage(message.getMessage())
+                .build()
+        );
+        responseObserver.onCompleted();
     }
 
     @Override

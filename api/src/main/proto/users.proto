@@ -7,6 +7,7 @@ package com.medrec.grpc.users;
 
 service DoctorService {
   rpc CreateDoctor (Doctor) returns (isSuccessfulResponse);
+  rpc CreateDoctorSpecialtyId (DoctorSpecialtyId) returns (isSuccessfulResponse);
   rpc GetDoctorById (google.protobuf.Int32Value) returns (DoctorResponse);
   rpc GetDoctorByEmail (google.protobuf.StringValue) returns (DoctorResponse);
   rpc GetAllDoctors (google.protobuf.Empty) returns (DoctorList);
@@ -16,6 +17,7 @@ service DoctorService {
 
 service PatientService {
   rpc CreatePatient (Patient) returns (isSuccessfulResponse);
+  rpc CreatePatientDoctorId (PatientDoctorId) returns (isSuccessfulResponse);
   rpc GetPatientById (google.protobuf.Int32Value) returns (PatientResponse);
   rpc GetPatientByEmail (google.protobuf.StringValue) returns (PatientResponse);
   rpc GetAllPatients (google.protobuf.Empty) returns (PatientList);
@@ -41,6 +43,16 @@ message Doctor {
   Specialty specialty = 7;
 }
 
+message DoctorSpecialtyId {
+  optional int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string password = 5;
+  bool isGp = 6;
+  int32 specialtyId = 7;
+}
+
 message DoctorResponse {
   optional Doctor doctor = 1;
   bool exists = 2;
@@ -54,6 +66,17 @@ message Patient {
   string password = 5;
   string pin = 6;
   Doctor gp = 7;
+  bool isHealthInsured = 8;
+}
+
+message PatientDoctorId {
+  optional int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string password = 5;
+  string pin = 6;
+  int32 gpId = 7;
   bool isHealthInsured = 8;
 }
 

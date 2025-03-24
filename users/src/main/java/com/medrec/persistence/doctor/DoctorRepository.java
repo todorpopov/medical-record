@@ -1,8 +1,11 @@
 package com.medrec.persistence.doctor;
 
+import com.medrec.dtos.CreateDoctorSpecialtyIdDTO;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
 import com.medrec.persistence.ResponseMessage;
+import com.medrec.persistence.specialty.Specialty;
+import com.medrec.persistence.specialty.SpecialtyRepository;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -13,6 +16,8 @@ import java.util.logging.Logger;
 
 public class DoctorRepository implements ICrudRepository<Doctor> {
     private static DoctorRepository instance;
+
+    private final SpecialtyRepository specialtyRepository = SpecialtyRepository.getInstance();
 
     private final Logger logger = Logger.getLogger(DoctorRepository.class.getName());
 
@@ -40,6 +45,29 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
             );
         } catch (Exception e) {
             this.logger.severe(String.format("Doctor %s save failed", doctor.toString()));
+            return new ResponseMessage(false, e.getMessage());
+        }
+    }
+
+    public ResponseMessage saveWithSpecialtyId(CreateDoctorSpecialtyIdDTO dto) {
+        Specialty specialty = specialtyRepository.findById(dto.getSpecialtyId());
+
+        if (specialty == null) {
+            return new ResponseMessage(false, String.format("Specialty %s not found", dto.getSpecialtyId()));
+        }
+        try (Session session = DBUtils.getCurrentSession()) {
+            Transaction tx = session.beginTransaction();
+            Doctor doctor = dto.createDoctorWithSpecialty(specialty);
+            session.persist(doctor);
+            tx.commit();
+
+            this.logger.info(String.format("Doctor %s saved successfully", doctor.toString()));
+            return new ResponseMessage(
+                true,
+                String.format("%s %s created successfully!", doctor.getFirstName(), doctor.getLastName())
+            );
+        } catch (Exception e) {
+            this.logger.severe("Doctor save failed");
             return new ResponseMessage(false, e.getMessage());
         }
     }
