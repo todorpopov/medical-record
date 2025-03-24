@@ -16,7 +16,7 @@ public class GrpcServer {
     private final HealthStatusManager healthStatusManager = new HealthStatusManager();
 
     public void start() throws IOException, InterruptedException {
-        int port = Integer.parseInt(System.getenv("USERS_PORT"));
+        int port = Integer.parseInt(System.getenv("AUTH_PORT"));
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         Server server = ServerBuilder.forPort(port)

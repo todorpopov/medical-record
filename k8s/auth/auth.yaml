@@ -1,27 +1,27 @@
-# API Deployment
+# Auth Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-service
+  name: auth-service
   namespace: medical-record
   labels:
-    app: api-service
+    app: auth-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-service
+      app: auth-service
   template:
     metadata:
       labels:
-        app: api-service
+        app: auth-service
     spec:
       containers:
-        - name: api-service
-          image: api-service:latest
+        - name: auth-service
+          image: auth-service:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8080
+            - containerPort: 9091
           resources:
             requests:
               memory: "256Mi"
@@ -30,30 +30,35 @@ spec:
               memory: "512Mi"
               cpu: "500m"
           env:
-            - name: API_GATEWAY_PORT
-              value: "8080"
+            - name: AUTH_PORT
+              value: "9091"
             - name: USERS_PORT
               value: "9090"
             - name: USERS_HOST
               value: "users-service"
-            - name: AUTH_PORT
-              value: "9091"
-            - name: AUTH_HOST
-              value: "auth-service"
+          livenessProbe:
+            grpc:
+              port: 9091
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            grpc:
+              port: 9091
+            initialDelaySeconds: 5
+            periodSeconds: 10
 
 ---
 
-# API Service
+# Auth Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-service
+  name: auth-service
   namespace: medical-record
 spec:
   selector:
-    app: api-service
+    app: auth-service
   ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 31000
-  type: NodePort
+    - port: 9091
+      targetPort: 9091
+  type: ClusterIP
