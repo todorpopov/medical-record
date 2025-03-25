@@ -34,21 +34,7 @@ public class UsersGateway {
         specialtyService = SpecialtyServiceGrpc.newBlockingStub(channel);
     }
 
-    public ResponseMessage createPatient(Users.Patient patient, int doctorId) {
-        Users.PatientDoctorId patientWithDoctorId = Users.PatientDoctorId.newBuilder()
-            .setFirstName(patient.getFirstName())
-            .setLastName(patient.getLastName())
-            .setEmail(patient.getEmail())
-            .setPassword(patient.getPassword())
-            .setGpId(doctorId)
-            .setIsHealthInsured(patient.getIsHealthInsured())
-            .build();
-
-        Users.isSuccessfulResponse response = patientService.createPatientDoctorId(patientWithDoctorId);
-        return new ResponseMessage(response.getIsSuccessful(), response.getMessage());
-    }
-
-    public ResponseMessage createDoctor(Users.Doctor doctor, int specialtyId) {
+    public ResponseMessage createDoctorSpecialtyId(Users.Doctor doctor, int specialtyId) {
         Users.DoctorSpecialtyId doctorWithSpecialtyId = Users.DoctorSpecialtyId.newBuilder()
             .setFirstName(doctor.getFirstName())
             .setLastName(doctor.getFirstName())
@@ -59,6 +45,20 @@ public class UsersGateway {
             .build();
 
         Users.isSuccessfulResponse response = doctorService.createDoctorSpecialtyId(doctorWithSpecialtyId);
+        return new ResponseMessage(response.getIsSuccessful(), response.getMessage());
+    }
+
+    public ResponseMessage createPatientDoctorId(Users.Patient patient, int doctorId) {
+        Users.PatientDoctorId patientWithDoctorId = Users.PatientDoctorId.newBuilder()
+            .setFirstName(patient.getFirstName())
+            .setLastName(patient.getLastName())
+            .setEmail(patient.getEmail())
+            .setPassword(patient.getPassword())
+            .setGpId(doctorId)
+            .setIsHealthInsured(patient.getIsHealthInsured())
+            .build();
+
+        Users.isSuccessfulResponse response = patientService.createPatientDoctorId(patientWithDoctorId);
         return new ResponseMessage(response.getIsSuccessful(), response.getMessage());
     }
 
