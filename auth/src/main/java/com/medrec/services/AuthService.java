@@ -10,7 +10,11 @@ import com.medrec.grpc.users.Users;
 import com.medrec.jwt.JwtUtil;
 import io.grpc.stub.StreamObserver;
 
+import java.util.logging.Logger;
+
 public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
+    private final Logger logger = Logger.getLogger(AuthService.class.getName());
+
     private static AuthService instance;
 
     private final JwtUtil jwtUtil = JwtUtil.getInstance();
@@ -33,6 +37,8 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
     @Override
     public void logPatientIn(Auth.LoginRequest request,StreamObserver<Auth.LoginResponse> responseObserver ) {
+        this.logger.info("Called RPC Log Patient In");
+
         String email = request.getEmail();
         String password = request.getPassword();
 
@@ -59,6 +65,8 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
     @Override
     public void logDoctorIn(Auth.LoginRequest request,StreamObserver<Auth.LoginResponse> responseObserver ) {
+        this.logger.info("Called RPC Log Doctor In");
+
         String email = request.getEmail();
         String password = request.getPassword();
 
@@ -85,6 +93,8 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
     @Override
     public void authorizeRequest(Auth.AuthorizationRequest request, StreamObserver<Auth.AuthorizationResponse> responseObserver) {
+        this.logger.info("Called RPC Authorize Request");
+
         String token = request.getToken();
         String requiredRole = request.getRequiredRole();
 

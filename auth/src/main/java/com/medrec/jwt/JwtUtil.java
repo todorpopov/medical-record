@@ -26,6 +26,7 @@ public class JwtUtil {
     }
 
     public String generateToken(String email, String role) {
+        logger.info("Generating token for email: " + email);
         long now = System.currentTimeMillis();
 
         int TOKEN_VALIDITY = 1000 * 60 * 15; // 15 Minutes

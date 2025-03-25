@@ -33,7 +33,10 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
     public void createSpecialty(Users.Specialty request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
         this.logger.info("Called RPC Create Specialty");
 
-        Specialty specialty = new Specialty();
+        Specialty specialty = new Specialty(
+            request.getSpecialtyName(),
+            request.getSpecialtyDescription()
+        );
 
         ResponseMessage message = specialtyRepository.save(specialty);
         responseObserver.onNext(
