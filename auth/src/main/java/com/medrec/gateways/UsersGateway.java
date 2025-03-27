@@ -38,6 +38,14 @@ public class UsersGateway {
         return instance;
     }
 
+    public Users.isSuccessfulResponse registerDoctor(Users.DoctorSpecialtyId doctor) {
+        return doctorService.createDoctorSpecialtyId(doctor);
+    }
+
+    public Users.isSuccessfulResponse registerPatient(Users.PatientDoctorId patient) {
+        return patientService.createPatientDoctorId(patient);
+    }
+
     public UsersLogInResponseDTO getPatientByEmail(UsersLogInRequestDTO request) {
         Users.PatientResponse response = patientService.getPatientByEmail(StringValue.of(request.getEmail()));
         if (response.getExists()) {

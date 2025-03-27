@@ -5,8 +5,8 @@ import "users.proto";
 package com.medrec.grpc.auth;
 
 service AuthService {
-  rpc RegisterPatient (com.medrec.grpc.users.Patient) returns (com.medrec.grpc.users.isSuccessfulResponse);
-  rpc RegisterDoctor (com.medrec.grpc.users.Doctor) returns (com.medrec.grpc.users.isSuccessfulResponse);
+  rpc RegisterPatient (com.medrec.grpc.users.PatientDoctorId) returns (RegisterResponse);
+  rpc RegisterDoctor (com.medrec.grpc.users.DoctorSpecialtyId) returns (RegisterResponse);
   rpc LogPatientIn (LoginRequest) returns (LoginResponse);
   rpc LogDoctorIn (LoginRequest) returns (LoginResponse);
   rpc AuthorizeRequest (AuthorizationRequest) returns (AuthorizationResponse);
@@ -18,6 +18,12 @@ message LoginRequest {
 }
 
 message LoginResponse {
+  bool isSuccessful = 1;
+  optional string token = 2;
+  optional string role = 3;
+}
+
+message RegisterResponse {
   bool isSuccessful = 1;
   optional string token = 2;
   optional string role = 3;

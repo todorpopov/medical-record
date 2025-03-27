@@ -30,10 +30,52 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void registerPatient(Users.Patient request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {}
+    public void registerPatient(Users.PatientDoctorId request, StreamObserver<Auth.RegisterResponse> responseObserver) {
+        this.logger.info("Called RPC Register Patient");
+
+        Users.isSuccessfulResponse response = usersGateway.registerPatient(request);
+
+        if(response.getIsSuccessful()) {
+            String token = jwtUtil.generateToken(request.getEmail(), "patient");
+            responseObserver.onNext(
+                Auth.RegisterResponse.newBuilder()
+                    .setIsSuccessful(true)
+                    .setToken(token)
+                    .setRole("patient")
+                    .build()
+            );
+        } else {
+            responseObserver.onNext(
+                Auth.RegisterResponse.newBuilder()
+                    .setIsSuccessful(false)
+                    .build());
+            responseObserver.onCompleted();
+        }
+    }
 
     @Override
-    public void registerDoctor(Users.Doctor request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {}
+    public void registerDoctor(Users.DoctorSpecialtyId request, StreamObserver<Auth.RegisterResponse> responseObserver) {
+        this.logger.info("Called RPC Register Doctor");
+
+        Users.isSuccessfulResponse response = usersGateway.registerDoctor(request);
+
+        if(response.getIsSuccessful()) {
+            String token = jwtUtil.generateToken(request.getEmail(), "doctor");
+            responseObserver.onNext(
+                Auth.RegisterResponse.newBuilder()
+                    .setIsSuccessful(true)
+                    .setToken(token)
+                    .setRole("doctor")
+                    .build()
+            );
+        } else {
+            responseObserver.onNext(
+                Auth.RegisterResponse.newBuilder()
+                    .setIsSuccessful(false)
+                    .build());
+            responseObserver.onCompleted();
+        }
+    }
 
     @Override
     public void logPatientIn(Auth.LoginRequest request,StreamObserver<Auth.LoginResponse> responseObserver ) {
@@ -74,7 +116,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         UsersLogInResponseDTO responseDTO = usersGateway.getDoctorByEmail(requestDTO);
 
         if(responseDTO.getExists() && responseDTO.getPassword().equals(password)) {
-            String token = jwtUtil.generateToken(email, "patient");
+            String token = jwtUtil.generateToken(email, "doctor");
             responseObserver.onNext(
                 Auth.LoginResponse.newBuilder()
                     .setIsSuccessful(true)
