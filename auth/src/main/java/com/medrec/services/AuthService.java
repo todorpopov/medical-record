@@ -1,13 +1,11 @@
 package com.medrec.services;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.medrec.dtos.UsersLogInRequestDTO;
 import com.medrec.dtos.UsersLogInResponseDTO;
 import com.medrec.gateways.UsersGateway;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
 import com.medrec.grpc.users.Users;
-import com.medrec.jwt.JwtUtil;
 import io.grpc.stub.StreamObserver;
 
 import java.util.logging.Logger;
@@ -17,7 +15,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
     private static AuthService instance;
 
-    private final JwtUtil jwtUtil = JwtUtil.getInstance();
+    private final JwtService jwtService = JwtService.getInstance();
     private final UsersGateway usersGateway = UsersGateway.getInstance();
 
     private AuthService() {}
@@ -32,11 +30,22 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     @Override
     public void registerPatient(Users.PatientDoctorId request, StreamObserver<Auth.RegisterResponse> responseObserver) {
         this.logger.info("Called RPC Register Patient");
+        this.logger.info(request.getPassword());
 
-        Users.isSuccessfulResponse response = usersGateway.registerPatient(request);
+        Users.PatientDoctorId requestWithHashedPass = Users.PatientDoctorId.newBuilder()
+            .setFirstName(request.getFirstName())
+            .setLastName(request.getLastName())
+            .setEmail(request.getEmail())
+            .setPassword(BcryptService.hashPassword(request.getPassword()))
+            .setPin(request.getPin())
+            .setGpId(request.getGpId())
+            .setIsHealthInsured(request.getIsHealthInsured())
+            .build();
+
+        Users.isSuccessfulResponse response = usersGateway.registerPatient(requestWithHashedPass);
 
         if(response.getIsSuccessful()) {
-            String token = jwtUtil.generateToken(request.getEmail(), "patient");
+            String token = jwtService.generateToken(request.getEmail(), "patient");
             responseObserver.onNext(
                 Auth.RegisterResponse.newBuilder()
                     .setIsSuccessful(true)
@@ -49,18 +58,27 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                 Auth.RegisterResponse.newBuilder()
                     .setIsSuccessful(false)
                     .build());
-            responseObserver.onCompleted();
         }
+        responseObserver.onCompleted();
     }
 
     @Override
     public void registerDoctor(Users.DoctorSpecialtyId request, StreamObserver<Auth.RegisterResponse> responseObserver) {
         this.logger.info("Called RPC Register Doctor");
 
-        Users.isSuccessfulResponse response = usersGateway.registerDoctor(request);
+        Users.DoctorSpecialtyId requestWithHashedPass = Users.DoctorSpecialtyId.newBuilder()
+            .setFirstName(request.getFirstName())
+            .setLastName(request.getLastName())
+            .setEmail(request.getEmail())
+            .setPassword(BcryptService.hashPassword(request.getPassword()))
+            .setIsGp(request.getIsGp())
+            .setSpecialtyId(request.getSpecialtyId())
+            .build();
+
+        Users.isSuccessfulResponse response = usersGateway.registerDoctor(requestWithHashedPass);
 
         if(response.getIsSuccessful()) {
-            String token = jwtUtil.generateToken(request.getEmail(), "doctor");
+            String token = jwtService.generateToken(request.getEmail(), "doctor");
             responseObserver.onNext(
                 Auth.RegisterResponse.newBuilder()
                     .setIsSuccessful(true)
@@ -73,8 +91,8 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                 Auth.RegisterResponse.newBuilder()
                     .setIsSuccessful(false)
                     .build());
-            responseObserver.onCompleted();
         }
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -87,8 +105,8 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         UsersLogInRequestDTO requestDTO = new UsersLogInRequestDTO(email, password);
         UsersLogInResponseDTO responseDTO = usersGateway.getPatientByEmail(requestDTO);
 
-        if(responseDTO.getExists() && responseDTO.getPassword().equals(password)) {
-            String token = jwtUtil.generateToken(email, "patient");
+        if(responseDTO.getExists() && BcryptService.checkPassword(password, responseDTO.getPassword())) {
+            String token = jwtService.generateToken(email, "patient");
             responseObserver.onNext(
                 Auth.LoginResponse.newBuilder()
                     .setIsSuccessful(true)
@@ -115,8 +133,8 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         UsersLogInRequestDTO requestDTO = new UsersLogInRequestDTO(email, password);
         UsersLogInResponseDTO responseDTO = usersGateway.getDoctorByEmail(requestDTO);
 
-        if(responseDTO.getExists() && responseDTO.getPassword().equals(password)) {
-            String token = jwtUtil.generateToken(email, "doctor");
+        if(responseDTO.getExists() && BcryptService.checkPassword(password, responseDTO.getPassword())) {
+            String token = jwtService.generateToken(email, "doctor");
             responseObserver.onNext(
                 Auth.LoginResponse.newBuilder()
                     .setIsSuccessful(true)
@@ -140,21 +158,22 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String token = request.getToken();
         String requiredRole = request.getRequiredRole();
 
-        DecodedJWT jwt = jwtUtil.verifyAndDecode(token);
-        if (jwt != null && requiredRole.equals(jwtUtil.getRole(jwt))) {
+        boolean isAuthorized = jwtService.isUserAuthorized(token, requiredRole);
+
+        if(isAuthorized) {
             responseObserver.onNext(
                 Auth.AuthorizationResponse.newBuilder()
                     .setIsTokenAuthorized(true)
                     .build()
             );
-            responseObserver.onCompleted();
+        } else {
+            responseObserver.onNext(
+                Auth.AuthorizationResponse.newBuilder()
+                    .setIsTokenAuthorized(false)
+                    .build()
+            );
         }
 
-        responseObserver.onNext(
-            Auth.AuthorizationResponse.newBuilder()
-                .setIsTokenAuthorized(false)
-                .build()
-        );
         responseObserver.onCompleted();
     }
 }

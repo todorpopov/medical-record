@@ -43,6 +43,7 @@ public class UsersGateway {
     }
 
     public Users.isSuccessfulResponse registerPatient(Users.PatientDoctorId patient) {
+        this.logger.info(patient.getPassword());
         return patientService.createPatientDoctorId(patient);
     }
 

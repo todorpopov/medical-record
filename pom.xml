@@ -15,7 +15,7 @@
     <protobuf.version>3.25.1</protobuf.version>
     <maven.shade.version>3.5.1</maven.shade.version>
     <spring.boot.version>3.4.3</spring.boot.version>
-    <jwt.version>4.4.0</jwt.version>
+    <jwt.version>0.11.5</jwt.version>
     <bcrypt.version>0.4</bcrypt.version>
   </properties>
   <!-- Define all dependencies that child modules can use -->
@@ -79,9 +79,21 @@
       </dependency>
       <!-- JWT -->
       <dependency>
-        <groupId>com.auth0</groupId>
-        <artifactId>java-jwt</artifactId>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
         <version>${jwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>${jwt.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>${jwt.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <!-- Bcrypt -->
       <dependency>

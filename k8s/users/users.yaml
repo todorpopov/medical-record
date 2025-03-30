@@ -33,7 +33,7 @@ spec:
             - name: USERS_PORT
               value: "9090"
             - name: DB_URL
-              value: "jdbc:postgresql://postgres:5432/users"
+              value: "jdbc:postgresql://localhost:31001/users"
             - name: DB_USERNAME
               value: "admin"
             - name: DB_PASSWORD

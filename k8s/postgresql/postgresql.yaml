@@ -88,4 +88,5 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
-  type: ClusterIP # Internal - needs to be port-forwarded to be accessible outside the cluster
+      nodePort: 31001
+  type: NodePort

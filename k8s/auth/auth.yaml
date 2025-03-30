@@ -32,6 +32,8 @@ spec:
           env:
             - name: AUTH_PORT
               value: "9091"
+            - name: JWT_SECRET
+              value: "Medrec JWT Secret"
             - name: USERS_PORT
               value: "9090"
             - name: USERS_HOST

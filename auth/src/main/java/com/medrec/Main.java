@@ -1,5 +1,7 @@
 package com.medrec;
 
+import com.medrec.services.JwtService;
+
 import java.io.IOException;
 import java.util.logging.Logger;
 

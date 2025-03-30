@@ -1,19 +1,61 @@
 package com.medrec.controllers;
 
-import com.medrec.gateways.AuthGateway;
+import com.medrec.dtos.*;
 import com.medrec.services.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("api/auth")
 public class AuthController {
-    private final AuthGateway authGateway;
+    private final Logger logger = Logger.getLogger(AuthController.class.getName());
+    private final AuthService authService;
 
-    @Autowired
-    public AuthController(AuthGateway authGateway) {
-        this.authGateway = authGateway;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("register-doctor")
+    public ResponseEntity<AuthResponseDTO> registerDoctor(@RequestBody RegisterDoctorDTO dto) {
+        logger.info(dto.toString());
+        AuthResponseDTO response = this.authService.registerDoctor(dto);
+        if (response.isSuccessful()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @PostMapping("register-patient")
+    public ResponseEntity<AuthResponseDTO> registerPatient(@RequestBody RegisterPatientDTO dto) {
+        logger.info(dto.toString());
+        logger.info(dto.getPassword());
+        AuthResponseDTO response = this.authService.registerPatient(dto);
+        if (response.isSuccessful()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @PostMapping("log-doctor-in")
+    public ResponseEntity<AuthResponseDTO> logDoctorIn(@RequestBody LogUserInDTO dto) {
+        logger.info("Log Doctor In: " + dto.getEmail());
+        AuthResponseDTO response = this.authService.LogDoctorIn(dto);
+        if (response.isSuccessful()) {
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @PostMapping("log-patient-in")
+    public ResponseEntity<AuthResponseDTO> logPatientIn(@RequestBody LogUserInDTO dto) {
+        logger.info("Log Patient In: " + dto.getEmail());
+        AuthResponseDTO response = this.authService.LogPatientIn(dto);
+        if (response.isSuccessful()) {
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

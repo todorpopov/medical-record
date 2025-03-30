@@ -66,7 +66,7 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
             request.getFirstName(),
             request.getLastName(),
             request.getEmail(),
-            request.getEmail(),
+            request.getPassword(),
             request.getPin(),
             request.getGpId(),
             request.getIsHealthInsured()
