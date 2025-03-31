@@ -9,6 +9,7 @@ service AuthService {
   rpc RegisterDoctor (com.medrec.grpc.users.DoctorSpecialtyId) returns (RegisterResponse);
   rpc LogPatientIn (LoginRequest) returns (LoginResponse);
   rpc LogDoctorIn (LoginRequest) returns (LoginResponse);
+  rpc LogAdminIn (LoginRequest) returns (LoginResponse);
   rpc AuthorizeRequest (AuthorizationRequest) returns (AuthorizationResponse);
 }
 
@@ -31,7 +32,7 @@ message RegisterResponse {
 
 message AuthorizationRequest {
   string token = 1;
-  string requiredRole = 2;
+  repeated string requiredRoles = 2;
 }
 
 message AuthorizationResponse {

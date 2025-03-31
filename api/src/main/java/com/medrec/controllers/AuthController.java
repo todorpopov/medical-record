@@ -42,7 +42,7 @@ public class AuthController {
     @PostMapping("log-doctor-in")
     public ResponseEntity<AuthResponseDTO> logDoctorIn(@RequestBody LogUserInDTO dto) {
         logger.info("Log Doctor In: " + dto.getEmail());
-        AuthResponseDTO response = this.authService.LogDoctorIn(dto);
+        AuthResponseDTO response = this.authService.logDoctorIn(dto);
         if (response.isSuccessful()) {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
@@ -52,10 +52,20 @@ public class AuthController {
     @PostMapping("log-patient-in")
     public ResponseEntity<AuthResponseDTO> logPatientIn(@RequestBody LogUserInDTO dto) {
         logger.info("Log Patient In: " + dto.getEmail());
-        AuthResponseDTO response = this.authService.LogPatientIn(dto);
+        AuthResponseDTO response = this.authService.logPatientIn(dto);
         if (response.isSuccessful()) {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @PostMapping("log-admin-in")
+    public ResponseEntity<AuthResponseDTO> logAdminIn(@RequestBody LogUserInDTO dto) {
+        logger.info("Log Admin In: " + dto.getEmail());
+        AuthResponseDTO responseDTO = this.authService.logAdminIn(dto);
+        if (responseDTO.isSuccessful()) {
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDTO);
     }
 }

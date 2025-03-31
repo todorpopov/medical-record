@@ -40,7 +40,7 @@ public class AuthService {
         );
     }
 
-    public AuthResponseDTO LogDoctorIn(LogUserInDTO dto) {
+    public AuthResponseDTO logDoctorIn(LogUserInDTO dto) {
         String token = authGateway.logDoctorIn(dto.getEmail(), dto.getPassword());
         return new AuthResponseDTO(
             token != null,
@@ -49,12 +49,21 @@ public class AuthService {
         );
     }
 
-    public AuthResponseDTO LogPatientIn(LogUserInDTO dto) {
+    public AuthResponseDTO logPatientIn(LogUserInDTO dto) {
         String token = authGateway.logPatientIn(dto.getEmail(), dto.getPassword());
         return new AuthResponseDTO(
             token != null,
             token,
             "patient"
+        );
+    }
+
+    public AuthResponseDTO logAdminIn(LogUserInDTO dto) {
+        String token = authGateway.logAdminIn(dto.getEmail(), dto.getPassword());
+        return new AuthResponseDTO(
+            token != null,
+            token,
+            "admin"
         );
     }
 }

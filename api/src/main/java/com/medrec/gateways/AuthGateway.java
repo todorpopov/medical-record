@@ -1,5 +1,6 @@
 package com.medrec.gateways;
 
+import com.google.protobuf.ProtocolStringList;
 import com.medrec.dtos.AuthResponseDTO;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
@@ -9,6 +10,7 @@ import io.grpc.ManagedChannelBuilder;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -110,10 +112,24 @@ public class AuthGateway {
         return null;
     }
 
-    public boolean isRequestAuthorized(String token, String requiredRole) {
+    public String logAdminIn(String email, String password) {
+        Auth.LoginResponse response = authService.logAdminIn(
+            Auth.LoginRequest.newBuilder()
+                .setEmail(email)
+                .setPassword(password)
+                .build()
+        );
+
+        if (response.getIsSuccessful()) {
+            return response.getToken();
+        }
+        return null;
+    }
+
+    public boolean isRequestAuthorized(String token, List<String> requiredRoles) {
         Auth.AuthorizationRequest request = Auth.AuthorizationRequest.newBuilder()
             .setToken(token)
-            .setRequiredRole(requiredRole)
+            .addAllRequiredRoles(requiredRoles)
             .build();
 
         Auth.AuthorizationResponse response = authService.authorizeRequest(request);
