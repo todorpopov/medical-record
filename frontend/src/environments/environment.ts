@@ -1,4 +1,3 @@
 export const environment = {
-    apiGatewayHost: "localhost",
-    apiGatewayPort: 31000
+  apiGateway: 'http://localhost:8080'
 };

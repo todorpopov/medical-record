@@ -1,0 +1,23 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <app-text-input
+    label="Email"
+    type="email"
+    placeholder="Enter you email"
+    formControlName="email"
+    [error]="loginForm.get('email')?.errors && loginForm.get('email')?.touched ? 'Please enter valid email!': ''"
+  ></app-text-input>
+  
+  <app-text-input
+    label="Password"
+    type="password"
+    placeholder="Enter you password"
+    formControlName="password"
+    [error]="loginForm.get('password')?.errors && loginForm.get('password')?.touched ? 'Password must be at least 6 characters!': ''"
+  ></app-text-input>
+
+  <app-checkbox
+    label="Log In as Doctor"
+    formControlName="isDoctor"
+  ></app-checkbox>
+  <button type="submit" [disabled]="loginForm.invalid">Login</button>
+</form>

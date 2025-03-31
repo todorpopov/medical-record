@@ -7,21 +7,21 @@ import {environment} from '../../environments/environment';
   providedIn: 'root'
 })
 export class UsersService {
-    private apiUrl = `http://${environment.apiGatewayHost}:${environment.apiGatewayPort}/api/users`
+  private apiUrl = `http://${environment.apiGatewayHost}:${environment.apiGatewayPort}/api/users`
 
-    constructor(
-        private httpClient: HttpClient
-    ) { }
+  constructor(
+    private httpClient: HttpClient
+  ) { }
 
-    public registerPatient(patient: Patient) {
-        this.httpClient.post(`${this.apiUrl}/create`, patient)
-            .subscribe({
-                next: () => {
-                    console.log("Successfully created patient")
-                },
-                error: (err: Error) => {
-                    console.log(`Error occurred: ${err.message}`)
-                }
-            })
-    }
+  public registerPatient(patient: Patient) {
+    this.httpClient.post(`${this.apiUrl}/create`, patient)
+      .subscribe({
+        next: () => {
+            console.log("Successfully created patient")
+        },
+        error: (err: Error) => {
+            console.log(`Error occurred: ${err.message}`)
+        }
+      })
+  }
 }
