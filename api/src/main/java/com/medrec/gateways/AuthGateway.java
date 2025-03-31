@@ -1,6 +1,5 @@
 package com.medrec.gateways;
 
-import com.google.protobuf.ProtocolStringList;
 import com.medrec.dtos.AuthResponseDTO;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
@@ -8,13 +7,13 @@ import com.medrec.grpc.users.Users;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import jakarta.annotation.PreDestroy;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-@Repository
+@Component
 public class AuthGateway {
     private final Logger logger = Logger.getLogger(AuthGateway.class.getName());
 

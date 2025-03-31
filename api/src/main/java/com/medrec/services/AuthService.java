@@ -2,11 +2,12 @@ package com.medrec.services;
 
 import com.medrec.dtos.*;
 import com.medrec.gateways.AuthGateway;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.logging.Logger;
 
-@Service
+@Component
 public class AuthService {
     private final Logger logger = Logger.getLogger(AuthService.class.getName());
 
@@ -65,5 +66,9 @@ public class AuthService {
             token,
             "admin"
         );
+    }
+
+    public boolean isRequestAuthorized(String token, List<String> requiredRoles) {
+        return authGateway.isRequestAuthorized(token, requiredRoles);
     }
 }

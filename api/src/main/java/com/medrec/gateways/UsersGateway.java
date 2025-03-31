@@ -10,12 +10,12 @@ import com.medrec.grpc.users.Users;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import jakarta.annotation.PreDestroy;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-@Repository
+@Component
 public class UsersGateway {
     private final Logger logger = Logger.getLogger(UsersGateway.class.getName());
 

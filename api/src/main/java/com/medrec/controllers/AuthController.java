@@ -1,5 +1,6 @@
 package com.medrec.controllers;
 
+import com.medrec.annotations.AuthGuard;
 import com.medrec.dtos.*;
 import com.medrec.services.AuthService;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @AuthGuard({"patient", "admin"})
     @PostMapping("register-doctor")
     public ResponseEntity<AuthResponseDTO> registerDoctor(@RequestBody RegisterDoctorDTO dto) {
         logger.info(dto.toString());

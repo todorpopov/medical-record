@@ -8,8 +8,8 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.jar.JarException;
 import java.util.logging.Logger;
 
 public class JwtService {
@@ -48,12 +48,19 @@ public class JwtService {
             .compact();
     }
 
-    public boolean isUserAuthorized(String token, String requiredRole) {
+    public boolean isUserAuthorized(String token, List<String> requiredRoles) {
         if(!isTokenValid(token)) {
             return false;
         }
+        String tokenRole = getRole(token);
 
-        return requiredRole.equals(getRole(token));
+        for(String requiredRole : requiredRoles) {
+            if(requiredRole.equals(tokenRole)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isTokenValid(String token) {

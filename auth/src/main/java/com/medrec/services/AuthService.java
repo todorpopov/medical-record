@@ -8,6 +8,7 @@ import com.medrec.grpc.auth.AuthServiceGrpc;
 import com.medrec.grpc.users.Users;
 import io.grpc.stub.StreamObserver;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
@@ -17,6 +18,9 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
     private final JwtService jwtService = JwtService.getInstance();
     private final UsersGateway usersGateway = UsersGateway.getInstance();
+
+    private final String ADMIN_EMAIL = System.getenv("ADMIN_EMAIL");
+    private final String ADMIN_PASSWORD = System.getenv("ADMIN_PASSWORD");
 
     private AuthService() {}
 
@@ -113,14 +117,13 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     .setToken(token)
                     .setRole("patient")
                     .build());
-            responseObserver.onCompleted();
         } else {
         responseObserver.onNext(
             Auth.LoginResponse.newBuilder()
                 .setIsSuccessful(false)
                 .build());
-        responseObserver.onCompleted();
         }
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -141,14 +144,37 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     .setToken(token)
                     .setRole("patient")
                     .build());
-            responseObserver.onCompleted();
         } else {
             responseObserver.onNext(
                 Auth.LoginResponse.newBuilder()
                     .setIsSuccessful(false)
                     .build());
-            responseObserver.onCompleted();
         }
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void logAdminIn(Auth.LoginRequest request,StreamObserver<Auth.LoginResponse> responseObserver ) {
+        this.logger.info("Called RPC Log Admin In");
+
+        String email = request.getEmail();
+        String password = request.getPassword();
+
+        if(email.equals(ADMIN_EMAIL) && password.equals(ADMIN_PASSWORD)) {
+            String token = jwtService.generateToken(email, "admin");
+            responseObserver.onNext(
+                Auth.LoginResponse.newBuilder()
+                    .setIsSuccessful(true)
+                    .setToken(token)
+                    .setRole("admin")
+                    .build());
+        } else {
+            responseObserver.onNext(
+                Auth.LoginResponse.newBuilder()
+                    .setIsSuccessful(false)
+                    .build());
+        }
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -156,7 +182,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         this.logger.info("Called RPC Authorize Request");
 
         String token = request.getToken();
-        String requiredRole = request.getRequiredRole();
+        List<String> requiredRole = request.getRequiredRolesList();
 
         boolean isAuthorized = jwtService.isUserAuthorized(token, requiredRole);
 
