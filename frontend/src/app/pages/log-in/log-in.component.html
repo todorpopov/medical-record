@@ -1,23 +1,56 @@
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-  <app-text-input
-    label="Email"
-    type="email"
-    placeholder="Enter you email"
-    formControlName="email"
-    [error]="loginForm.get('email')?.errors && loginForm.get('email')?.touched ? 'Please enter valid email!': ''"
-  ></app-text-input>
+<div class="container mx-auto w-25 m-5 border rounded">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="my-3 mx-2 text-center font-weight-light">
+      <label *ngIf="label">{{ label }}</label>
+    </div>
   
-  <app-text-input
-    label="Password"
-    type="password"
-    placeholder="Enter you password"
-    formControlName="password"
-    [error]="loginForm.get('password')?.errors && loginForm.get('password')?.touched ? 'Password must be at least 6 characters!': ''"
-  ></app-text-input>
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="Email"
+        type="email"
+        placeholder="Enter your email"
+        formControlName="email"
+        [error]="loginForm.get('email')?.errors && loginForm.get('email')?.touched ? 'Please enter valid email!': ''"
+      ></app-text-input>
+    </div>
 
-  <app-checkbox
-    label="Log In as Doctor"
-    formControlName="isDoctor"
-  ></app-checkbox>
-  <button type="submit" [disabled]="loginForm.invalid">Login</button>
-</form>
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="Password"
+        type="password"
+        placeholder="Enter your password"
+        formControlName="password"
+        [error]="loginForm.get('password')?.errors && loginForm.get('password')?.touched ? 'Password must be at least 6 characters!': ''"
+      ></app-text-input>
+    </div>
+  
+    <div class="my-3 mx-2">
+      <app-radio
+        label="Patient"
+        name="userType"
+        value="patient"
+        formControlName="userType"
+      ></app-radio>
+      <app-radio
+        label="Doctor"
+        name="userType"
+        value="doctor"
+        formControlName="userType"
+      ></app-radio>
+      <app-radio
+        label="System Administator"
+        name="userType"
+        value="admin"
+        formControlName="userType"
+      ></app-radio>
+    </div>
+  
+    <div class="my-3 mx-2">
+      <button
+        class="btn btn-outline-primary"
+        type="submit"
+        [disabled]="loginForm.invalid"
+      >Submit</button>
+    </div>
+  </form>
+</div>

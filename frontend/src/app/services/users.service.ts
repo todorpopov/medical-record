@@ -1,27 +1,49 @@
 import { Injectable } from '@angular/core';
-import {Patient} from '../common/patient.model';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+
+import { SpecialtyDTO } from '../common/dtos/specialty.dto';
+import { DoctorSummaryDTO } from '../common/dtos/doctor.summary.dto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  private apiUrl = `http://${environment.apiGatewayHost}:${environment.apiGatewayPort}/api/users`
+  private apiUrl = `${environment.apiGateway}/users`
 
   constructor(
     private httpClient: HttpClient
-  ) { }
+  ) {}
 
-  public registerPatient(patient: Patient) {
-    this.httpClient.post(`${this.apiUrl}/create`, patient)
-      .subscribe({
-        next: () => {
-            console.log("Successfully created patient")
-        },
-        error: (err: Error) => {
-            console.log(`Error occurred: ${err.message}`)
-        }
-      })
+  public getSpecialties(): SpecialtyDTO[] {
+    let dtos: SpecialtyDTO[] = [];
+    this.httpClient.get<SpecialtyDTO[]>(`${this.apiUrl}/specialty/all`).subscribe({
+      next: (specialties: SpecialtyDTO[]) => {
+        specialties.forEach(specialty => {
+          dtos.push(specialty)
+        })
+      },
+      error: (err) => {
+        console.log("Error fetching specialties", err);
+      }
+    });
+
+    return dtos;
+  }
+
+  public getGpDoctors(): DoctorSummaryDTO[] {
+    let dtos: DoctorSummaryDTO[] = [];
+    this.httpClient.get<DoctorSummaryDTO[]>(`${this.apiUrl}/doctors/all-gp`).subscribe({
+      next: ((doctors: DoctorSummaryDTO[]) => {
+        doctors.forEach(doctor => {
+          dtos.push(doctor)
+        })
+      }),
+      error: (err) => {
+        console.log("Error fetching GP doctors")
+      }
+    })
+
+    return dtos;
   }
 }

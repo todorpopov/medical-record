@@ -14,6 +14,7 @@ import io.grpc.stub.StreamObserver;
 
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
     private static DoctorService instance;
@@ -107,6 +108,22 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
             responseObserver.onNext(doctorResponse);
         }
 
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getAllGPDoctors(Empty request, StreamObserver<com.medrec.grpc.users.Users.DoctorList> responseObserver) {
+        this.logger.info("Called RPC Get All GP Doctors");
+
+        List<Doctor> doctors = doctorRepository.findAllGpDoctors();
+        List<Users.Doctor> grpcDocctors = doctors.stream()
+            .map(DoctorService::getGrpcDoctorFromEntity)
+            .toList();
+        Users.DoctorList list = Users.DoctorList.newBuilder()
+            .addAllDoctors(grpcDocctors)
+            .build();
+
+        responseObserver.onNext(list);
         responseObserver.onCompleted();
     }
 

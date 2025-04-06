@@ -11,6 +11,7 @@ service DoctorService {
   rpc GetDoctorById (google.protobuf.Int32Value) returns (DoctorResponse);
   rpc GetDoctorByEmail (google.protobuf.StringValue) returns (DoctorResponse);
   rpc GetAllDoctors (google.protobuf.Empty) returns (DoctorList);
+  rpc GetAllGPDoctors (google.protobuf.Empty) returns (DoctorList);
   rpc UpdateDoctor (Doctor) returns (isSuccessfulResponse);
   rpc DeleteDoctorById (google.protobuf.Int32Value) returns (isSuccessfulResponse);
 }

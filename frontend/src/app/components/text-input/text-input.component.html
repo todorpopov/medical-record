@@ -1,11 +1,12 @@
-<div class="input-container">
-  <label *ngIf="label">{{ label }}</label>
+<div class="form-group input-container">
+  <label class="col col-form-label" *ngIf="label">{{ label }}</label>
   <input
+    class="form-control"
     [type]="type"
     [placeholder]="placeholder"
     [value]="value"
     [disabled]="disabled"
     (input)="onInput($event)"
   >
-  <span class="error" *ngIf="error">{{ error }}</span>
+  <span class="form-text text-danger error" *ngIf="error">{{ error }}</span>
 </div>

@@ -61,6 +61,10 @@ public class UsersGateway {
         return doctorService.getAllDoctors(Empty.getDefaultInstance());
     }
 
+    public Users.DoctorList getAllGpDoctors() {
+        return doctorService.getAllGPDoctors(Empty.getDefaultInstance());
+    }
+
     public Users.isSuccessfulResponse updateDoctor(Users.Doctor doctor) {
         return doctorService.updateDoctor(doctor);
     }

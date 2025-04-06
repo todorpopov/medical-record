@@ -1,0 +1,12 @@
+<div class="form-check radio-container">
+  <input
+    class="form-check-input"
+    type="radio"
+    [name]="name"
+    [value]="value"
+    [checked]="checked"
+    [disabled]="disabled"
+    (change)="onRadioChange($event)"
+  >
+  <label class="form-check-label label-text">{{ label }}</label>
+</div>

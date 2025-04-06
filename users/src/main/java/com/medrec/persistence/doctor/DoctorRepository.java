@@ -153,4 +153,16 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
             return new ResponseMessage(false, e.getMessage());
         }
     }
+
+    public List<Doctor> findAllGpDoctors() {
+        List<Doctor> doctors = new ArrayList<>();
+        try (Session session = DBUtils.getCurrentSession()) {
+            Transaction tx = session.beginTransaction();
+            doctors = session.createQuery("from Doctor where isGp=true", Doctor.class).getResultList();
+            tx.commit();
+        } catch (Exception e) {
+            this.logger.severe(String.format("Doctor findAll failed: %s", e.getMessage()));
+        }
+        return doctors;
+    }
 }

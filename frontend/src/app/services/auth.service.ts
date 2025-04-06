@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { LoginResponse } from '../common/login.response';
 import { LoginRequest } from '../common/login.request';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -12,24 +13,13 @@ export class AuthService {
 
   constructor(private httpClient: HttpClient) {}
 
-  logDoctorIn(loginRequest: LoginRequest) {
-    this.httpClient.post<LoginResponse>(
+  protected logDoctorIn(loginRequest: LoginRequest): Observable<LoginResponse> {
+    return this.httpClient.post<LoginResponse>(
       `${this.api}/log-doctor-in`,
       {
         email: loginRequest.email,
         password: loginRequest.password
       }
-    ).subscribe({
-      next: (response) => {
-        console.log(response)
-        localStorage.setItem('token', response.token);
-      },
-      error: (error) => {
-        console.log(error)
-      },
-      complete: () => {
-        console.log("complete!")
-      }
-    })
+    )
   }
 }
