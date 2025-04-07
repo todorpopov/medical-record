@@ -54,6 +54,7 @@ public class UsersService {
             );
 
             DoctorSummaryDTO dto = new DoctorSummaryDTO(
+                d.getId(),
                 d.getFirstName(),
                 d.getLastName(),
                 d.getIsGp(),

@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-radio',
@@ -14,7 +14,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
   templateUrl: './radio.component.html',
   styleUrl: './radio.component.css'
 })
-export class RadioComponent {
+export class RadioComponent implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() name: string = '';
   @Input() value: any;

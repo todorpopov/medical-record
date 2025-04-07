@@ -18,7 +18,7 @@
         formControlName="userType"
       ></app-radio>
     </div>
-    
+
     <div class="my-3 mx-2">
       <app-text-input
         label="First name"
@@ -36,7 +36,7 @@
         formControlName="lastName"
       ></app-text-input>
     </div>
-  
+
     <div class="my-3 mx-2">
       <app-text-input
         label="Email"
@@ -80,13 +80,12 @@
       <div class="my-3 mx-2">
         <app-dropdown
           label="Select your General Practitioner"
-          placeholder="Doctors"
           [items]="gpDoctors"
           [valueField]="'id'"
-          [displayField]="'firstName'"
-          [(selectedValue)]="selectedDoctorId"
+          [displayField]="'fullName'"
           (selectionChanged)="onDoctorSelected($event)"
           [errorMessage]="doctorError"
+          formControlName="gpId"
         ></app-dropdown>
       </div>
     </div>
@@ -103,13 +102,12 @@
       <div class="my-3 mx-2">
         <app-dropdown
           label="Select your General Practitioner"
-          placeholder="Specialties"
           [items]="specialties"
           [valueField]="'id'"
           [displayField]="'name'"
-          [(selectedValue)]="selectedSpecialtyId"
           (selectionChanged)="onSpecialtySelected($event)"
           [errorMessage]="specialtyError"
+          formControlName="specialtyId"
         ></app-dropdown>
       </div>
     </div>

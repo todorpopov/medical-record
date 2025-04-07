@@ -1,14 +1,13 @@
 <div class="form-group">
   <label class="form-label" *ngIf="label">{{ label }}</label>
-  <select 
+  <select
     class="form-select"
-    [(ngModel)]="selectedValue" 
+    [(ngModel)]="value"
     (ngModelChange)="onSelectionChange($event)"
     [disabled]="disabled">
-    <option *ngIf="placeholder" value="" disabled selected>{{ placeholder }}</option>
     <option *ngFor="let item of items" [value]="getItemValue(item)">
       {{ getItemLabel(item) }}
     </option>
   </select>
-    <div *ngIf="errorMessage" class="invalid-feedback d-block">{{ errorMessage }}</div>
+  <div *ngIf="errorMessage" class="invalid-feedback d-block">{{ errorMessage }}</div>
 </div>

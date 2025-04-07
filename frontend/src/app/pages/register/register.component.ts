@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { UsersService } from '../../services/users.service';
 import { NgIf } from '@angular/common';
 import { RadioComponent } from "../../components/radio/radio.component";
 import { TextInputComponent } from '../../components/text-input/text-input.component';
 import { CheckboxComponent } from "../../components/checkbox/checkbox.component";
 import { DropdownComponent } from '../../components/dropdown/dropdown.component';
-import { DoctorSummaryDTO } from '../../common/dtos/doctor.summary.dto';
-import { SpecialtyDTO } from '../../common/dtos/specialty.dto';
+import { DoctorSummary } from '../../common/interfaces/doctor.summary';
+import { Specialty } from '../../common/interfaces/specialty';
 
 @Component({
   selector: 'app-register',
@@ -22,19 +22,17 @@ import { SpecialtyDTO } from '../../common/dtos/specialty.dto';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent {
+export class RegisterComponent implements ReactiveFormsModule{
   registerForm: FormGroup;
   label: string = 'Register';
   selectedUserType: 'patient' | 'doctor' = 'patient';
 
-  specialties: SpecialtyDTO[] = []
-  selectedSpecialtyId: number | null = null;
-  selectedSpecialty: SpecialtyDTO | null = null;
+  specialties: Specialty[] = []
+  selectedSpecialty: Specialty | null = null;
   specialtyError: string = ''
 
-  gpDoctors: DoctorSummaryDTO[] = []
-  selectedDoctorId: number | null = null;
-  selectedDoctor: DoctorSummaryDTO | null = null;
+  gpDoctors: DoctorSummary[] = []
+  selectedDoctor: DoctorSummary | null = null;
   doctorError: string = '';
 
 
@@ -44,75 +42,118 @@ export class RegisterComponent {
   ) {
     this.getGpDoctors();
     this.getSpecialties();
-  
+
     this.registerForm = this.fb.group({
       userType: ['patient'],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      firstName: [''],
-      lastName: [''],
-      
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+
       // Patient specific
-      gpId: [-1],
+      gpId: [null],
       pin: ['', [Validators.required, Validators.pattern('[0-9]{10}')]],
       isHealthInsured: [true],
 
       // Doctor specific
-      specialtyId: [-1],
+      specialtyId: [null],
       isGp: [true]
     })
 
     this.registerForm.get('userType')?.valueChanges.subscribe(userType => {
       this.selectedUserType = userType;
-      this.updateFormVlaidation();
+      this.updateFormValidation();
     })
+
+    // Initialize validation based on initial user type
+    this.updateFormValidation();
   }
 
-  private getGpDoctors() {
-    this.gpDoctors = this.usersService.getGpDoctors();
+  private async getGpDoctors() {
+    const apiData = await this.usersService.getGpDoctors();
+    this.gpDoctors = apiData;
+
+    if (apiData.length === 0) {
+      this.doctorError = 'Error retrieving doctors';
+    } else {
+      this.doctorError = '';
+    }
   }
 
-  private getSpecialties() {
-    this.specialties = this.usersService.getSpecialties();
+  private async getSpecialties() {
+    const apiData = await this.usersService.getSpecialties();
+    this.specialties = apiData;
+
+    if (apiData.length === 0) {
+      this.specialtyError = 'Error retrieving specialties';
+    } else  {
+      this.specialtyError = '';
+    }
   }
 
-  onDoctorSelected(doctor: DoctorSummaryDTO) {
+  onDoctorSelected(doctor: DoctorSummary) {
     this.selectedDoctor = doctor;
   }
 
-  onSpecialtySelected(specialty: SpecialtyDTO) {
+  onSpecialtySelected(specialty: Specialty) {
     this.selectedSpecialty = specialty;
   }
 
-  private updateFormVlaidation(): void {
+  private updateFormValidation(): void {
     const patientFields = ['gpId', 'pin', 'isHealthInsured'];
     const doctorFields = ['specialtyId', 'isGp'];
 
     if (this.selectedUserType === 'patient') {
+      // Set required validation for patient fields
       patientFields.forEach(field => {
-        this.registerForm.get(field)?.setValidators([Validators.required]);
-        this.registerForm.get(field)?.updateValueAndValidity();
-      })
+        const control = this.registerForm.get(field);
+        if (control) {
+          control.setValidators([Validators.required]);
+          control.updateValueAndValidity();
+        }
+      });
 
+      // Clear validation for doctor fields
       doctorFields.forEach(field => {
-        this.registerForm.get(field)?.clearValidators();
-        this.registerForm.get(field)?.updateValueAndValidity();
-      })
+        const control = this.registerForm.get(field);
+        if (control) {
+          control.clearValidators();
+          control.updateValueAndValidity();
+          control.setValue(null); // Reset the value
+        }
+      });
     } else {
+      // Set required validation for doctor fields
       doctorFields.forEach(field => {
-        this.registerForm.get(field)?.setValidators([Validators.required]);
-        this.registerForm.get(field)?.updateValueAndValidity();
-      })
+        const control = this.registerForm.get(field);
+        if (control) {
+          control.setValidators([Validators.required]);
+          control.updateValueAndValidity();
+        }
+      });
 
+      // Clear validation for patient fields
       patientFields.forEach(field => {
-        this.registerForm.get(field)?.clearValidators();
-        this.registerForm.get(field)?.updateValueAndValidity();
-      })
+        const control = this.registerForm.get(field);
+        if (control) {
+          control.clearValidators();
+          control.updateValueAndValidity();
+          control.setValue(null); // Reset the value
+        }
+      });
     }
   }
 
   onSubmit(): void {
-    console.log(this.registerForm.value)
+    if (this.registerForm.valid) {
+      const formValue = this.registerForm.value;
+      console.log('Form submitted with values:', formValue);
+    } else {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.registerForm.controls).forEach(key => {
+        this.registerForm.get(key)?.markAsTouched();
+      });
+    }
   }
 }
 

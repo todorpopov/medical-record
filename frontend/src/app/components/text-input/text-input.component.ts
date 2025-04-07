@@ -1,6 +1,6 @@
 import { NgIf } from '@angular/common';
 import { Component, forwardRef, Input } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-text-input',
@@ -15,7 +15,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
   templateUrl: './text-input.component.html',
   styleUrl: './text-input.component.css'
 })
-export class TextInputComponent {
+export class TextInputComponent implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() type: string = 'text';
   @Input() placeholder: string = '';
@@ -48,5 +48,5 @@ export class TextInputComponent {
     this.value = value;
     this.onChange(value);
     this.onTouch();
-  } 
+  }
 }

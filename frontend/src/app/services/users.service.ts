@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
-import { SpecialtyDTO } from '../common/dtos/specialty.dto';
-import { DoctorSummaryDTO } from '../common/dtos/doctor.summary.dto';
+import { Specialty } from '../common/interfaces/specialty';
+import { DoctorSummary } from '../common/interfaces/doctor.summary';
+import {firstValueFrom, map} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,35 +16,21 @@ export class UsersService {
     private httpClient: HttpClient
   ) {}
 
-  public getSpecialties(): SpecialtyDTO[] {
-    let dtos: SpecialtyDTO[] = [];
-    this.httpClient.get<SpecialtyDTO[]>(`${this.apiUrl}/specialty/all`).subscribe({
-      next: (specialties: SpecialtyDTO[]) => {
-        specialties.forEach(specialty => {
-          dtos.push(specialty)
-        })
-      },
-      error: (err) => {
-        console.log("Error fetching specialties", err);
-      }
-    });
-
-    return dtos;
+  public async getSpecialties(): Promise<Specialty[]> {
+    try {
+      return await firstValueFrom(this.httpClient.get<Specialty[]>(`${this.apiUrl}/specialty/all`));
+    } catch (error) {
+      console.log('Error fetching specialties: ', error)
+      return [];
+    }
   }
 
-  public getGpDoctors(): DoctorSummaryDTO[] {
-    let dtos: DoctorSummaryDTO[] = [];
-    this.httpClient.get<DoctorSummaryDTO[]>(`${this.apiUrl}/doctors/all-gp`).subscribe({
-      next: ((doctors: DoctorSummaryDTO[]) => {
-        doctors.forEach(doctor => {
-          dtos.push(doctor)
-        })
-      }),
-      error: (err) => {
-        console.log("Error fetching GP doctors")
-      }
-    })
-
-    return dtos;
+  public async getGpDoctors(): Promise<DoctorSummary[]> {
+    try {
+      return await firstValueFrom(this.httpClient.get<DoctorSummary[]>(`${this.apiUrl}/doctors/all-gp`));
+    } catch (error) {
+      console.log('Error fetching doctors: ', error);
+      return [];
+    }
   }
 }
