@@ -8,6 +8,7 @@ import { CheckboxComponent } from "../../components/checkbox/checkbox.component"
 import { DropdownComponent } from '../../components/dropdown/dropdown.component';
 import { DoctorSummary } from '../../common/interfaces/doctor.summary';
 import { Specialty } from '../../common/interfaces/specialty';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -38,7 +39,8 @@ export class RegisterComponent implements ReactiveFormsModule{
 
   constructor(
     private fb: FormBuilder,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private authService: AuthService,
   ) {
     this.getGpDoctors();
     this.getSpecialties();
@@ -148,11 +150,6 @@ export class RegisterComponent implements ReactiveFormsModule{
     if (this.registerForm.valid) {
       const formValue = this.registerForm.value;
       console.log('Form submitted with values:', formValue);
-    } else {
-      // Mark all fields as touched to show validation errors
-      Object.keys(this.registerForm.controls).forEach(key => {
-        this.registerForm.get(key)?.markAsTouched();
-      });
     }
   }
 }

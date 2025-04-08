@@ -3,7 +3,7 @@
     <div class="my-3 mx-2 text-center font-weight-light">
       <label *ngIf="label">{{ label }}</label>
     </div>
-  
+
     <div class="my-3 mx-2">
       <app-text-input
         label="Email"
@@ -23,7 +23,7 @@
         [error]="loginForm.get('password')?.errors && loginForm.get('password')?.touched ? 'Password must be at least 6 characters!': ''"
       ></app-text-input>
     </div>
-  
+
     <div class="my-3 mx-2">
       <app-radio
         label="Patient"
@@ -44,13 +44,17 @@
         formControlName="userType"
       ></app-radio>
     </div>
-  
+
     <div class="my-3 mx-2">
       <button
         class="btn btn-outline-primary"
         type="submit"
         [disabled]="loginForm.invalid"
       >Submit</button>
+    </div>
+
+    <div class="my-3 mx-2">
+      <span class="form-text text-danger error" *ngIf="logInError">{{ logInError }}</span>
     </div>
   </form>
 </div>

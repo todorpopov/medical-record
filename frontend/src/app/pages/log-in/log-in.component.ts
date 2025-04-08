@@ -3,6 +3,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TextInputComponent } from "../../components/text-input/text-input.component";
 import { NgIf } from '@angular/common';
 import { RadioComponent } from "../../components/radio/radio.component";
+import {AuthService} from '../../services/auth.service';
+import {UserAuth} from '../../common/interfaces/user.auth';
+import {LocalStorageService} from '../../services/local-storage.service';
 
 @Component({
   selector: 'app-log-in',
@@ -16,11 +19,16 @@ import { RadioComponent } from "../../components/radio/radio.component";
   templateUrl: './log-in.component.html',
   styleUrl: './log-in.component.css',
 })
-export class LogInComponent {
+export class LogInComponent implements ReactiveFormsModule {
   loginForm: FormGroup;
   label: string = 'Log In';
+  logInError: string = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private localStorageService: LocalStorageService,
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -28,10 +36,30 @@ export class LogInComponent {
     });
   }
 
+  private setLogInError(error: string): void {
+    this.logInError = error;
+  }
+
+  private removeLogInError(): void {
+    this.logInError = ''
+  }
+
   onSubmit(): void {
     if (this.loginForm.valid) {
-      const userType = this.loginForm.value.userType;
-      console.log('Logging in as:', userType);
+      const userType: 'patient' | 'doctor' | 'admin' = this.loginForm.value?.userType;
+      const email: string = this.loginForm.value?.email;
+      const password: string = this.loginForm.value?.password;
+      this.authService.logIn(userType, email, password)
+        .subscribe({
+          next: (auth: UserAuth) => {
+            this.localStorageService.storeUserAuth(auth);
+            this.removeLogInError();
+          },
+          error: err => {
+            console.log('Error occurred: ', err)
+            this.setLogInError('An error occurred!')
+          }
+        });
     }
   }
 }

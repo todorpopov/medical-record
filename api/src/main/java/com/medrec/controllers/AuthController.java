@@ -19,7 +19,6 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @AuthGuard({"patient", "admin"})
     @PostMapping("register-doctor")
     public ResponseEntity<AuthResponseDTO> registerDoctor(@RequestBody RegisterDoctorDTO dto) {
         logger.info(dto.toString());
