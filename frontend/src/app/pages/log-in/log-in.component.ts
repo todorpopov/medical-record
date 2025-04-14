@@ -4,7 +4,7 @@ import { TextInputComponent } from "../../components/text-input/text-input.compo
 import { NgIf } from '@angular/common';
 import { RadioComponent } from "../../components/radio/radio.component";
 import {AuthService} from '../../services/auth.service';
-import {UserAuth} from '../../common/interfaces/user.auth';
+import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
 
 @Component({
@@ -51,7 +51,7 @@ export class LogInComponent implements ReactiveFormsModule {
       const password: string = this.loginForm.value?.password;
       this.authService.logIn(userType, email, password)
         .subscribe({
-          next: (auth: UserAuth) => {
+          next: (auth: AuthResponse) => {
             this.localStorageService.storeUserAuth(auth);
             this.removeLogInError();
           },
@@ -59,7 +59,7 @@ export class LogInComponent implements ReactiveFormsModule {
             console.log('Error occurred: ', err)
             this.setLogInError('An error occurred!')
           }
-        });
+      });
     }
   }
 }

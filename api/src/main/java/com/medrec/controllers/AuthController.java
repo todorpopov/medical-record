@@ -1,6 +1,5 @@
 package com.medrec.controllers;
 
-import com.medrec.annotations.AuthGuard;
 import com.medrec.dtos.*;
 import com.medrec.services.AuthService;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,6 @@ public class AuthController {
     @PostMapping("register-patient")
     public ResponseEntity<AuthResponseDTO> registerPatient(@RequestBody RegisterPatientDTO dto) {
         logger.info(dto.toString());
-        logger.info(dto.getPassword());
         AuthResponseDTO response = this.authService.registerPatient(dto);
         if (response.isSuccessful()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

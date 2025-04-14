@@ -9,6 +9,8 @@ import { DropdownComponent } from '../../components/dropdown/dropdown.component'
 import { DoctorSummary } from '../../common/interfaces/doctor.summary';
 import { Specialty } from '../../common/interfaces/specialty';
 import {AuthService} from '../../services/auth.service';
+import {AuthResponse} from '../../common/interfaces/auth.response';
+import {LocalStorageService} from '../../services/local-storage.service';
 
 @Component({
   selector: 'app-register',
@@ -41,6 +43,7 @@ export class RegisterComponent implements ReactiveFormsModule{
     private fb: FormBuilder,
     private usersService: UsersService,
     private authService: AuthService,
+    private localStorageService: LocalStorageService,
   ) {
     this.getGpDoctors();
     this.getSpecialties();
@@ -149,7 +152,44 @@ export class RegisterComponent implements ReactiveFormsModule{
   onSubmit(): void {
     if (this.registerForm.valid) {
       const formValue = this.registerForm.value;
-      console.log('Form submitted with values:', formValue);
+
+      switch (formValue.userType) {
+        case 'patient': {
+          this.authService.registerPatient(
+            formValue.firstName,
+            formValue.lastName,
+            formValue.email,
+            formValue.password,
+            formValue.pin,
+            formValue.gpId,
+            formValue.isHealthInsured
+          ).subscribe({
+            next: (authResponse: AuthResponse) => {
+              if (authResponse.successful) {
+                this.localStorageService.storeUserAuth(authResponse);
+              }
+            }
+          });
+          break;
+        }
+        case 'doctor': {
+          this.authService.registerDoctor(
+            formValue.firstName,
+            formValue.lastName,
+            formValue.email,
+            formValue.password,
+            formValue.isGp,
+            formValue.specialtyId
+          ).subscribe({
+            next: (authResponse: AuthResponse) => {
+              if (authResponse.successful) {
+                this.localStorageService.storeUserAuth(authResponse);
+              }
+            }
+          })
+          break;
+        }
+      }
     }
   }
 }

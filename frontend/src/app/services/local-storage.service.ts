@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {UserAuth} from '../common/interfaces/user.auth';
+import {AuthResponse} from '../common/interfaces/auth.response';
 
 @Injectable({
   providedIn: 'root'
@@ -8,18 +8,19 @@ export class LocalStorageService {
 
   constructor() { }
 
-  public storeUserAuth(userAuth: UserAuth): void {
+  public storeUserAuth(userAuth: AuthResponse): void {
     localStorage.setItem('token', userAuth.token);
     localStorage.setItem('role', userAuth.role);
   }
 
-  public getUserAuth(): UserAuth {
+  public getUserAuth(): AuthResponse {
     const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role')
+    const role = localStorage.getItem('role');
 
     return {
       'token': token !== null ? token : '',
       'role': role !== null ? role : '',
+      'successful': true,
     }
   }
 

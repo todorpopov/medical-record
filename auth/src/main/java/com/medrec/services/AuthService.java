@@ -34,7 +34,6 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     @Override
     public void registerPatient(Users.PatientDoctorId request, StreamObserver<Auth.RegisterResponse> responseObserver) {
         this.logger.info("Called RPC Register Patient");
-        this.logger.info(request.getPassword());
 
         Users.PatientDoctorId requestWithHashedPass = Users.PatientDoctorId.newBuilder()
             .setFirstName(request.getFirstName())

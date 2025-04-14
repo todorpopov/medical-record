@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
-import {UserAuth} from '../common/interfaces/user.auth';
+import {AuthResponse} from '../common/interfaces/auth.response';
 import {LocalStorageService} from './local-storage.service';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class AuthService {
     private localStorageService: LocalStorageService,
   ) {}
 
-  public logIn(userType: 'patient' | 'doctor' | 'admin', email: string, password: string): Observable<UserAuth> {
+  public logIn(userType: 'patient' | 'doctor' | 'admin', email: string, password: string): Observable<AuthResponse> {
     let url: string = '';
 
     switch (userType) {
@@ -33,7 +33,47 @@ export class AuthService {
         break;
       }
     }
-    return this.httpClient.post<UserAuth>(url, {'email': email, 'password': password});
+    return this.httpClient.post<AuthResponse>(url, {'email': email, 'password': password});
+  }
+
+  public registerPatient(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    pin: string,
+    gpId: number,
+    isInsured: boolean,
+  ): Observable<AuthResponse> {
+    const url = `${this.api}/register-patient`;
+    return this.httpClient.post<AuthResponse>(url, {
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'password': password,
+      'pin': pin,
+      'gpId': gpId,
+      'insured': isInsured
+    });
+  }
+
+  public registerDoctor(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    generalPractitioner: boolean,
+    specialtyId: number,
+  ): Observable<AuthResponse> {
+    const url = `${this.api}/register-doctor`;
+    return this.httpClient.post<AuthResponse>(url, {
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'password': password,
+      'generalPractitioner': generalPractitioner,
+      'specialtyId': specialtyId,
+    })
   }
 
   public logOut(): void {
