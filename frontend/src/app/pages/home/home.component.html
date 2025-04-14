@@ -1,0 +1,38 @@
+<div class="container mx-auto w-50 m-5 border rounded">
+  <nav class="navbar my-3 mx-2">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <img src="/healthcare.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
+        MedRec
+      </a>
+      <form class="justify-content-end">
+        <button class="btn btn-primary me-2" type="button" (click)="redirectToLogIn()">Log In</button>
+        <button class="btn btn-primary me-2" type="button" (click)="redirectToRegister()">Register</button>
+      </form>
+    </div>
+  </nav>
+  <hr/>
+  <div class="my-3 mx-2">
+    <p class="text-break">
+      This project has been built as the final project to the 'CSCB869 Java Web Services' course at New Bulgarian
+      University by Todor Popov - F112420.
+    </p>
+    <p class="text-break">
+      The system follows the microservices architecture, utilizing multiple Java/Maven services and an Angular frontend.
+    </p>
+    <p class="text-break">
+      It uses a Spring Boot RESTful API to act as a gateway between the services and the frontend. Inter-service
+      communication is handled synchronously via gRPC, and asynchronously via RabbitMQ message queues.
+    </p>
+    <p class="text-break">
+      The system uses a shared PostgreSQL instance to persist data inside multiple, separate databases for individual microservices.
+    </p>
+    <p class="text-break">
+      All of the individual services and dependencies run inside Docker containers, and are orchestrated using Kubernetes.
+    </p>
+    <p class="text-break">
+      To learn more about the project you can check out the repo on
+        <a target="_blank" href="https://github.com/todorpopov/medical-record" class="text-reset">GitHub</a>
+    </p>
+  </div>
+</div>

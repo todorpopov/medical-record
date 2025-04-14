@@ -10,9 +10,9 @@ import { RouterOutlet } from '@angular/router';
     ReactiveFormsModule
   ],
   template: `
-  <div class="app-container">
-      <router-outlet></router-outlet>
-  </div>
+    <div class="app-container">
+        <router-outlet></router-outlet>
+    </div>
   `,
   styles: [``]
 })
