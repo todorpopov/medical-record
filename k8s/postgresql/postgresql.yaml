@@ -6,11 +6,10 @@ metadata:
   namespace: medical-record
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
-  storageClassName: hostpath
 
 ---
 
@@ -51,11 +50,11 @@ spec:
             - containerPort: 5432
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: "128Mi"
+              cpu: "100m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "256Mi"
+              cpu: "200m"
           env: # Env variables should be held in a 'Secret' K8S resource for production use
             - name: POSTGRES_USER
               value: "admin"
