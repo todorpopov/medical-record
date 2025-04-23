@@ -1,7 +1,7 @@
 package com.medrec.exception_handling;
 
 import com.medrec.exception_handling.exceptions.DatabaseConnectionException;
-import com.medrec.exception_handling.exceptions.HibernateException;
+import com.medrec.exception_handling.exceptions.DatabaseException;
 import com.medrec.exception_handling.exceptions.ServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class GlobalHTTPExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorHTTPResponse> handleHibernateException(HibernateException e) {
+    public ResponseEntity<ErrorHTTPResponse> handleHibernateException(DatabaseException e) {
         ErrorHTTPResponse error = new ErrorHTTPResponse("HIBERNATE_EXCEPTION", e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
