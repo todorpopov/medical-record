@@ -4,7 +4,7 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import com.medrec.dtos.CreatePatientDoctorIdDTO;
-import com.medrec.exceptions.DoctorIsNotGpException;
+import com.medrec.exception_handling.exceptions.DoctorIsNotGpException;
 import com.medrec.grpc.users.PatientServiceGrpc;
 import com.medrec.grpc.users.Users;
 import com.medrec.persistence.ResponseMessage;

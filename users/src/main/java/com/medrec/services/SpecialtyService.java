@@ -2,6 +2,7 @@ package com.medrec.services;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
+import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.users.SpecialtyServiceGrpc;
 import com.medrec.grpc.users.Users;
 import com.medrec.persistence.ResponseMessage;
@@ -71,17 +72,22 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
     @Override
     public void getAllSpecialties(Empty request, StreamObserver<Users.SpecialtiesList> responseObserver) {
         this.logger.info("Called RPC Get All Specialties");
+        try {
+            List<Specialty> specialties = specialtyRepository.findAll();
+            List<Users.Specialty> grpcSpecialtiesList = specialties.stream()
+                .map(SpecialtyService::getGrpcSpecialtyFromEntity)
+                .toList();
+            Users.SpecialtiesList specialtiesList = Users.SpecialtiesList.newBuilder()
+                .addAllSpecialties(grpcSpecialtiesList)
+                .build();
 
-        List<Specialty> specialties = specialtyRepository.findAll();
-        List<Users.Specialty> grpcSpecialtiesList = specialties.stream()
-            .map(SpecialtyService::getGrpcSpecialtyFromEntity)
-            .toList();
-        Users.SpecialtiesList specialtiesList = Users.SpecialtiesList.newBuilder()
-            .addAllSpecialties(grpcSpecialtiesList)
-            .build();
-
-        responseObserver.onNext(specialtiesList);
-        responseObserver.onCompleted();
+            this.logger.info(String.format("Found %s specialties", specialties.size()));
+            responseObserver.onNext(specialtiesList);
+        } catch (Exception e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 
     @Override

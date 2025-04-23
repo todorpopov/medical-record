@@ -1,10 +1,10 @@
 package com.medrec.services;
 
-import com.medrec.dtos.DoctorDTO;
 import com.medrec.dtos.DoctorSummaryDTO;
 import com.medrec.dtos.SpecialtyDTO;
 import com.medrec.gateways.UsersGateway;
 import com.medrec.grpc.users.Users;
+import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class UsersService {
         this.usersGateway = usersGateway;
     }
 
-    public List<SpecialtyDTO> getAllSpecialties() {
+    public List<SpecialtyDTO> getAllSpecialties() throws StatusRuntimeException {
         this.logger.info("Retrieving all specialties");
 
         Users.SpecialtiesList specialties = usersGateway.getAllSpecialties();

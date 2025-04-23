@@ -1,6 +1,6 @@
 package com.medrec.dtos;
 
-import com.medrec.exceptions.DoctorIsNotGpException;
+import com.medrec.exception_handling.exceptions.DoctorIsNotGpException;
 import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.patient.Patient;
 

@@ -1,12 +1,14 @@
 package com.medrec.persistence.specialty;
 
+import com.medrec.exception_handling.exceptions.DatabaseConnectionException;
+import com.medrec.exception_handling.exceptions.HibernateRuntimeException;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
 import com.medrec.persistence.ResponseMessage;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -73,18 +75,21 @@ public class SpecialtyRepository implements ICrudRepository<Specialty> {
     }
 
     @Override
-    public List<Specialty> findAll() {
-        List<Specialty> specialtys = new ArrayList<>();
+    public List<Specialty> findAll() throws RuntimeException {
         try (Session session = DBUtils.getCurrentSession()) {
             Transaction tx = session.beginTransaction();
-            specialtys = session.createQuery("from Specialty", Specialty.class).getResultList();
+            List<Specialty> specialties = session.createQuery("from Specialty", Specialty.class).getResultList();
             tx.commit();
-        } catch (Exception e) {
-            this.logger.severe(String.format("Specialtys findAll failed: %s", e.getMessage()));
+            return specialties;
+        } catch (ExceptionInInitializerError e) {
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (HibernateException e) {
+            this.logger.severe("Exception found in database access: " + e.getMessage());
+            throw new HibernateRuntimeException("Exception found in database access!");
         }
-
-        return specialtys;
     }
+
     @Override
     public ResponseMessage update(Specialty specialty) {
         try (Session session = DBUtils.getCurrentSession()) {

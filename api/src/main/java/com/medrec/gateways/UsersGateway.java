@@ -3,12 +3,14 @@ package com.medrec.gateways;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
+import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.users.DoctorServiceGrpc;
 import com.medrec.grpc.users.PatientServiceGrpc;
 import com.medrec.grpc.users.SpecialtyServiceGrpc;
 import com.medrec.grpc.users.Users;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 
@@ -114,8 +116,12 @@ public class UsersGateway {
         return specialtyService.getSpecialtyById(Int32Value.of(id));
     }
 
-    public Users.SpecialtiesList getAllSpecialties() {
-        return specialtyService.getAllSpecialties(Empty.getDefaultInstance());
+    public Users.SpecialtiesList getAllSpecialties() throws StatusRuntimeException {
+        try {
+            return specialtyService.getAllSpecialties(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
     public Users.isSuccessfulResponse updateSpecialty(Users.Specialty specialty) {

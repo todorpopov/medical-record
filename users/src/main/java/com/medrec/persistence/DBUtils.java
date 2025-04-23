@@ -1,13 +1,18 @@
 package com.medrec.persistence;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+
+import java.util.logging.Logger;
 
 public class DBUtils {
     private static final SessionFactory sessionFactory;
 
     static {
+        Logger logger = Logger.getLogger(DBUtils.class.getName());
+
         try {
             Configuration configuration = new Configuration();
 
@@ -16,17 +21,17 @@ public class DBUtils {
             configuration.setProperty("hibernate.connection.password", System.getenv("DB_PASSWORD"));
 
             sessionFactory = configuration.configure("hibernate.cfg.xml").buildSessionFactory();
-        } catch (Throwable ex) {
-            System.err.println("Initial SessionFactory creation failed: " + ex);
-            throw new ExceptionInInitializerError(ex);
+        } catch (HibernateException e) {
+            logger.severe("Initial SessionFactory creation failed: " + e);
+            throw new ExceptionInInitializerError(e);
         }
     }
 
-    public static Session getCurrentSession() {
+    public static Session getCurrentSession() throws HibernateException {
         return sessionFactory.getCurrentSession();
     }
 
-    public static void shutdown() {
+    public static void shutdown() throws HibernateException {
         if (sessionFactory != null) {
             sessionFactory.close();
         }
