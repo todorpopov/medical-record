@@ -21,10 +21,13 @@ public class ExceptionsMapper {
             return Status.ALREADY_EXISTS.withDescription("Entity Already Exists").asRuntimeException();
         } else if (throwable instanceof ConstrainException) {
             logger.info("Unique constraint exception");
-            return Status.INVALID_ARGUMENT.withDescription("Constraint Violation").asRuntimeException();
+            return Status.ABORTED.withDescription("Constraint Violation").asRuntimeException();
         } else if (throwable instanceof NotFoundException) {
             logger.info("Not found exception");
             return Status.NOT_FOUND.withDescription("Entity Not Found").asRuntimeException();
+        } else if (throwable instanceof InvalidPropertyException) {
+            logger.info("Invalid property exception");
+            return Status.INVALID_ARGUMENT.withDescription("Invalid Property").asRuntimeException();
         }
 
         logger.severe("Unknown exception found: " + throwable.getMessage());

@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import com.medrec.dtos.CreatePatientDoctorIdDTO;
+import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.exception_handling.exceptions.DoctorIsNotGpException;
 import com.medrec.grpc.users.PatientServiceGrpc;
 import com.medrec.grpc.users.Users;
@@ -11,6 +12,7 @@ import com.medrec.persistence.ResponseMessage;
 import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.patient.Patient;
 import com.medrec.persistence.patient.PatientRepository;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.util.List;
@@ -48,12 +50,9 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
                     .build()
             );
         } catch (DoctorIsNotGpException e) {
-            responseObserver.onNext(
-                Users.isSuccessfulResponse.newBuilder()
-                    .setIsSuccessful(false)
-                    .setMessage(e.getMessage())
-                    .build()
-            );
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("doctor_not_gp").asRuntimeException());
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         } finally {
             responseObserver.onCompleted();
         }
@@ -72,14 +71,19 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
             request.getIsHealthInsured()
         );
 
-        ResponseMessage message = patientRepository.saveWithDoctorId(dto);
-        responseObserver.onNext(
-            Users.isSuccessfulResponse.newBuilder()
-                .setIsSuccessful(message.isSuccessful())
-                .setMessage(message.getMessage())
-                .build()
-        );
-        responseObserver.onCompleted();
+        try {
+            ResponseMessage message = patientRepository.saveWithDoctorId(dto);
+            responseObserver.onNext(
+                Users.isSuccessfulResponse.newBuilder()
+                    .setIsSuccessful(message.isSuccessful())
+                    .setMessage(message.getMessage())
+                    .build()
+            );
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 
     @Override
@@ -87,19 +91,19 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         this.logger.info("Called RPC Get Patient By Id");
 
         int id = request.getValue();
-        Patient patient = patientRepository.findById(id);
+        try {
+            Patient patient = patientRepository.findById(id);
 
-        if (patient == null) {
-            responseObserver.onNext(Users.PatientResponse.newBuilder().setExists(false).build());
-        } else {
             Users.PatientResponse patientResponse = Users.PatientResponse.newBuilder()
                 .setPatient(getGrpcPatientFromEntity(patient))
                 .setExists(true)
                 .build();
             responseObserver.onNext(patientResponse);
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -107,34 +111,39 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         this.logger.info("Called RPC Get Patient By Email");
 
         String email = request.getValue();
-        Patient patient = patientRepository.findByEmail(email);
-        if (patient == null) {
-            responseObserver.onNext(Users.PatientResponse.newBuilder().setExists(false).build());
-        } else {
+        try {
+            Patient patient = patientRepository.findByEmail(email);
             Users.PatientResponse patientResponse = Users.PatientResponse.newBuilder()
                 .setPatient(getGrpcPatientFromEntity(patient))
                 .setExists(true)
                 .build();
             responseObserver.onNext(patientResponse);
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
     public void getAllPatients(Empty request, StreamObserver<Users.PatientList> responseObserver) {
         this.logger.info("Called RPC Get All Patients");
 
-        List<Patient> patients = patientRepository.findAll();
-        List<Users.Patient> grpcPatientsList = patients.stream()
-            .map(PatientService::getGrpcPatientFromEntity)
-            .toList();
-        Users.PatientList patientList = Users.PatientList.newBuilder()
-            .addAllPatients(grpcPatientsList)
-            .build();
+        try {
+            List<Patient> patients = patientRepository.findAll();
+            List<Users.Patient> grpcPatientsList = patients.stream()
+                .map(PatientService::getGrpcPatientFromEntity)
+                .toList();
+            Users.PatientList patientList = Users.PatientList.newBuilder()
+                .addAllPatients(grpcPatientsList)
+                .build();
 
-        responseObserver.onNext(patientList);
-        responseObserver.onCompleted();
+            responseObserver.onNext(patientList);
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 
     @Override
@@ -152,32 +161,33 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
                     .build()
             );
         } catch (DoctorIsNotGpException e) {
-            responseObserver.onNext(
-                Users.isSuccessfulResponse.newBuilder()
-                    .setIsSuccessful(false)
-                    .setMessage(e.getMessage())
-                    .build()
-            );
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("doctor_not_gp").asRuntimeException());
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         } finally {
             responseObserver.onCompleted();
         }
     }
-
 
     @Override
     public void deletePatientById(Int32Value request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
         this.logger.info("Called RPC Delete Patient");
 
         int id = request.getValue();
-        ResponseMessage message = patientRepository.delete(id);
+        try {
+            ResponseMessage message = patientRepository.delete(id);
 
-        responseObserver.onNext(
-            Users.isSuccessfulResponse.newBuilder()
-                .setIsSuccessful(true)
-                .setMessage(message.getMessage())
-                .build()
-        );
-        responseObserver.onCompleted();
+            responseObserver.onNext(
+                Users.isSuccessfulResponse.newBuilder()
+                    .setIsSuccessful(true)
+                    .setMessage(message.getMessage())
+                    .build()
+            );
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 
     private static Patient getEntityFromRequest(Users.Patient grpcPatient) throws DoctorIsNotGpException {
