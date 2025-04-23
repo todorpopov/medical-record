@@ -34,19 +34,24 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
     public void createSpecialty(Users.Specialty request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
         this.logger.info("Called RPC Create Specialty");
 
-        Specialty specialty = new Specialty(
-            request.getSpecialtyName(),
-            request.getSpecialtyDescription()
-        );
+        try {
+            Specialty specialty = new Specialty(
+                request.getSpecialtyName(),
+                request.getSpecialtyDescription()
+            );
 
-        ResponseMessage message = specialtyRepository.save(specialty);
-        responseObserver.onNext(
-            Users.isSuccessfulResponse.newBuilder()
-                .setIsSuccessful(message.isSuccessful())
-                .setMessage(message.getMessage())
-                .build()
-        );
-        responseObserver.onCompleted();
+            ResponseMessage message = specialtyRepository.save(specialty);
+            responseObserver.onNext(
+                Users.isSuccessfulResponse.newBuilder()
+                    .setIsSuccessful(message.isSuccessful())
+                    .setMessage(message.getMessage())
+                    .build()
+            );
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 
     @Override
@@ -54,19 +59,23 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
         this.logger.info("Called RPC Get Specialty By Id");
 
         int id = request.getValue();
-        Specialty specialty = specialtyRepository.findById(id);
+        try {
+            Specialty specialty = specialtyRepository.findById(id);
 
-        if (specialty == null) {
-            responseObserver.onNext(Users.SpecialtyResponse.newBuilder().setExists(false).build());
-        } else {
-            Users.SpecialtyResponse specialtyResponse = Users.SpecialtyResponse.newBuilder()
-                .setSpecialty(getGrpcSpecialtyFromEntity(specialty))
-                .setExists(true)
-                .build();
-            responseObserver.onNext(specialtyResponse);
+            if (specialty == null) {
+                responseObserver.onNext(Users.SpecialtyResponse.newBuilder().setExists(false).build());
+            } else {
+                Users.SpecialtyResponse specialtyResponse = Users.SpecialtyResponse.newBuilder()
+                    .setSpecialty(getGrpcSpecialtyFromEntity(specialty))
+                    .setExists(true)
+                    .build();
+                responseObserver.onNext(specialtyResponse);
+            }
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -83,7 +92,7 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
 
             this.logger.info(String.format("Found %s specialties", specialties.size()));
             responseObserver.onNext(specialtiesList);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         } finally {
             responseObserver.onCompleted();
@@ -94,16 +103,21 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
     public void updateSpecialty(Users.Specialty request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
         this.logger.info("Called RPC Update Specialty");
 
-        Specialty specialty = getEntityFromRequest(request);
-        ResponseMessage message = specialtyRepository.update(specialty);
+        try {
+            Specialty specialty = getEntityFromRequest(request);
+            ResponseMessage message = specialtyRepository.update(specialty);
 
-        responseObserver.onNext(
-            Users.isSuccessfulResponse.newBuilder()
-                .setIsSuccessful(message.isSuccessful())
-                .setMessage(message.getMessage())
-                .build()
-        );
-        responseObserver.onCompleted();
+            responseObserver.onNext(
+                Users.isSuccessfulResponse.newBuilder()
+                    .setIsSuccessful(message.isSuccessful())
+                    .setMessage(message.getMessage())
+                    .build()
+            );
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 
     @Override
@@ -111,15 +125,20 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
         this.logger.info("Called RPC Delete Specialty");
 
         int id = request.getValue();
-        ResponseMessage message = specialtyRepository.delete(id);
+        try {
+            ResponseMessage message = specialtyRepository.delete(id);
 
-        responseObserver.onNext(
-            Users.isSuccessfulResponse.newBuilder()
-                .setIsSuccessful(true)
-                .setMessage(message.getMessage())
-                .build()
-        );
-        responseObserver.onCompleted();
+            responseObserver.onNext(
+                Users.isSuccessfulResponse.newBuilder()
+                    .setIsSuccessful(true)
+                    .setMessage(message.getMessage())
+                    .build()
+            );
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
+        }
     }
 
     private static Specialty getEntityFromRequest(Users.Specialty grpcSpecialty) {

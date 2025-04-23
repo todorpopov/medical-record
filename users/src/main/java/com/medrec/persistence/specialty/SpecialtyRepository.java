@@ -1,13 +1,12 @@
 package com.medrec.persistence.specialty;
 
-import com.medrec.exception_handling.exceptions.DatabaseConnectionException;
-import com.medrec.exception_handling.exceptions.HibernateRuntimeException;
+import com.medrec.exception_handling.exceptions.*;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
 import com.medrec.persistence.ResponseMessage;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import jakarta.persistence.EntityExistsException;
+import org.hibernate.*;
+import org.hibernate.exception.ConstraintViolationException;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -28,7 +27,7 @@ public class SpecialtyRepository implements ICrudRepository<Specialty> {
     }
 
     @Override
-    public ResponseMessage save(Specialty specialty) {
+    public ResponseMessage save(Specialty specialty) throws RuntimeException {
         try (Session session = DBUtils.getCurrentSession()) {
             Transaction tx = session.beginTransaction();
             session.persist(specialty);
@@ -39,13 +38,22 @@ public class SpecialtyRepository implements ICrudRepository<Specialty> {
                     true,
                     String.format("%s created successfully!", specialty.getSpecialtyName())
             );
-        } catch (Exception e) {
-            this.logger.severe(String.format("Specialty %s save failed", specialty.toString()));
-            return new ResponseMessage(false, e.getMessage());
+        } catch (ExceptionInInitializerError e) {
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (ConstraintViolationException e){
+            this.logger.severe("Constraint violation: " + e.getMessage());
+            throw new ConstrainException("Constraint exception");
+        } catch (EntityExistsException e) {
+            this.logger.severe("Entity already exists: " + e.getMessage());
+            throw new AlreadyExistsException("Entity already exists");
+        } catch (HibernateException e) {
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
         }
     }
 
-    public int saveGetId(Specialty specialty) {
+    public int saveGetId(Specialty specialty) throws RuntimeException {
         try (Session session = DBUtils.getCurrentSession()) {
             Transaction tx = session.beginTransaction();
             session.persist(specialty);
@@ -53,25 +61,40 @@ public class SpecialtyRepository implements ICrudRepository<Specialty> {
 
             this.logger.info(String.format("Specialty %s saved successfully", specialty.toString()));
             return specialty.getId();
-        } catch (Exception e) {
-            this.logger.severe(String.format("Specialty %s save failed", specialty.toString()));
-            return -1;
+        } catch (ExceptionInInitializerError e) {
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (ConstraintViolationException e){
+            this.logger.severe("Constraint violation: " + e.getMessage());
+            throw new ConstrainException("Constraint exception");
+        } catch (EntityExistsException e) {
+            this.logger.severe("Entity already exists: " + e.getMessage());
+            throw new AlreadyExistsException("Entity already exists");
+        } catch (HibernateException e) {
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
         }
     }
 
     @Override
-    public Specialty findById(int id) {
-        Specialty specialty = null;
+    public Specialty findById(int id) throws RuntimeException {
         try (Session session = DBUtils.getCurrentSession()) {
             Transaction tx = session.beginTransaction();
-            specialty = session.get(Specialty.class, id);
+            Specialty specialty = session.get(Specialty.class, id);
             tx.commit();
 
             this.logger.info(String.format("Specialty %s found", specialty.toString()));
-        } catch (Exception e) {
-            this.logger.severe(String.format("Specialty %s findById failed", id));
+            return specialty;
+        } catch (ExceptionInInitializerError e) {
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (ObjectNotFoundException e) {
+            this.logger.severe("Specialty with id + " + id + " not found: " + e.getMessage());
+            throw new NotFoundException("Not found exception");
+        } catch (HibernateException e) {
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
         }
-        return specialty;
     }
 
     @Override
@@ -85,13 +108,13 @@ public class SpecialtyRepository implements ICrudRepository<Specialty> {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (HibernateException e) {
-            this.logger.severe("Exception found in database access: " + e.getMessage());
-            throw new HibernateRuntimeException("Exception found in database access!");
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
         }
     }
 
     @Override
-    public ResponseMessage update(Specialty specialty) {
+    public ResponseMessage update(Specialty specialty) throws RuntimeException {
         try (Session session = DBUtils.getCurrentSession()) {
             Transaction tx = session.beginTransaction();
             session.merge(specialty);
@@ -102,14 +125,17 @@ public class SpecialtyRepository implements ICrudRepository<Specialty> {
                     true,
                     String.format("%s updated successfully!", specialty.getSpecialtyName())
             );
-        } catch (Exception e) {
-            this.logger.severe(String.format("Specialty %s update failed", specialty.toString()));
-            return new ResponseMessage(false, e.getMessage());
+        } catch (ExceptionInInitializerError e) {
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (HibernateException e) {
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
         }
     }
 
     @Override
-    public ResponseMessage delete(int id) {
+    public ResponseMessage delete(int id) throws RuntimeException {
         try (Session session = DBUtils.getCurrentSession()) {
             Transaction tx = session.beginTransaction();
             Specialty specialty = session.get(Specialty.class, id);
@@ -121,9 +147,18 @@ public class SpecialtyRepository implements ICrudRepository<Specialty> {
                     true,
                     String.format("%s deleted successfully!", specialty.getSpecialtyName())
             );
-        } catch (Exception e) {
-            this.logger.severe(String.format("Specialty %s delete failed", id));
-            return new ResponseMessage(false, e.getMessage());
+        } catch (ExceptionInInitializerError e) {
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (ObjectNotFoundException e) {
+            this.logger.severe(String.format("Specialty with id + %s not found", id));
+            throw new NotFoundException("Not found exception");
+        } catch (ConstraintViolationException e) {
+            this.logger.severe("Constraint exception: " + e.getMessage());
+            throw new ConstrainException("Constraint exception");
+        } catch (HibernateException e) {
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
         }
     }
 }
