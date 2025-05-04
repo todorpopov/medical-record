@@ -6,6 +6,8 @@ import com.medrec.gateways.UsersGateway;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
 import com.medrec.grpc.users.Users;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 import java.util.List;
@@ -45,24 +47,24 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
             .setIsHealthInsured(request.getIsHealthInsured())
             .build();
 
-        Users.isSuccessfulResponse response = usersGateway.registerPatient(requestWithHashedPass);
+        try {
+            Users.isSuccessfulResponse response = usersGateway.registerPatient(requestWithHashedPass);
 
-        if(response.getIsSuccessful()) {
-            String token = jwtService.generateToken(request.getEmail(), "patient");
-            responseObserver.onNext(
-                Auth.RegisterResponse.newBuilder()
-                    .setIsSuccessful(true)
-                    .setToken(token)
-                    .setRole("patient")
-                    .build()
-            );
-        } else {
-            responseObserver.onNext(
-                Auth.RegisterResponse.newBuilder()
-                    .setIsSuccessful(false)
-                    .build());
+            if(response.getIsSuccessful()) {
+                String token = jwtService.generateToken(request.getEmail(), "patient");
+                responseObserver.onNext(
+                    Auth.RegisterResponse.newBuilder()
+                        .setIsSuccessful(true)
+                        .setToken(token)
+                        .setRole("patient")
+                        .build()
+                );
+            }
+        } catch (StatusRuntimeException e) {
+            responseObserver.onError(e);
+        } finally {
+            responseObserver.onCompleted();
         }
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -78,24 +80,23 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
             .setSpecialtyId(request.getSpecialtyId())
             .build();
 
-        Users.isSuccessfulResponse response = usersGateway.registerDoctor(requestWithHashedPass);
-
-        if(response.getIsSuccessful()) {
-            String token = jwtService.generateToken(request.getEmail(), "doctor");
-            responseObserver.onNext(
-                Auth.RegisterResponse.newBuilder()
-                    .setIsSuccessful(true)
-                    .setToken(token)
-                    .setRole("doctor")
-                    .build()
-            );
-        } else {
-            responseObserver.onNext(
-                Auth.RegisterResponse.newBuilder()
-                    .setIsSuccessful(false)
-                    .build());
+        try {
+            Users.isSuccessfulResponse response = usersGateway.registerDoctor(requestWithHashedPass);
+            if(response.getIsSuccessful()) {
+                String token = jwtService.generateToken(request.getEmail(), "doctor");
+                responseObserver.onNext(
+                    Auth.RegisterResponse.newBuilder()
+                        .setIsSuccessful(true)
+                        .setToken(token)
+                        .setRole("doctor")
+                        .build()
+                );
+            }
+        } catch (StatusRuntimeException e) {
+            responseObserver.onError(e);
+        } finally {
+            responseObserver.onCompleted();
         }
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -106,23 +107,25 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String password = request.getPassword();
 
         UsersLogInRequestDTO requestDTO = new UsersLogInRequestDTO(email, password);
-        UsersLogInResponseDTO responseDTO = usersGateway.getPatientByEmail(requestDTO);
+        try {
+            UsersLogInResponseDTO responseDTO = usersGateway.getPatientByEmail(requestDTO);
 
-        if(responseDTO.getExists() && BcryptService.checkPassword(password, responseDTO.getPassword())) {
-            String token = jwtService.generateToken(email, "patient");
-            responseObserver.onNext(
-                Auth.LoginResponse.newBuilder()
-                    .setIsSuccessful(true)
-                    .setToken(token)
-                    .setRole("patient")
-                    .build());
-        } else {
-        responseObserver.onNext(
-            Auth.LoginResponse.newBuilder()
-                .setIsSuccessful(false)
-                .build());
+            if(responseDTO.getExists() && BcryptService.checkPassword(password, responseDTO.getPassword())) {
+                String token = jwtService.generateToken(email, "patient");
+                responseObserver.onNext(
+                    Auth.LoginResponse.newBuilder()
+                        .setIsSuccessful(true)
+                        .setToken(token)
+                        .setRole("patient")
+                        .build());
+            } else {
+                responseObserver.onError(Status.UNAUTHENTICATED.withDescription("Invalid credentials").asRuntimeException());
+            }
+        } catch (StatusRuntimeException e) {
+            responseObserver.onError(e);
+        } finally {
+            responseObserver.onCompleted();
         }
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -133,23 +136,26 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String password = request.getPassword();
 
         UsersLogInRequestDTO requestDTO = new UsersLogInRequestDTO(email, password);
-        UsersLogInResponseDTO responseDTO = usersGateway.getDoctorByEmail(requestDTO);
+        try {
+            UsersLogInResponseDTO responseDTO = usersGateway.getDoctorByEmail(requestDTO);
 
-        if(responseDTO.getExists() && BcryptService.checkPassword(password, responseDTO.getPassword())) {
-            String token = jwtService.generateToken(email, "doctor");
-            responseObserver.onNext(
-                Auth.LoginResponse.newBuilder()
-                    .setIsSuccessful(true)
-                    .setToken(token)
-                    .setRole("patient")
-                    .build());
-        } else {
-            responseObserver.onNext(
-                Auth.LoginResponse.newBuilder()
-                    .setIsSuccessful(false)
-                    .build());
+            if(BcryptService.checkPassword(password, responseDTO.getPassword())) {
+                String token = jwtService.generateToken(email, "doctor");
+                responseObserver.onNext(
+                    Auth.LoginResponse.newBuilder()
+                        .setIsSuccessful(true)
+                        .setToken(token)
+                        .setRole("patient")
+                        .build());
+            } else {
+                this.logger.warning("Invalid credentials for doctor: " + email);
+                responseObserver.onError(Status.UNAUTHENTICATED.withDescription("Invalid credentials").asRuntimeException());
+            }
+        } catch (StatusRuntimeException e) {
+            responseObserver.onError(e);
+        } finally {
+            responseObserver.onCompleted();
         }
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -168,11 +174,9 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     .setRole("admin")
                     .build());
         } else {
-            responseObserver.onNext(
-                Auth.LoginResponse.newBuilder()
-                    .setIsSuccessful(false)
-                    .build());
+            responseObserver.onError(Status.UNAUTHENTICATED.withDescription("Invalid credentials").asRuntimeException());
         }
+
         responseObserver.onCompleted();
     }
 
@@ -192,11 +196,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     .build()
             );
         } else {
-            responseObserver.onNext(
-                Auth.AuthorizationResponse.newBuilder()
-                    .setIsTokenAuthorized(false)
-                    .build()
-            );
+            responseObserver.onError(Status.PERMISSION_DENIED.withDescription("Unauthorized").asRuntimeException());
         }
 
         responseObserver.onCompleted();

@@ -26,6 +26,8 @@ public class ExceptionsMapper {
                 } else {
                     return new InvalidPropertyException(message);
                 }
+            case UNAUTHENTICATED:
+                return new UnauthenticatedException(statusRuntimeException.getStatus().getDescription());
             default:
                 throw new ServiceException("Service Error");
         }

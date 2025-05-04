@@ -25,11 +25,13 @@ public class UsersController {
 
     @GetMapping("specialty/all")
     public ResponseEntity<List<SpecialtyDTO>> getAllSpecialties() {
+        logger.info("Retrieving all specialties");
         return ResponseEntity.ok(this.usersService.getAllSpecialties());
     }
 
     @GetMapping("doctors/all-gp")
     public ResponseEntity<List<DoctorSummaryDTO>> getAllDoctors() {
+        logger.info("Retrieving all GP doctors");
         return ResponseEntity.ok(this.usersService.getAllGpDoctors());
     }
 }

@@ -41,11 +41,7 @@ public class AuthController {
     @PostMapping("log-doctor-in")
     public ResponseEntity<AuthResponseDTO> logDoctorIn(@RequestBody LogUserInDTO dto) {
         logger.info("Log Doctor In: " + dto.getEmail());
-        AuthResponseDTO response = this.authService.logDoctorIn(dto);
-        if (response.isSuccessful()) {
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return ResponseEntity.ok(this.authService.logDoctorIn(dto));
     }
 
     @PostMapping("log-patient-in")

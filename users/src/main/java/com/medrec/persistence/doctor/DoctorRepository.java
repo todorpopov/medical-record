@@ -64,14 +64,15 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
     }
 
     public ResponseMessage saveWithSpecialtyId(CreateDoctorSpecialtyIdDTO dto) throws RuntimeException {
-        Specialty specialty = specialtyRepository.findById(dto.getSpecialtyId());
+        try {
+            Specialty specialty = specialtyRepository.findById(dto.getSpecialtyId());
 
-        if (specialty == null) {
-            this.logger.warning(String.format("Specialty with id %s not found", dto.getSpecialtyId()));
-            throw new NotFoundException(String.format("Specialty with id %s not found", dto.getSpecialtyId()));
-        }
+            if (specialty == null) {
+                this.logger.warning(String.format("Specialty with id %s not found", dto.getSpecialtyId()));
+                throw new NotFoundException("");
+            }
 
-        try (Session session = DBUtils.getCurrentSession()) {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             Doctor doctor = dto.createDoctorWithSpecialty(specialty);
             session.persist(doctor);
@@ -85,6 +86,8 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (NotFoundException e) {
+            throw new NotFoundException("specialty_not_found");
         } catch (ConstraintViolationException e){
             this.logger.severe("Constraint violation: " + e.getMessage());
             throw new ConstrainException("Constraint exception");
@@ -127,7 +130,7 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
             Doctor doctor = (Doctor) query.uniqueResult();
             tx.commit();
 
-            this.logger.info(String.format("Doctor %s found", doctor.toString()));
+            this.logger.info(String.format("Doctor with email %s found", email));
             return doctor;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());

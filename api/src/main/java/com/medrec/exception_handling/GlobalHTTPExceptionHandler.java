@@ -1,8 +1,6 @@
 package com.medrec.exception_handling;
 
-import com.medrec.exception_handling.exceptions.DatabaseConnectionException;
-import com.medrec.exception_handling.exceptions.DatabaseException;
-import com.medrec.exception_handling.exceptions.ServiceException;
+import com.medrec.exception_handling.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,8 +20,45 @@ public class GlobalHTTPExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleAlreadyExistsException(AlreadyExistsException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("ALREADY_EXISTS_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ErrorHTTPResponse> handleServiceException(ServiceException e) {
         ErrorHTTPResponse error = new ErrorHTTPResponse("SERVICE_EXCEPTION", e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleUniqueConstrainException(UniqueConstrainException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("UNIQUE_CONSTRAIN_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleNotFound(NotFoundException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("NOT_FOUND_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleDoctorNotGpException(DoctorNotGpException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("DOCTOR_NOT_GP_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleInvalidPropertyException(InvalidPropertyException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("INVALID_PROPERTY_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleUnauthenticatedException(UnauthenticatedException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("UNAUTHENTICATED_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 }

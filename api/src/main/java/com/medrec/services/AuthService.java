@@ -1,7 +1,9 @@
 package com.medrec.services;
 
 import com.medrec.dtos.*;
+import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.gateways.AuthGateway;
+import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,58 +19,82 @@ public class AuthService {
         this.authGateway = authGateway;
     }
 
-    public AuthResponseDTO registerDoctor(RegisterDoctorDTO dto) {
-        return this.authGateway.registerDoctor(
-            dto.getFirstName(),
-            dto.getLastName(),
-            dto.getEmail(),
-            dto.getPassword(),
-            dto.isGeneralPractitioner(),
-            dto.getSpecialtyId()
-        );
+    public AuthResponseDTO registerDoctor(RegisterDoctorDTO dto) throws RuntimeException {
+        try {
+            return this.authGateway.registerDoctor(
+                dto.getFirstName(),
+                dto.getLastName(),
+                dto.getEmail(),
+                dto.getPassword(),
+                dto.isGeneralPractitioner(),
+                dto.getSpecialtyId()
+            );
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public AuthResponseDTO registerPatient(RegisterPatientDTO dto) {
+    public AuthResponseDTO registerPatient(RegisterPatientDTO dto) throws RuntimeException {
         this.logger.info(dto.getPassword());
-        return this.authGateway.registerPatient(
-            dto.getFirstName(),
-            dto.getLastName(),
-            dto.getEmail(),
-            dto.getPassword(),
-            dto.getPin(),
-            dto.getGpId(),
-            dto.isInsured()
-        );
+        try {
+            return this.authGateway.registerPatient(
+                dto.getFirstName(),
+                dto.getLastName(),
+                dto.getEmail(),
+                dto.getPassword(),
+                dto.getPin(),
+                dto.getGpId(),
+                dto.isInsured()
+            );
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public AuthResponseDTO logDoctorIn(LogUserInDTO dto) {
-        String token = authGateway.logDoctorIn(dto.getEmail(), dto.getPassword());
-        return new AuthResponseDTO(
-            token != null,
-            token,
-            "doctor"
-        );
+    public AuthResponseDTO logDoctorIn(LogUserInDTO dto) throws RuntimeException {
+        try {
+            String token = authGateway.logDoctorIn(dto.getEmail(), dto.getPassword());
+            return new AuthResponseDTO(
+                token != null,
+                token,
+                "doctor"
+            );
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public AuthResponseDTO logPatientIn(LogUserInDTO dto) {
-        String token = authGateway.logPatientIn(dto.getEmail(), dto.getPassword());
-        return new AuthResponseDTO(
-            token != null,
-            token,
-            "patient"
-        );
+    public AuthResponseDTO logPatientIn(LogUserInDTO dto) throws StatusRuntimeException {
+        try {
+            String token = authGateway.logPatientIn(dto.getEmail(), dto.getPassword());
+            return new AuthResponseDTO(
+                token != null,
+                token,
+                "patient"
+            );
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public AuthResponseDTO logAdminIn(LogUserInDTO dto) {
-        String token = authGateway.logAdminIn(dto.getEmail(), dto.getPassword());
-        return new AuthResponseDTO(
-            token != null,
-            token,
-            "admin"
-        );
+    public AuthResponseDTO logAdminIn(LogUserInDTO dto) throws StatusRuntimeException {
+        try {
+            String token = authGateway.logAdminIn(dto.getEmail(), dto.getPassword());
+            return new AuthResponseDTO(
+                token != null,
+                token,
+                "admin"
+            );
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public boolean isRequestAuthorized(String token, List<String> requiredRoles) {
-        return authGateway.isRequestAuthorized(token, requiredRoles);
+    public boolean isRequestAuthorized(String token, List<String> requiredRoles) throws StatusRuntimeException {
+        try {
+            return authGateway.isRequestAuthorized(token, requiredRoles);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 }

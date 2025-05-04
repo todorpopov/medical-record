@@ -83,7 +83,7 @@ public class SpecialtyRepository implements ICrudRepository<Specialty> {
             Specialty specialty = session.get(Specialty.class, id);
             tx.commit();
 
-            this.logger.info(String.format("Specialty %s found", specialty.toString()));
+            this.logger.info(String.format("Specialty with id %s found", id));
             return specialty;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());

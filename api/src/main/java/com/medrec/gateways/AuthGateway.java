@@ -6,6 +6,7 @@ import com.medrec.grpc.auth.AuthServiceGrpc;
 import com.medrec.grpc.users.Users;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,7 @@ public class AuthGateway {
         String password,
         boolean isGp,
         int specialtyId
-    ) {
+    ) throws StatusRuntimeException {
         Users.DoctorSpecialtyId doctor = Users.DoctorSpecialtyId.newBuilder()
             .setFirstName(firstName)
             .setLastName(lastName)
@@ -62,7 +63,7 @@ public class AuthGateway {
         String pin,
         int generalPractitionerId,
         boolean isHealthInsured
-    ) {
+    ) throws StatusRuntimeException {
         this.logger.info(password);
         Users.PatientDoctorId patient = Users.PatientDoctorId.newBuilder()
             .setFirstName(firstName)
@@ -83,7 +84,7 @@ public class AuthGateway {
         );
     }
 
-    public String logPatientIn(String email, String password) {
+    public String logPatientIn(String email, String password) throws StatusRuntimeException {
         Auth.LoginResponse response = authService.logPatientIn(
             Auth.LoginRequest.newBuilder()
                 .setEmail(email)
@@ -97,7 +98,7 @@ public class AuthGateway {
         return null;
     }
 
-    public String logDoctorIn(String email, String password) {
+    public String logDoctorIn(String email, String password) throws StatusRuntimeException{
         Auth.LoginResponse response = authService.logDoctorIn(
             Auth.LoginRequest.newBuilder()
                 .setEmail(email)
@@ -111,7 +112,7 @@ public class AuthGateway {
         return null;
     }
 
-    public String logAdminIn(String email, String password) {
+    public String logAdminIn(String email, String password) throws StatusRuntimeException {
         Auth.LoginResponse response = authService.logAdminIn(
             Auth.LoginRequest.newBuilder()
                 .setEmail(email)
@@ -125,7 +126,7 @@ public class AuthGateway {
         return null;
     }
 
-    public boolean isRequestAuthorized(String token, List<String> requiredRoles) {
+    public boolean isRequestAuthorized(String token, List<String> requiredRoles) throws StatusRuntimeException {
         Auth.AuthorizationRequest request = Auth.AuthorizationRequest.newBuilder()
             .setToken(token)
             .addAllRequiredRoles(requiredRoles)

@@ -24,6 +24,10 @@ public class ExceptionsMapper {
             return Status.ABORTED.withDescription("Constraint Violation").asRuntimeException();
         } else if (throwable instanceof NotFoundException) {
             logger.info("Not found exception");
+
+            if (throwable.getMessage().contains("specialty_not_found")) {
+                return Status.NOT_FOUND.withDescription("Specialty Not Found").asRuntimeException();
+            }
             return Status.NOT_FOUND.withDescription("Entity Not Found").asRuntimeException();
         } else if (throwable instanceof InvalidPropertyException) {
             logger.info("Invalid property exception");

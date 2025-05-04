@@ -3,11 +3,13 @@ package com.medrec.gateways;
 import com.google.protobuf.StringValue;
 import com.medrec.dtos.UsersLogInRequestDTO;
 import com.medrec.dtos.UsersLogInResponseDTO;
+import com.medrec.exceptions.UserNotFoundException;
 import com.medrec.grpc.users.DoctorServiceGrpc;
 import com.medrec.grpc.users.PatientServiceGrpc;
 import com.medrec.grpc.users.Users;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 
 import javax.annotation.PreDestroy;
 import java.util.concurrent.TimeUnit;
@@ -38,16 +40,15 @@ public class UsersGateway {
         return instance;
     }
 
-    public Users.isSuccessfulResponse registerDoctor(Users.DoctorSpecialtyId doctor) {
+    public Users.isSuccessfulResponse registerDoctor(Users.DoctorSpecialtyId doctor) throws StatusRuntimeException {
         return doctorService.createDoctorSpecialtyId(doctor);
     }
 
-    public Users.isSuccessfulResponse registerPatient(Users.PatientDoctorId patient) {
-        this.logger.info(patient.getPassword());
+    public Users.isSuccessfulResponse registerPatient(Users.PatientDoctorId patient) throws StatusRuntimeException {
         return patientService.createPatientDoctorId(patient);
     }
 
-    public UsersLogInResponseDTO getPatientByEmail(UsersLogInRequestDTO request) {
+    public UsersLogInResponseDTO getPatientByEmail(UsersLogInRequestDTO request) throws StatusRuntimeException {
         Users.PatientResponse response = patientService.getPatientByEmail(StringValue.of(request.getEmail()));
         if (response.getExists()) {
             return new UsersLogInResponseDTO(
@@ -56,10 +57,11 @@ public class UsersGateway {
                 response.getPatient().getPassword()
             );
         }
-        return new UsersLogInResponseDTO(false);
+
+        throw new UserNotFoundException("Could not find patient with email " + request.getEmail());
     }
 
-    public UsersLogInResponseDTO getDoctorByEmail(UsersLogInRequestDTO request) {
+    public UsersLogInResponseDTO getDoctorByEmail(UsersLogInRequestDTO request) throws StatusRuntimeException {
         Users.DoctorResponse response = doctorService.getDoctorByEmail(StringValue.of(request.getEmail()));
         if (response.getExists()) {
             return new UsersLogInResponseDTO(
@@ -68,7 +70,7 @@ public class UsersGateway {
                 response.getDoctor().getPassword()
             );
         }
-        return new UsersLogInResponseDTO(false);
+        throw new UserNotFoundException("Could not find doctor with email " + request.getEmail());
     }
 
     @PreDestroy
