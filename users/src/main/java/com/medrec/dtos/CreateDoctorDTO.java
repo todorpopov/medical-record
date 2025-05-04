@@ -3,9 +3,7 @@ package com.medrec.dtos;
 import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.specialty.Specialty;
 
-public class CreateDoctorSpecialtyIdDTO {
-    private int id;
-
+public class CreateDoctorDTO {
     private String firstName;
 
     private String lastName;
@@ -18,7 +16,7 @@ public class CreateDoctorSpecialtyIdDTO {
 
     private boolean isGp;
 
-    public CreateDoctorSpecialtyIdDTO(String firstName, String lastName, String email, String password, int specialtyId, boolean isGp) {
+    public CreateDoctorDTO(String firstName, String lastName, String email, String password, int specialtyId, boolean isGp) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -36,14 +34,6 @@ public class CreateDoctorSpecialtyIdDTO {
             specialty,
             this.isGp
         );
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getFirstName() {

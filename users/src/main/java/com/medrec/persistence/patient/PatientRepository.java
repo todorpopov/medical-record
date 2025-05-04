@@ -1,10 +1,10 @@
 package com.medrec.persistence.patient;
 
-import com.medrec.dtos.CreatePatientDoctorIdDTO;
+import com.medrec.dtos.CreatePatientDTO;
 import com.medrec.exception_handling.exceptions.*;
+import com.medrec.grpc.users.Users;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
-import com.medrec.persistence.ResponseMessage;
 import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.doctor.DoctorRepository;
 import jakarta.persistence.EntityExistsException;
@@ -16,9 +16,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
-public class PatientRepository implements ICrudRepository<Patient> {
+public class PatientRepository implements ICrudRepository<Patient, CreatePatientDTO, Users.UpdatePatientRequest> {
     private static PatientRepository instance;
 
     private final DoctorRepository doctorRepository = DoctorRepository.getInstance();
@@ -36,57 +37,33 @@ public class PatientRepository implements ICrudRepository<Patient> {
     }
 
     @Override
-    public ResponseMessage save(Patient patient) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+    public Patient save(CreatePatientDTO dto) throws RuntimeException {
+        try {
+            Doctor gp = doctorRepository.findById(dto.getGpId());
+            if (gp == null) {
+                throw new NotFoundException("");
+            }
+            if (!gp.isGp()) {
+                throw new InvalidPropertyException("");
+            }
+
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
+            Patient patient = dto.getDomainModel(gp);
             session.persist(patient);
             tx.commit();
 
             this.logger.info(String.format("Patient %s saved successfully", patient.toString()));
-            return new ResponseMessage(
-                    true,
-                    String.format("%s %s created successfully!", patient.getFirstName(), patient.getLastName())
-            );
+            return patient;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (ConstraintViolationException e){
-            this.logger.severe("Constraint violation: " + e.getMessage());
-            throw new ConstrainException("Constraint exception");
-        } catch (EntityExistsException e) {
-            this.logger.severe("Entity already exists: " + e.getMessage());
-            throw new AlreadyExistsException("Entity already exists");
-        } catch (HibernateException e) {
-            this.logger.severe("Database exception found: " + e.getMessage());
-            throw new DatabaseException("Database exception found");
-        }
-    }
-
-    public ResponseMessage saveWithDoctorId(CreatePatientDoctorIdDTO dto) throws RuntimeException {
-        Doctor doctor = doctorRepository.findById(dto.getGpId());
-
-        if (doctor == null) {
-            this.logger.warning(String.format("Doctor %s not found", dto.getGpId()));
-            throw new NotFoundException(String.format("Doctor with id %s not found", dto.getGpId()));
-        } else if (!doctor.isGp()) {
-            this.logger.warning(String.format("Doctor %s is not gp", dto.getGpId()));
-            throw new InvalidPropertyException(String.format("Doctor with id %s is not Gp", dto.getGpId()));
-        }
-
-        try (Session session = DBUtils.getCurrentSession()) {
-            Transaction tx = session.beginTransaction();
-            Patient patient = dto.createPatientWithDoctor(doctor);
-            session.persist(patient);
-            tx.commit();
-
-            this.logger.info(String.format("Patient %s saved successfully", patient.toString()));
-            return new ResponseMessage(
-                true,
-                String.format("%s %s created successfully!", patient.getFirstName(), patient.getLastName())
-            );
-        } catch (ExceptionInInitializerError e) {
-            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
-            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (NotFoundException e) {
+            this.logger.severe("General Practitioner not found");
+            throw new NotFoundException("gp_not_found");
+        } catch (InvalidPropertyException e) {
+            this.logger.severe("Doctor not GP");
+            throw new InvalidPropertyException("doctor_not_gp");
         } catch (ConstraintViolationException e){
             this.logger.severe("Constraint violation: " + e.getMessage());
             throw new ConstrainException("Constraint exception");
@@ -101,7 +78,8 @@ public class PatientRepository implements ICrudRepository<Patient> {
 
     @Override
     public Patient findById(int id) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             Patient patient = session.get(Patient.class, id);
             tx.commit();
@@ -121,7 +99,8 @@ public class PatientRepository implements ICrudRepository<Patient> {
     }
 
     public Patient findByEmail(String email) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             String hql = "from Doctor where email = :email";
             Query query = session.createQuery("from Patient where email = :email").setParameter("email", email);
@@ -144,7 +123,8 @@ public class PatientRepository implements ICrudRepository<Patient> {
 
     @Override
     public List<Patient> findAll() throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             List<Patient> patients = session.createQuery("from Patient", Patient.class).getResultList();
             tx.commit();
@@ -159,20 +139,61 @@ public class PatientRepository implements ICrudRepository<Patient> {
     }
 
     @Override
-    public ResponseMessage update(Patient patient) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+    public Patient update(Users.UpdatePatientRequest request) throws RuntimeException {
+        int id = request.getPatientId();
+        Optional<Patient> patientOptional = Optional.ofNullable(findById(id));
+
+        try {
+            if (patientOptional.isEmpty()) {
+                throw new NotFoundException("patient_not_found");
+            }
+
+            Patient patient = patientOptional.get();
+
+            if (request.hasFirstName()) {
+                patient.setFirstName(request.getFirstName());
+            }
+
+            if (request.hasLastName()) {
+                patient.setLastName(request.getLastName());
+            }
+
+            if (request.hasPassword()) {
+                patient.setPassword(request.getPassword());
+            }
+
+            if (request.hasGpId()) {
+                Optional<Doctor> optionalDoctor = Optional.ofNullable(doctorRepository.findById(request.getGpId()));
+                if (optionalDoctor.isEmpty()) {
+                    throw new NotFoundException("doctor_not_found");
+                }
+                Doctor newDoctor = optionalDoctor.get();
+                if (!newDoctor.isGp()) {
+                    throw new DoctorIsNotGpException("Doctor is not GP");
+                }
+                patient.setDoctor(optionalDoctor.get());
+            }
+
+            if (request.hasIsHealthInsured()) {
+                patient.setHealthInsured(request.getIsHealthInsured());
+            }
+
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
-            session.merge(patient);
+            Patient updatedPatient = session.merge(patient);
             tx.commit();
 
-            this.logger.info(String.format("Patient %s updated successfully", patient.toString()));
-            return new ResponseMessage(
-                    true,
-                    String.format("%s %s updated successfully!", patient.getFirstName(), patient.getLastName())
-            );
+            this.logger.info("Patient updated successfully");
+            return updatedPatient;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (NotFoundException e) {
+            this.logger.severe("Not found: " + e.getMessage());
+            throw e;
+        } catch (DoctorIsNotGpException e) {
+            this.logger.severe("Doctor is not GP: " + e.getMessage());
+            throw e;
         } catch (HibernateException e) {
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
@@ -180,18 +201,15 @@ public class PatientRepository implements ICrudRepository<Patient> {
     }
 
     @Override
-    public ResponseMessage delete(int id) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+    public void delete(int id) throws RuntimeException {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             Patient patient = session.get(Patient.class, id);
             session.remove(patient);
             tx.commit();
 
             this.logger.info(String.format("Patient %s deleted successfully", patient.toString()));
-            return new ResponseMessage(
-                    true,
-                    String.format("%s %s deleted successfully!", patient.getFirstName(), patient.getLastName())
-            );
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");

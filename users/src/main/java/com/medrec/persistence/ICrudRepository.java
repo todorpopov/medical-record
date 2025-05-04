@@ -2,10 +2,10 @@ package com.medrec.persistence;
 
 import java.util.List;
 
-public interface ICrudRepository<T> {
-    ResponseMessage save(T entity);
-    T findById(int id);
-    List<T> findAll() throws Exception;
-    ResponseMessage update(T entity);
-    ResponseMessage delete(int id);
+public interface ICrudRepository<DomainModelEntity, CreateDTO, UpdateRequest> {
+    DomainModelEntity save(CreateDTO dto);
+    DomainModelEntity findById(int id);
+    List<DomainModelEntity> findAll() throws Exception;
+    DomainModelEntity update(UpdateRequest entity);
+    void delete(int id);
 }

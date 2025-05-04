@@ -1,14 +1,12 @@
 package com.medrec.services;
 
-import com.medrec.dtos.CreateDoctorSpecialtyIdDTO;
+import com.medrec.dtos.CreateDoctorDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.users.DoctorServiceGrpc;
 import com.medrec.grpc.users.Users;
 import com.google.protobuf.Empty;
-import com.medrec.persistence.ResponseMessage;
 import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.doctor.DoctorRepository;
-import com.medrec.persistence.specialty.Specialty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import io.grpc.stub.StreamObserver;
@@ -34,31 +32,9 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
     }
 
     @Override
-    public void createDoctor(Users.Doctor request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
-        this.logger.info("Called RPC Create Doctor");
-
-        Doctor doctor = getEntityFromRequest(request);
-
-        try {
-            ResponseMessage message = doctorRepository.save(doctor);
-
-            responseObserver.onNext(
-                Users.isSuccessfulResponse.newBuilder()
-                    .setIsSuccessful(message.isSuccessful())
-                    .setMessage(message.getMessage())
-                    .build()
-            );
-        } catch (RuntimeException e) {
-            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
-        }
-    }
-
-    @Override
-    public void createDoctorSpecialtyId(Users.DoctorSpecialtyId request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
+    public void createDoctor(Users.CreateDoctorRequest request, StreamObserver<Users.Doctor> responseObserver) {
         this.logger.info("Called RPC Create Doctor- Specialty Id");
-        CreateDoctorSpecialtyIdDTO dto = new CreateDoctorSpecialtyIdDTO(
+        CreateDoctorDTO dto = new CreateDoctorDTO(
             request.getFirstName(),
             request.getLastName(),
             request.getEmail(),
@@ -68,50 +44,39 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         );
 
         try {
-            ResponseMessage message = doctorRepository.saveWithSpecialtyId(dto);
-            responseObserver.onNext(
-                Users.isSuccessfulResponse.newBuilder()
-                    .setIsSuccessful(message.isSuccessful())
-                    .setMessage(message.getMessage())
-                    .build()
+            Doctor savedDoctor = doctorRepository.save(dto);
+            responseObserver.onNext(grpcFromDomainModel(savedDoctor)
             );
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
         }
-        responseObserver.onCompleted();
     }
 
     @Override
-    public void getDoctorById(Int32Value request, StreamObserver<Users.DoctorResponse> responseObserver) {
+    public void getDoctorById(Int32Value request, StreamObserver<Users.Doctor> responseObserver) {
         this.logger.info("Called RPC Get Doctor By Id");
-
         int id = request.getValue();
+
         try {
             Doctor doctor = doctorRepository.findById(id);
-            Users.DoctorResponse doctorResponse = Users.DoctorResponse.newBuilder()
-                .setDoctor(getGrpcDoctorFromEntity(doctor))
-                .setExists(true)
-                .build();
-            responseObserver.onNext(doctorResponse);
+            responseObserver.onNext(grpcFromDomainModel(doctor));
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        } finally {
+            responseObserver.onCompleted();
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
-    public void getDoctorByEmail(StringValue request, StreamObserver<Users.DoctorResponse> responseObserver) {
+    public void getDoctorByEmail(StringValue request, StreamObserver<Users.Doctor> responseObserver) {
         this.logger.info("Called RPC Get Doctor By Email");
-
         String email = request.getValue();
+
         try {
             Doctor doctor = doctorRepository.findByEmail(email);
-            Users.DoctorResponse doctorResponse = Users.DoctorResponse.newBuilder()
-                .setDoctor(getGrpcDoctorFromEntity(doctor))
-                .setExists(true)
-                .build();
-            responseObserver.onNext(doctorResponse);
+            responseObserver.onNext(grpcFromDomainModel(doctor));
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         } finally {
@@ -125,11 +90,11 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
 
         try {
             List<Doctor> doctors = doctorRepository.findAllGpDoctors();
-            List<Users.Doctor> grpcDocctors = doctors.stream()
-                .map(DoctorService::getGrpcDoctorFromEntity)
+            List<Users.Doctor> grpcDoctors = doctors.stream()
+                .map(DoctorService::grpcFromDomainModel)
                 .toList();
             Users.DoctorList list = Users.DoctorList.newBuilder()
-                .addAllDoctors(grpcDocctors)
+                .addAllDoctors(grpcDoctors)
                 .build();
 
             responseObserver.onNext(list);
@@ -147,7 +112,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         try {
             List<Doctor> doctors = doctorRepository.findAll();
             List<Users.Doctor> grpcDoctorsList = doctors.stream()
-                .map(DoctorService::getGrpcDoctorFromEntity)
+                .map(DoctorService::grpcFromDomainModel)
                 .toList();
             Users.DoctorList doctorList = Users.DoctorList.newBuilder()
                 .addAllDoctors(grpcDoctorsList)
@@ -162,19 +127,12 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
     }
 
     @Override
-    public void updateDoctor(Users.Doctor request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
+    public void updateDoctor(Users.UpdateDoctorRequest request, StreamObserver<Users.Doctor> responseObserver) {
         this.logger.info("Called RPC Update Doctor");
 
-        Doctor doctor = getEntityFromRequest(request);
         try {
-            ResponseMessage message = doctorRepository.update(doctor);
-
-            responseObserver.onNext(
-                Users.isSuccessfulResponse.newBuilder()
-                    .setIsSuccessful(true)
-                    .setMessage(message.getMessage())
-                    .build()
-            );
+            Doctor updatedDoctor = doctorRepository.update(request);
+            responseObserver.onNext(grpcFromDomainModel(updatedDoctor));
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         } finally {
@@ -183,19 +141,13 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
     }
 
     @Override
-    public void deleteDoctorById(Int32Value request, StreamObserver<Users.isSuccessfulResponse> responseObserver) {
+    public void deleteDoctorById(Int32Value request, StreamObserver<Empty> responseObserver) {
         this.logger.info("Called RPC Delete Doctor");
-
         int id = request.getValue();
-        try {
-            ResponseMessage message = doctorRepository.delete(id);
 
-            responseObserver.onNext(
-                Users.isSuccessfulResponse.newBuilder()
-                    .setIsSuccessful(true)
-                    .setMessage(message.getMessage())
-                    .build()
-            );
+        try {
+            doctorRepository.delete(id);
+            responseObserver.onNext(Empty.getDefaultInstance());
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         } finally {
@@ -203,26 +155,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         }
     }
 
-    static Doctor getEntityFromRequest(Users.Doctor grpcDoctor) {
-        Users.Specialty requestSpecialty = grpcDoctor.getSpecialty();
-
-        Specialty specialty = new Specialty(
-            requestSpecialty.getId(),
-            requestSpecialty.getSpecialtyName(),
-            requestSpecialty.getSpecialtyDescription()
-        );
-
-        return new Doctor(
-            grpcDoctor.getFirstName(),
-            grpcDoctor.getLastName(),
-            grpcDoctor.getEmail(),
-            grpcDoctor.getPassword(),
-            specialty,
-            grpcDoctor.getIsGp()
-        );
-    }
-
-    static Users.Doctor getGrpcDoctorFromEntity(Doctor doctor) {
+    static Users.Doctor grpcFromDomainModel(Doctor doctor) {
         Users.Specialty grpcSpecialty = Users.Specialty.newBuilder()
             .setId(doctor.getSpecialty().getId())
             .setSpecialtyName(doctor.getSpecialty().getSpecialtyName())

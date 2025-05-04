@@ -1,10 +1,10 @@
 package com.medrec.persistence.doctor;
 
-import com.medrec.dtos.CreateDoctorSpecialtyIdDTO;
+import com.medrec.dtos.CreateDoctorDTO;
 import com.medrec.exception_handling.exceptions.*;
+import com.medrec.grpc.users.Users;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
-import com.medrec.persistence.ResponseMessage;
 import com.medrec.persistence.specialty.Specialty;
 import com.medrec.persistence.specialty.SpecialtyRepository;
 import jakarta.persistence.EntityExistsException;
@@ -15,11 +15,11 @@ import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
-public class DoctorRepository implements ICrudRepository<Doctor> {
+public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO, Users.UpdateDoctorRequest> {
     private static DoctorRepository instance;
 
     private final SpecialtyRepository specialtyRepository = SpecialtyRepository.getInstance();
@@ -37,40 +37,13 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
     }
 
     @Override
-    public ResponseMessage save(Doctor doctor) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
-            Transaction tx = session.beginTransaction();
-            session.persist(doctor);
-            tx.commit();
-
-            this.logger.info(String.format("Doctor %s saved successfully", doctor.toString()));
-            return new ResponseMessage(
-                    true,
-                    String.format("%s %s created successfully!", doctor.getFirstName(), doctor.getLastName())
-            );
-        } catch (ExceptionInInitializerError e) {
-            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
-            throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (ConstraintViolationException e){
-            this.logger.severe("Constraint violation: " + e.getMessage());
-            throw new ConstrainException("Constraint exception");
-        } catch (EntityExistsException e) {
-            this.logger.severe("Entity already exists: " + e.getMessage());
-            throw new AlreadyExistsException("Entity already exists");
-        } catch (HibernateException e) {
-            this.logger.severe("Database exception found: " + e.getMessage());
-            throw new DatabaseException("Database exception found");
-        }
-    }
-
-    public ResponseMessage saveWithSpecialtyId(CreateDoctorSpecialtyIdDTO dto) throws RuntimeException {
+    public Doctor save(CreateDoctorDTO dto) throws RuntimeException {
         try {
             Specialty specialty = specialtyRepository.findById(dto.getSpecialtyId());
 
-            if (specialty == null) {
-                this.logger.warning(String.format("Specialty with id %s not found", dto.getSpecialtyId()));
-                throw new NotFoundException("");
-            }
+//            if (specialty == null) {
+//                throw new NotFoundException("");
+//            }
 
             Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
@@ -78,11 +51,8 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
             session.persist(doctor);
             tx.commit();
 
-            this.logger.info(String.format("Doctor %s saved successfully", doctor.toString()));
-            return new ResponseMessage(
-                true,
-                String.format("%s %s created successfully!", doctor.getFirstName(), doctor.getLastName())
-            );
+            this.logger.info("Doctor saved successfully");
+            return doctor;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
@@ -102,7 +72,8 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
 
     @Override
     public Doctor findById(int id) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             Doctor doctor = session.get(Doctor.class, id);
             tx.commit();
@@ -122,7 +93,8 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
     }
 
     public Doctor findByEmail(String email) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             String hql = "from Doctor where email = :email";
             Query query = session.createQuery("from Doctor where email = :email")
@@ -146,7 +118,8 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
 
     @Override
     public List<Doctor> findAll() throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             List<Doctor> doctors = session.createQuery("from Doctor", Doctor.class).getResultList();
             tx.commit();
@@ -161,20 +134,54 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
     }
 
     @Override
-    public ResponseMessage update(Doctor doctor) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+    public Doctor update(Users.UpdateDoctorRequest request) throws RuntimeException {
+        int id = request.getDoctorId();
+        Optional<Doctor> doctorOptional = Optional.ofNullable(findById(id));
+
+        try {
+            if (doctorOptional.isEmpty()) {
+                throw new NotFoundException("doctor_not_found");
+            }
+
+            Doctor doctor = doctorOptional.get();
+
+            if (request.hasFirstName()) {
+                doctor.setFirstName(request.getFirstName());
+            }
+
+            if (request.hasLastName()) {
+                doctor.setLastName(request.getLastName());
+            }
+
+            if (request.hasPassword()) {
+                doctor.setPassword(request.getPassword());
+            }
+
+            if (request.hasIsGp()) {
+                doctor.setGp(request.getIsGp());
+            }
+
+            if (request.hasSpecialtyId()) {
+                Optional<Specialty> optionalSpecialty = Optional.ofNullable(specialtyRepository.findById(request.getSpecialtyId()));
+                if (optionalSpecialty.isEmpty()) {
+                    throw new NotFoundException("specialty_not_found");
+                }
+                doctor.setSpecialty(optionalSpecialty.get());
+            }
+
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
-            session.merge(doctor);
+            Doctor updatedDoctor = session.merge(doctor);
             tx.commit();
 
-            this.logger.info(String.format("Doctor %s updated successfully", doctor.toString()));
-            return new ResponseMessage(
-                    true,
-                    String.format("%s %s updated successfully!", doctor.getFirstName(), doctor.getLastName())
-            );
+            this.logger.info("Doctor updated successfully");
+            return updatedDoctor;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (NotFoundException e) {
+            this.logger.severe("Not found: " + e.getMessage());
+            throw e;
         } catch (HibernateException e) {
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
@@ -182,18 +189,15 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
     }
 
     @Override
-    public ResponseMessage delete(int id) throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+    public void delete(int id) throws RuntimeException {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             Doctor doctor = session.get(Doctor.class, id);
             session.remove(doctor);
             tx.commit();
 
             this.logger.info(String.format("Doctor %s deleted successfully", doctor.toString()));
-            return new ResponseMessage(
-                    true,
-                    String.format("%s %s deleted successfully!", doctor.getFirstName(), doctor.getLastName())
-            );
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
@@ -210,7 +214,8 @@ public class DoctorRepository implements ICrudRepository<Doctor> {
     }
 
     public List<Doctor> findAllGpDoctors() throws RuntimeException {
-        try (Session session = DBUtils.getCurrentSession()) {
+        try {
+            Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             List<Doctor> doctors = session.createQuery("from Doctor where isGp=true", Doctor.class).getResultList();
             tx.commit();

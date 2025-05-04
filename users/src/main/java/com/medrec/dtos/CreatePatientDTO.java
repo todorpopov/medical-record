@@ -6,10 +6,8 @@ import com.medrec.persistence.patient.Patient;
 
 import java.util.logging.Logger;
 
-public class CreatePatientDoctorIdDTO {
-    private final Logger logger = Logger.getLogger(CreatePatientDoctorIdDTO.class.getName());
-
-    private int id;
+public class CreatePatientDTO {
+    private final Logger logger = Logger.getLogger(CreatePatientDTO.class.getName());
 
     private String firstName;
 
@@ -25,7 +23,7 @@ public class CreatePatientDoctorIdDTO {
 
     private boolean isHealthInsured;
 
-    public CreatePatientDoctorIdDTO(String firstName, String lastName, String email, String password, String pin, int gpId, boolean isHealthInsured) {
+    public CreatePatientDTO(String firstName, String lastName, String email, String password, String pin, int gpId, boolean isHealthInsured) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -35,7 +33,7 @@ public class CreatePatientDoctorIdDTO {
         this.isHealthInsured = isHealthInsured;
     }
 
-    public Patient createPatientWithDoctor(Doctor doctor) {
+    public Patient getDomainModel(Doctor doctor) {
         try {
             return new Patient(
                 this.firstName,
@@ -50,14 +48,6 @@ public class CreatePatientDoctorIdDTO {
             this.logger.severe(e.getMessage());
             return null;
         }
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getFirstName() {

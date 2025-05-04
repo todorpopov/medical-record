@@ -28,6 +28,12 @@ public class ExceptionsMapper {
             if (throwable.getMessage().contains("specialty_not_found")) {
                 return Status.NOT_FOUND.withDescription("Specialty Not Found").asRuntimeException();
             }
+            if (throwable.getMessage().contains("doctor_not_found")) {
+                return Status.NOT_FOUND.withDescription("Doctor Not Found").asRuntimeException();
+            }
+            if (throwable.getMessage().contains("patient_not_found")) {
+                return Status.NOT_FOUND.withDescription("Patient Not Found").asRuntimeException();
+            }
             return Status.NOT_FOUND.withDescription("Entity Not Found").asRuntimeException();
         } else if (throwable instanceof InvalidPropertyException) {
             logger.info("Invalid property exception");
