@@ -1,6 +1,6 @@
 package com.medrec.gateways;
 
-import com.medrec.dtos.AuthResponseDTO;
+import com.medrec.dtos.auth.AuthResponseDTO;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
 import com.medrec.grpc.users.Users;

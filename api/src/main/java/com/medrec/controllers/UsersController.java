@@ -1,10 +1,8 @@
 package com.medrec.controllers;
 
-import com.medrec.dtos.DoctorSummaryDTO;
-import com.medrec.dtos.SpecialtyDTO;
+import com.medrec.dtos.users.doctor.DoctorSummaryDTO;
+import com.medrec.dtos.users.specialty.SpecialtyDTO;
 import com.medrec.services.UsersService;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

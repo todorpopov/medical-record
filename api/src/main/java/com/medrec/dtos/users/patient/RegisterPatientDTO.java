@@ -1,23 +1,26 @@
-package com.medrec.dtos;
+package com.medrec.dtos.users.patient;
 
-public class RegisterDoctorDTO {
+
+public class RegisterPatientDTO {
     private String firstName;
     private String lastName;
     private String email;
     private String password;
-    private boolean generalPractitioner;
-    private int specialtyId;
+    private String pin;
+    private int gpId;
+    private boolean insured;
 
-    public RegisterDoctorDTO(String firstName, String lastName, String email, String password, boolean generalPractitioner, int specialtyId) {
+    public RegisterPatientDTO() {
+    }
+
+    public RegisterPatientDTO(String firstName, String lastName, String email, String password, String pin, int gpId, boolean insured) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.generalPractitioner = generalPractitioner;
-        this.specialtyId = specialtyId;
-    }
-
-    public RegisterDoctorDTO() {
+        this.pin = pin;
+        this.gpId = gpId;
+        this.insured = insured;
     }
 
     public String getFirstName() {
@@ -52,31 +55,39 @@ public class RegisterDoctorDTO {
         this.password = password;
     }
 
-    public boolean isGeneralPractitioner() {
-        return generalPractitioner;
+    public String getPin() {
+        return pin;
     }
 
-    public void setGeneralPractitioner(boolean gp) {
-        generalPractitioner = gp;
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 
-    public int getSpecialtyId() {
-        return specialtyId;
+    public int getGpId() {
+        return gpId;
     }
 
-    public void setSpecialtyId(int specialtyId) {
-        this.specialtyId = specialtyId;
+    public void setGpId(int gpId) {
+        this.gpId = gpId;
+    }
+
+    public boolean isInsured() {
+        return insured;
+    }
+
+    public void setInsured(boolean healthInsured) {
+        insured = healthInsured;
     }
 
     @Override
     public String toString() {
-        return "RegisterDoctorDTO{" +
+        return "RegisterPatientDTO{" +
             "firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", email='" + email + '\'' +
-            ", password='" + password + '\'' +
-            ", generalPractitioner=" + generalPractitioner +
-            ", specialtyId='" + specialtyId + '\'' +
+            ", pin='" + pin + '\'' +
+            ", gpId=" + gpId +
+            ", insured=" + insured +
             '}';
     }
 }

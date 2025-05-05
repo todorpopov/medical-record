@@ -1,26 +1,37 @@
-package com.medrec.dtos;
+package com.medrec.dtos.users.patient;
 
+import com.medrec.dtos.users.doctor.DoctorDTO;
 
-public class RegisterPatientDTO {
+public class PatientDTO {
+    private int id;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
     private String pin;
-    private int gpId;
+    private DoctorDTO gp;
     private boolean insured;
 
-    public RegisterPatientDTO() {
+    public PatientDTO() {
     }
 
-    public RegisterPatientDTO(String firstName, String lastName, String email, String password, String pin, int gpId, boolean insured) {
+    public PatientDTO(int id, String firstName, String lastName, String email, String password, String pin, DoctorDTO gp, boolean insured) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.pin = pin;
-        this.gpId = gpId;
+        this.gp = gp;
         this.insured = insured;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -63,31 +74,19 @@ public class RegisterPatientDTO {
         this.pin = pin;
     }
 
-    public int getGpId() {
-        return gpId;
+    public DoctorDTO getGp() {
+        return gp;
     }
 
-    public void setGpId(int gpId) {
-        this.gpId = gpId;
+    public void setGp(DoctorDTO gp) {
+        this.gp = gp;
     }
 
     public boolean isInsured() {
         return insured;
     }
 
-    public void setInsured(boolean healthInsured) {
-        insured = healthInsured;
-    }
-
-    @Override
-    public String toString() {
-        return "RegisterPatientDTO{" +
-            "firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", pin='" + pin + '\'' +
-            ", gpId=" + gpId +
-            ", insured=" + insured +
-            '}';
+    public void setInsured(boolean insured) {
+        this.insured = insured;
     }
 }

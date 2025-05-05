@@ -1,6 +1,9 @@
-package com.medrec.dtos;
+package com.medrec.dtos.users.doctor;
+
+import com.medrec.dtos.users.specialty.SpecialtyDTO;
 
 public class DoctorDTO {
+    private int id;
     private String firstName;
     private String lastName;
     private String email;
@@ -11,13 +14,22 @@ public class DoctorDTO {
     public DoctorDTO() {
     }
 
-    public DoctorDTO(String firstName, String lastName, String email, String password, boolean isGp, SpecialtyDTO specialty) {
+    public DoctorDTO(int id, String firstName, String lastName, String email, String password, boolean isGp, SpecialtyDTO specialty) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.isGp = isGp;
         this.specialty = specialty;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getFirstName() {

@@ -1,4 +1,6 @@
-package com.medrec.dtos;
+package com.medrec.dtos.users.doctor;
+
+import com.medrec.dtos.users.specialty.SpecialtyDTO;
 
 public class DoctorSummaryDTO {
     private int id;

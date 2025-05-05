@@ -1,6 +1,9 @@
 package com.medrec.services;
 
-import com.medrec.dtos.*;
+import com.medrec.dtos.auth.AuthResponseDTO;
+import com.medrec.dtos.auth.LogUserInDTO;
+import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
+import com.medrec.dtos.users.patient.RegisterPatientDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.gateways.AuthGateway;
 import io.grpc.StatusRuntimeException;

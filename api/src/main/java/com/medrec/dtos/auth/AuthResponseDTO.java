@@ -1,4 +1,4 @@
-package com.medrec.dtos;
+package com.medrec.dtos.auth;
 
 public class AuthResponseDTO {
     private boolean isSuccessful;

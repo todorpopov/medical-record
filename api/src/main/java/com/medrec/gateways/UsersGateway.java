@@ -38,54 +38,68 @@ public class UsersGateway {
         specialtyService = SpecialtyServiceGrpc.newBlockingStub(channel);
     }
 
-    public Users.isSuccessfulResponse createDoctorSpecialtyId(Users.Doctor doctor, int specialtyId) {
-        Users.DoctorSpecialtyId doctorWithSpecialtyId = Users.DoctorSpecialtyId.newBuilder()
-            .setFirstName(doctor.getFirstName())
-            .setLastName(doctor.getFirstName())
-            .setEmail(doctor.getEmail())
-            .setPassword(doctor.getPassword())
-            .setSpecialtyId(specialtyId)
-            .setIsGp(doctor.getIsGp())
-            .build();
-
-        return doctorService.createDoctorSpecialtyId(doctorWithSpecialtyId);
+    public Users.Doctor createDoctor(Users.CreateDoctorRequest doctor) {
+        try {
+            return doctorService.createDoctor(doctor);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.DoctorResponse getDoctorById(int id) {
-        return doctorService.getDoctorById(Int32Value.of(id));
+    public Users.Doctor getDoctorById(int id) {
+        try {
+            return doctorService.getDoctorById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.DoctorResponse getDoctorByEmail(String email) {
-        return doctorService.getDoctorByEmail(StringValue.of(email));
+    public Users.Doctor getDoctorByEmail(String email) {
+        try {
+            return doctorService.getDoctorByEmail(StringValue.of(email));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
     public Users.DoctorList getAllDoctors() {
-        return doctorService.getAllDoctors(Empty.getDefaultInstance());
+        try {
+            return doctorService.getAllDoctors(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
     public Users.DoctorList getAllGpDoctors() {
-        return doctorService.getAllGPDoctors(Empty.getDefaultInstance());
+        try {
+            return doctorService.getAllGPDoctors(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.isSuccessfulResponse updateDoctor(Users.Doctor doctor) {
-        return doctorService.updateDoctor(doctor);
+    public Users.Doctor updateDoctor(Users.UpdateDoctorRequest doctor) {
+        try {
+            return doctorService.updateDoctor(doctor);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.isSuccessfulResponse deleteDoctor(int id) {
-        return doctorService.deleteDoctorById(Int32Value.of(id));
+    public void deleteDoctor(int id) {
+        try {
+            Empty result = doctorService.deleteDoctorById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.isSuccessfulResponse createPatientDoctorId(Users.Patient patient, int doctorId) {
-        Users.PatientDoctorId patientWithDoctorId = Users.PatientDoctorId.newBuilder()
-            .setFirstName(patient.getFirstName())
-            .setLastName(patient.getLastName())
-            .setEmail(patient.getEmail())
-            .setPassword(patient.getPassword())
-            .setGpId(doctorId)
-            .setIsHealthInsured(patient.getIsHealthInsured())
-            .build();
-
-        return patientService.createPatientDoctorId(patientWithDoctorId);
+    public Users.Patient createPatient(Users.CreatePatientRequest request) {
+        try {
+            return patientService.createPatient(request);
+        } catch (StatusRuntimeException e) {
+            throw
+        }
     }
 
     public Users.PatientResponse getPatientById(int id) {

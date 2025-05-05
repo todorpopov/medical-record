@@ -1,4 +1,4 @@
-package com.medrec.dtos;
+package com.medrec.dtos.users.specialty;
 
 public class SpecialtyDTO {
     private int id;
