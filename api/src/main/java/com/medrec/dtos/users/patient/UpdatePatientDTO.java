@@ -1,40 +1,41 @@
-package com.medrec.dtos.users.doctor;
+package com.medrec.dtos.users.patient;
 
+import com.medrec.dtos.users.doctor.DoctorDTO;
 import com.medrec.exception_handling.exceptions.IdNotSetException;
 import com.medrec.grpc.users.Users;
 
-public class UpdateDoctorDTO {
+public class UpdatePatientDTO {
     private Integer id;
     private String firstName;
     private String lastName;
     private String password;
-    private Boolean isGp;
-    private Integer specialtyId;
+    private Integer gpId;
+    private Boolean insured;
 
-    public UpdateDoctorDTO() {
+    public UpdatePatientDTO() {
     }
 
-    public UpdateDoctorDTO(int id) {
+    public UpdatePatientDTO(Integer id) {
         this.id = id;
     }
 
-    public UpdateDoctorDTO(Integer id, String firstName, String lastName, String password, Boolean isGp, Integer specialtyId) {
+    public UpdatePatientDTO(Integer id, String firstName, String lastName, String password, Integer gpId, Boolean insured) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.isGp = isGp;
-        this.specialtyId = specialtyId;
+        this.gpId = gpId;
+        this.insured = insured;
     }
 
-    public Users.UpdateDoctorRequest safeConvertToGrpcRequest() throws RuntimeException {
-        Users.UpdateDoctorRequest.Builder requestBuilder = Users.UpdateDoctorRequest.newBuilder();
+    public Users.UpdatePatientRequest safeConvertToGrpcRequest() throws RuntimeException {
+        Users.UpdatePatientRequest.Builder requestBuilder = Users.UpdatePatientRequest.newBuilder();
 
         if (this.id == null) {
             throw new IdNotSetException("");
         }
 
-        requestBuilder.setDoctorId(this.id);
+        requestBuilder.setPatientId(this.id);
 
         if (this.firstName != null) {
             requestBuilder.setFirstName(this.firstName);
@@ -48,22 +49,22 @@ public class UpdateDoctorDTO {
             requestBuilder.setPassword(this.password);
         }
 
-        if (this.isGp != null) {
-            requestBuilder.setIsGp(this.isGp);
+        if (this.gpId != null) {
+            requestBuilder.setGpId(this.gpId);
         }
 
-        if (this.specialtyId != null) {
-            requestBuilder.setSpecialtyId(this.specialtyId);
+        if (this.insured != null) {
+            requestBuilder.setIsHealthInsured(this.insured);
         }
 
         return requestBuilder.build();
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -91,19 +92,19 @@ public class UpdateDoctorDTO {
         this.password = password;
     }
 
-    public boolean isGp() {
-        return isGp;
+    public Integer getGpId() {
+        return gpId;
     }
 
-    public void setGp(boolean gp) {
-        isGp = gp;
+    public void setGpId(Integer gpId) {
+        this.gpId = gpId;
     }
 
-    public int getSpecialtyId() {
-        return specialtyId;
+    public Boolean getInsured() {
+        return insured;
     }
 
-    public void setSpecialtyId(int specialtyId) {
-        this.specialtyId = specialtyId;
+    public void setInsured(Boolean insured) {
+        this.insured = insured;
     }
 }

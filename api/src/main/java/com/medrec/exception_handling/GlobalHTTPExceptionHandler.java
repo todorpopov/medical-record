@@ -40,8 +40,20 @@ public class GlobalHTTPExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorHTTPResponse> handleNotFound(NotFoundException e) {
-        ErrorHTTPResponse error = new ErrorHTTPResponse("NOT_FOUND_EXCEPTION", e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        String message = e.getMessage();
+        if (message.contains("specialty_not_found")) {
+            ErrorHTTPResponse error = new ErrorHTTPResponse("SPECIALTY_NOT_FOUND_EXCEPTION", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        } else if (message.contains("doctor_not_found")) {
+            ErrorHTTPResponse error = new ErrorHTTPResponse("DOCTOR_NOT_FOUND_EXCEPTION", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        } else if (message.contains("patient_not_found")) {
+            ErrorHTTPResponse error = new ErrorHTTPResponse("PATIENT_NOT_FOUND_EXCEPTION", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        } else {
+            ErrorHTTPResponse error = new ErrorHTTPResponse("NOT_FOUND_EXCEPTION", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
     }
 
     @ExceptionHandler

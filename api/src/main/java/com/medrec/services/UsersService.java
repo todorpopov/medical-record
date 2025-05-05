@@ -6,7 +6,10 @@ import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
 import com.medrec.dtos.users.doctor.UpdateDoctorDTO;
 import com.medrec.dtos.users.patient.PatientDTO;
 import com.medrec.dtos.users.patient.RegisterPatientDTO;
+import com.medrec.dtos.users.patient.UpdatePatientDTO;
+import com.medrec.dtos.users.specialty.RegisterSpecialtyDTO;
 import com.medrec.dtos.users.specialty.SpecialtyDTO;
+import com.medrec.dtos.users.specialty.UpdateSpecialtyDTO;
 import com.medrec.gateways.UsersGateway;
 import com.medrec.grpc.users.Users;
 import org.springframework.stereotype.Component;
@@ -39,22 +42,7 @@ public class UsersService {
 
         try {
             Users.Doctor savedDoctor = this.usersGateway.createDoctor(request);
-
-            SpecialtyDTO specialtyDto = new SpecialtyDTO(
-                savedDoctor.getSpecialty().getId(),
-                savedDoctor.getSpecialty().getSpecialtyName(),
-                savedDoctor.getSpecialty().getSpecialtyDescription()
-            );
-
-            DoctorDTO doctorDto = new DoctorDTO(
-                savedDoctor.getId(),
-                savedDoctor.getFirstName(),
-                savedDoctor.getLastName(),
-                savedDoctor.getEmail(),
-                savedDoctor.getPassword(),
-                savedDoctor.getIsGp(),
-                specialtyDto
-            );
+            DoctorDTO doctorDto = getDoctorDto(savedDoctor);
 
             this.logger.info("Created doctor: " + doctorDto.getId());
             return doctorDto;
@@ -69,22 +57,7 @@ public class UsersService {
 
         try {
             Users.Doctor doctor = this.usersGateway.getDoctorById(id);
-
-            SpecialtyDTO specialtyDto = new SpecialtyDTO(
-                doctor.getSpecialty().getId(),
-                doctor.getSpecialty().getSpecialtyName(),
-                doctor.getSpecialty().getSpecialtyDescription()
-            );
-
-            DoctorDTO doctorDto = new DoctorDTO(
-                doctor.getId(),
-                doctor.getFirstName(),
-                doctor.getLastName(),
-                doctor.getEmail(),
-                doctor.getPassword(),
-                doctor.getIsGp(),
-                specialtyDto
-            );
+            DoctorDTO doctorDto = getDoctorDto(doctor);
 
             this.logger.info("Retrieved doctor: " + doctorDto.getId());
             return doctorDto;
@@ -99,22 +72,7 @@ public class UsersService {
 
         try {
             Users.Doctor doctor = this.usersGateway.getDoctorByEmail(email);
-
-            SpecialtyDTO specialtyDto = new SpecialtyDTO(
-                doctor.getSpecialty().getId(),
-                doctor.getSpecialty().getSpecialtyName(),
-                doctor.getSpecialty().getSpecialtyDescription()
-            );
-
-            DoctorDTO doctorDto = new DoctorDTO(
-                doctor.getId(),
-                doctor.getFirstName(),
-                doctor.getLastName(),
-                doctor.getEmail(),
-                doctor.getPassword(),
-                doctor.getIsGp(),
-                specialtyDto
-            );
+            DoctorDTO doctorDto = getDoctorDto(doctor);
 
             this.logger.info("Retrieved doctor: " + doctorDto.getId());
             return doctorDto;
@@ -132,23 +90,7 @@ public class UsersService {
             List<DoctorDTO> doctorDtos = new ArrayList<>();
 
             doctors.getDoctorsList().forEach(d -> {
-                SpecialtyDTO specialtyDto = new SpecialtyDTO(
-                    d.getSpecialty().getId(),
-                    d.getSpecialty().getSpecialtyName(),
-                    d.getSpecialty().getSpecialtyDescription()
-                );
-
-                DoctorDTO dto = new DoctorDTO(
-                    d.getId(),
-                    d.getFirstName(),
-                    d.getLastName(),
-                    d.getEmail(),
-                    d.getPassword(),
-                    d.getIsGp(),
-                    specialtyDto
-                );
-
-                doctorDtos.add(dto);
+                doctorDtos.add(getDoctorDto(d));
             });
 
             this.logger.info("Retrieved " + doctorDtos.size() + " doctors");
@@ -197,25 +139,10 @@ public class UsersService {
 
         try {
             Users.Doctor updatedDoctor = this.usersGateway.updateDoctor(doctor.safeConvertToGrpcRequest());
+            DoctorDTO doctorDto = getDoctorDto(updatedDoctor);
 
-            SpecialtyDTO specialtyDto = new SpecialtyDTO(
-                updatedDoctor.getSpecialty().getId(),
-                updatedDoctor.getSpecialty().getSpecialtyName(),
-                updatedDoctor.getSpecialty().getSpecialtyDescription()
-            );
-
-            DoctorDTO dto = new DoctorDTO(
-                updatedDoctor.getId(),
-                updatedDoctor.getFirstName(),
-                updatedDoctor.getLastName(),
-                updatedDoctor.getEmail(),
-                updatedDoctor.getPassword(),
-                updatedDoctor.getIsGp(),
-                specialtyDto
-            );
-
-            this.logger.info("Updated doctor: " + dto.getId());
-            return dto;
+            this.logger.info("Updated doctor: " + doctorDto.getId());
+            return doctorDto;
         } catch (RuntimeException e) {
             this.logger.info("Error updating doctor: " + e.getMessage());
             throw e;
@@ -248,7 +175,125 @@ public class UsersService {
                 .setIsHealthInsured(patient.isInsured())
                 .build();
 
-            Users.Patient savedPatient = this.usersGateway.createPatientDoctorId()
+            Users.Patient savedPatient = this.usersGateway.createPatient(request);
+            PatientDTO patientDto = getPatientDto(savedPatient);
+
+            this.logger.info("Created patient: " + patientDto.getId());
+            return patientDto;
+        } catch (RuntimeException e) {
+            this.logger.info("Error creating patient: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public PatientDTO getPatientById(int id) throws RuntimeException {
+        this.logger.info("Retrieving patient with id: " + id);
+
+        try {
+            Users.Patient patient = this.usersGateway.getPatientById(id);
+            PatientDTO patientDto = getPatientDto(patient);
+
+            this.logger.info("Retrieved patient: " + patientDto.getId());
+            return patientDto;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving patient: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public PatientDTO getPatientByEmail(String email) throws RuntimeException {
+        this.logger.info("Retrieving patient with email: " + email);
+
+        try {
+            Users.Patient patient = this.usersGateway.getPatientByEmail(email);
+            PatientDTO patientDto = getPatientDto(patient);
+
+            this.logger.info("Retrieved patient: " + patientDto.getId());
+            return patientDto;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving patient: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public List<PatientDTO> getAllPatients() throws RuntimeException {
+        this.logger.info("Retrieving all patients");
+
+        try {
+            Users.PatientList patients = this.usersGateway.getAllPatients();
+            List<PatientDTO> patientDtos = new ArrayList<>();
+
+            patients.getPatientsList().forEach(p -> {
+                patientDtos.add(getPatientDto(p));
+            });
+
+            this.logger.info("Retrieved " + patientDtos.size() + " patients");
+            return patientDtos;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving patients: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public PatientDTO updatePatient(UpdatePatientDTO patient) throws RuntimeException {
+        this.logger.info("Updating patient with id: " + patient.getId());
+
+        try {
+            Users.Patient updatedPatient = this.usersGateway.updatePatient(patient.safeConvertToGrpcRequest());
+            PatientDTO patientDto = getPatientDto(updatedPatient);
+
+            this.logger.info("Updated patient: " + patientDto.getId());
+            return patientDto;
+        } catch (RuntimeException e) {
+            this.logger.info("Error updating patient: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void deletePatientById(int id) throws RuntimeException {
+        this.logger.info("Deleting patient with id: " + id);
+
+        try {
+            this.usersGateway.deletePatient(id);
+            this.logger.info("Deleted patient with id: " + id);
+        } catch (RuntimeException e) {
+            this.logger.info("Error deleting patient: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public SpecialtyDTO createSpecialty(RegisterSpecialtyDTO specialtyDto) throws RuntimeException {
+        this.logger.info("Creating new specialty");
+
+        Users.CreateSpecialtyRequest request = Users.CreateSpecialtyRequest.newBuilder()
+            .setSpecialtyName(specialtyDto.getName())
+            .setSpecialtyDescription(specialtyDto.getDescription())
+            .build();
+
+        try {
+            Users.Specialty specialty = this.usersGateway.createSpecialty(request);
+            SpecialtyDTO dto = getSpecialtyDto(specialty);
+
+            this.logger.info("Created specialty: " + dto.getId());
+            return dto;
+        } catch (RuntimeException e) {
+            this.logger.info("Error creating specialty: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public SpecialtyDTO getSpecialtyById(int id) throws RuntimeException {
+        this.logger.info("Retrieving specialty with id: " + id);
+
+        try {
+            Users.Specialty specialty = this.usersGateway.getSpecialtyById(id);
+            SpecialtyDTO dto = getSpecialtyDto(specialty);
+
+            this.logger.info("Retrieved specialty: " + dto.getId());
+            return dto;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving specialty: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -269,5 +314,69 @@ public class UsersService {
         this.logger.info("Retrieved " + specialtyDtos.size() + " specialties");
 
         return specialtyDtos;
+    }
+
+    public SpecialtyDTO updateSpecialty(UpdateSpecialtyDTO specialtyDto) throws RuntimeException {
+        this.logger.info("Updating specialty with id: " + specialtyDto.getId());
+
+        try {
+            Users.Specialty updatedSpecialty = this.usersGateway.updateSpecialty(specialtyDto.safeConvertToGrpcRequest());
+            SpecialtyDTO dto = getSpecialtyDto(updatedSpecialty);
+
+            this.logger.info("Updated specialty: " + dto.getId());
+            return dto;
+        } catch (RuntimeException e) {
+            this.logger.info("Error updating specialty: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void deleteSpecialtyById(int id) throws RuntimeException {
+        this.logger.info("Deleting specialty with id: " + id);
+
+        try {
+            this.usersGateway.deleteSpecialty(id);
+            this.logger.info("Deleted specialty with id: " + id);
+        } catch (RuntimeException e) {
+            this.logger.info("Error deleting specialty: " + e.getMessage());
+        }
+    }
+
+    private static PatientDTO getPatientDto(Users.Patient patient) {
+        Users.Doctor respectiveDoctor = patient.getGp();
+        DoctorDTO doctorDto = getDoctorDto(respectiveDoctor);
+
+        return new PatientDTO(
+            patient.getId(),
+            patient.getFirstName(),
+            patient.getLastName(),
+            patient.getEmail(),
+            patient.getPassword(),
+            patient.getPin(),
+            doctorDto,
+            patient.getIsHealthInsured()
+        );
+    }
+
+    private static DoctorDTO getDoctorDto(Users.Doctor doctor) {
+        SpecialtyDTO specialtyDto = getSpecialtyDto(doctor.getSpecialty());
+
+        return new DoctorDTO(
+            doctor.getId(),
+            doctor.getFirstName(),
+            doctor.getLastName(),
+            doctor.getEmail(),
+            doctor.getPassword(),
+            doctor.getIsGp(),
+            specialtyDto
+        );
+    }
+
+    private static SpecialtyDTO getSpecialtyDto(Users.Specialty specialty) {
+        return new SpecialtyDTO(
+            specialty.getId(),
+            specialty.getSpecialtyName(),
+            specialty.getSpecialtyDescription()
+        );
     }
 }

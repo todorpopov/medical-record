@@ -38,7 +38,7 @@ public class UsersGateway {
         specialtyService = SpecialtyServiceGrpc.newBlockingStub(channel);
     }
 
-    public Users.Doctor createDoctor(Users.CreateDoctorRequest doctor) {
+    public Users.Doctor createDoctor(Users.CreateDoctorRequest doctor) throws RuntimeException {
         try {
             return doctorService.createDoctor(doctor);
         } catch (StatusRuntimeException e) {
@@ -46,7 +46,7 @@ public class UsersGateway {
         }
     }
 
-    public Users.Doctor getDoctorById(int id) {
+    public Users.Doctor getDoctorById(int id) throws RuntimeException {
         try {
             return doctorService.getDoctorById(Int32Value.of(id));
         } catch (StatusRuntimeException e) {
@@ -54,7 +54,7 @@ public class UsersGateway {
         }
     }
 
-    public Users.Doctor getDoctorByEmail(String email) {
+    public Users.Doctor getDoctorByEmail(String email) throws RuntimeException {
         try {
             return doctorService.getDoctorByEmail(StringValue.of(email));
         } catch (StatusRuntimeException e) {
@@ -62,7 +62,7 @@ public class UsersGateway {
         }
     }
 
-    public Users.DoctorList getAllDoctors() {
+    public Users.DoctorList getAllDoctors() throws RuntimeException {
         try {
             return doctorService.getAllDoctors(Empty.getDefaultInstance());
         } catch (StatusRuntimeException e) {
@@ -70,7 +70,7 @@ public class UsersGateway {
         }
     }
 
-    public Users.DoctorList getAllGpDoctors() {
+    public Users.DoctorList getAllGpDoctors() throws RuntimeException {
         try {
             return doctorService.getAllGPDoctors(Empty.getDefaultInstance());
         } catch (StatusRuntimeException e) {
@@ -78,7 +78,7 @@ public class UsersGateway {
         }
     }
 
-    public Users.Doctor updateDoctor(Users.UpdateDoctorRequest doctor) {
+    public Users.Doctor updateDoctor(Users.UpdateDoctorRequest doctor) throws RuntimeException {
         try {
             return doctorService.updateDoctor(doctor);
         } catch (StatusRuntimeException e) {
@@ -86,7 +86,7 @@ public class UsersGateway {
         }
     }
 
-    public void deleteDoctor(int id) {
+    public void deleteDoctor(int id) throws RuntimeException {
         try {
             Empty result = doctorService.deleteDoctorById(Int32Value.of(id));
         } catch (StatusRuntimeException e) {
@@ -94,43 +94,71 @@ public class UsersGateway {
         }
     }
 
-    public Users.Patient createPatient(Users.CreatePatientRequest request) {
+    public Users.Patient createPatient(Users.CreatePatientRequest request) throws RuntimeException {
         try {
             return patientService.createPatient(request);
         } catch (StatusRuntimeException e) {
-            throw
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
 
-    public Users.PatientResponse getPatientById(int id) {
-        return patientService.getPatientById(Int32Value.of(id));
+    public Users.Patient getPatientById(int id) throws RuntimeException {
+        try {
+            return patientService.getPatientById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.PatientResponse getPatientByEmail(String email) {
-        return patientService.getPatientByEmail(StringValue.of(email));
+    public Users.Patient getPatientByEmail(String email) throws RuntimeException {
+        try {
+            return patientService.getPatientByEmail(StringValue.of(email));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.PatientList getAllPatients() {
-        return patientService.getAllPatients(Empty.getDefaultInstance());
+    public Users.PatientList getAllPatients() throws RuntimeException {
+        try {
+            return patientService.getAllPatients(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.isSuccessfulResponse updatePatient(Users.Patient patient) {
-        return patientService.updatePatient(patient);
+    public Users.Patient updatePatient(Users.UpdatePatientRequest patient) throws RuntimeException {
+        try {
+            return patientService.updatePatient(patient);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.isSuccessfulResponse deletePatient(int id) {
-        return patientService.deletePatientById(Int32Value.of(id));
+    public void deletePatient(int id) throws RuntimeException {
+        try {
+            Empty empty = patientService.deletePatientById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.isSuccessfulResponse createSpecialty(Users.Specialty specialty) {
-        return specialtyService.createSpecialty(specialty);
+    public Users.Specialty createSpecialty(Users.CreateSpecialtyRequest specialty) throws RuntimeException {
+        try {
+            return specialtyService.createSpecialty(specialty);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.SpecialtyResponse getSpecialtyById(int id) {
-        return specialtyService.getSpecialtyById(Int32Value.of(id));
+    public Users.Specialty getSpecialtyById(int id) throws RuntimeException {
+        try {
+            return specialtyService.getSpecialtyById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.SpecialtiesList getAllSpecialties() throws StatusRuntimeException {
+    public Users.SpecialtiesList getAllSpecialties() throws RuntimeException {
         try {
             return specialtyService.getAllSpecialties(Empty.getDefaultInstance());
         } catch (StatusRuntimeException e) {
@@ -138,12 +166,20 @@ public class UsersGateway {
         }
     }
 
-    public Users.isSuccessfulResponse updateSpecialty(Users.Specialty specialty) {
-        return specialtyService.updateSpecialty(specialty);
+    public Users.Specialty updateSpecialty(Users.UpdateSpecialtyRequest specialty) throws RuntimeException {
+        try {
+            return specialtyService.updateSpecialty(specialty);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
-    public Users.isSuccessfulResponse deleteSpecialty(int id) {
-        return specialtyService.deleteSpecialtyById(Int32Value.of(id));
+    public void deleteSpecialty(int id) throws RuntimeException {
+        try {
+            Empty empty = specialtyService.deleteSpecialtyById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
     @PreDestroy

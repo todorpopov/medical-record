@@ -5,6 +5,7 @@ import io.grpc.StatusRuntimeException;
 
 public class ExceptionsMapper {
     public static RuntimeException translateStatusRuntimeException(StatusRuntimeException statusRuntimeException) {
+        String message = statusRuntimeException.getStatus().getDescription();
         switch (statusRuntimeException.getStatus().getCode()) {
             case UNAVAILABLE:
                 return new DatabaseConnectionException(statusRuntimeException.getStatus().getDescription());
@@ -17,9 +18,17 @@ public class ExceptionsMapper {
             case ABORTED:
                 return new UniqueConstrainException(statusRuntimeException.getStatus().getDescription());
             case NOT_FOUND:
-                return new NotFoundException(statusRuntimeException.getStatus().getDescription());
+                assert message != null;
+                if (message.contains("specialty_not_found")) {
+                    return new NotFoundException("Specialty Not Found");
+                } else if (message.contains("doctor_not_found")) {
+                    return new NotFoundException("Doctor Not Found");
+                } else if (message.contains("patient_not_found")) {
+                    return new NotFoundException("Patient Not Found");
+                } else {
+                    return new NotFoundException(statusRuntimeException.getStatus().getDescription());
+                }
             case INVALID_ARGUMENT:
-                String message = statusRuntimeException.getStatus().getDescription();
                 assert message != null;
                 if (message.contains("doctor_not_gp")) {
                     return new DoctorNotGpException("Doctor Is Not Gp");
@@ -29,7 +38,7 @@ public class ExceptionsMapper {
             case UNAUTHENTICATED:
                 return new UnauthenticatedException(statusRuntimeException.getStatus().getDescription());
             default:
-                throw new ServiceException("Service Error");
+                return new ServiceException("Service Error");
         }
     }
 }
