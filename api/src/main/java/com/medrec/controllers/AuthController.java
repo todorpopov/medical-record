@@ -23,47 +23,31 @@ public class AuthController {
 
     @PostMapping("register-doctor")
     public ResponseEntity<AuthResponseDTO> registerDoctor(@RequestBody RegisterDoctorDTO dto) {
-        logger.info(dto.toString());
-        AuthResponseDTO response = this.authService.registerDoctor(dto);
-        if (response.isSuccessful()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        this.logger.info("Registering new doctor");
+        return ResponseEntity.ok(this.authService.registerDoctor(dto));
     }
 
     @PostMapping("register-patient")
     public ResponseEntity<AuthResponseDTO> registerPatient(@RequestBody RegisterPatientDTO dto) {
-        logger.info(dto.toString());
-        AuthResponseDTO response = this.authService.registerPatient(dto);
-        if (response.isSuccessful()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        this.logger.info("Registering new patient");
+        return ResponseEntity.ok(this.authService.registerPatient(dto));
     }
 
     @PostMapping("log-doctor-in")
     public ResponseEntity<AuthResponseDTO> logDoctorIn(@RequestBody LogUserInDTO dto) {
-        logger.info("Log Doctor In: " + dto.getEmail());
+        this.logger.info("Trying to fulfil log doctor in request");
         return ResponseEntity.ok(this.authService.logDoctorIn(dto));
     }
 
     @PostMapping("log-patient-in")
     public ResponseEntity<AuthResponseDTO> logPatientIn(@RequestBody LogUserInDTO dto) {
-        logger.info("Log Patient In: " + dto.getEmail());
-        AuthResponseDTO response = this.authService.logPatientIn(dto);
-        if (response.isSuccessful()) {
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        this.logger.info("Trying to fulfil log patient in request");
+        return ResponseEntity.ok(this.authService.logPatientIn(dto));
     }
 
     @PostMapping("log-admin-in")
     public ResponseEntity<AuthResponseDTO> logAdminIn(@RequestBody LogUserInDTO dto) {
-        logger.info("Log Admin In: " + dto.getEmail());
-        AuthResponseDTO responseDTO = this.authService.logAdminIn(dto);
-        if (responseDTO.isSuccessful()) {
-            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDTO);
+        this.logger.info("Trying to fulfil log admin in request");
+        return ResponseEntity.ok( this.authService.logAdminIn(dto));
     }
 }

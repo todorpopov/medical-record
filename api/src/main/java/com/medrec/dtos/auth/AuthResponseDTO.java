@@ -1,29 +1,15 @@
 package com.medrec.dtos.auth;
 
 public class AuthResponseDTO {
-    private boolean isSuccessful;
     private String token;
     private String role;
 
-    public AuthResponseDTO(boolean isSuccessful) {
-        this.isSuccessful = isSuccessful;
-    }
-
-    public AuthResponseDTO(boolean isSuccessful, String token, String role) {
-        this.isSuccessful = isSuccessful;
+    public AuthResponseDTO(String token, String role) {
         this.token = token;
         this.role = role;
     }
 
     public AuthResponseDTO() {
-    }
-
-    public boolean isSuccessful() {
-        return isSuccessful;
-    }
-
-    public void setSuccessful(boolean successful) {
-        isSuccessful = successful;
     }
 
     public String getToken() {

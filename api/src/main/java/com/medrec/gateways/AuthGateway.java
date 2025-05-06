@@ -1,6 +1,7 @@
 package com.medrec.gateways;
 
 import com.medrec.dtos.auth.AuthResponseDTO;
+import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
 import com.medrec.grpc.users.Users;
@@ -36,23 +37,26 @@ public class AuthGateway {
         String password,
         boolean isGp,
         int specialtyId
-    ) throws StatusRuntimeException {
-        Users.DoctorSpecialtyId doctor = Users.DoctorSpecialtyId.newBuilder()
-            .setFirstName(firstName)
-            .setLastName(lastName)
-            .setEmail(email)
-            .setPassword(password)
-            .setIsGp(isGp)
-            .setSpecialtyId(specialtyId)
-            .build();
+    ) throws RuntimeException {
+        try {
+            Users.CreateDoctorRequest doctor = Users.CreateDoctorRequest.newBuilder()
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setEmail(email)
+                .setPassword(password)
+                .setIsGp(isGp)
+                .setSpecialtyId(specialtyId)
+                .build();
 
-        Auth.RegisterResponse response = authService.registerDoctor(doctor);
+            Auth.RegisterResponse response = authService.registerDoctor(doctor);
 
-        return new AuthResponseDTO(
-            response.getIsSuccessful(),
-            response.getToken(),
-            response.getRole()
-        );
+            return new AuthResponseDTO(
+                response.getToken(),
+                response.getRole()
+            );
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
     public AuthResponseDTO registerPatient(
@@ -63,78 +67,85 @@ public class AuthGateway {
         String pin,
         int generalPractitionerId,
         boolean isHealthInsured
-    ) throws StatusRuntimeException {
-        this.logger.info(password);
-        Users.PatientDoctorId patient = Users.PatientDoctorId.newBuilder()
-            .setFirstName(firstName)
-            .setLastName(lastName)
-            .setEmail(email)
-            .setPassword(password)
-            .setPin(pin)
-            .setGpId(generalPractitionerId)
-            .setIsHealthInsured(isHealthInsured)
-            .build();
-
-        Auth.RegisterResponse response = authService.registerPatient(patient);
-
-        return new AuthResponseDTO(
-            response.getIsSuccessful(),
-            response.getToken(),
-            response.getRole()
-        );
-    }
-
-    public String logPatientIn(String email, String password) throws StatusRuntimeException {
-        Auth.LoginResponse response = authService.logPatientIn(
-            Auth.LoginRequest.newBuilder()
+    ) throws RuntimeException {
+        try {
+            Users.CreatePatientRequest patient = Users.CreatePatientRequest.newBuilder()
+                .setFirstName(firstName)
+                .setLastName(lastName)
                 .setEmail(email)
                 .setPassword(password)
-                .build()
-        );
+                .setPin(pin)
+                .setGpId(generalPractitionerId)
+                .setIsHealthInsured(isHealthInsured)
+                .build();
 
-        if (response.getIsSuccessful()) {
-            return response.getToken();
+            Auth.RegisterResponse response = authService.registerPatient(patient);
+
+            return new AuthResponseDTO(
+                response.getToken(),
+                response.getRole()
+            );
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
-        return null;
     }
 
-    public String logDoctorIn(String email, String password) throws StatusRuntimeException{
-        Auth.LoginResponse response = authService.logDoctorIn(
-            Auth.LoginRequest.newBuilder()
-                .setEmail(email)
-                .setPassword(password)
-                .build()
-        );
+    public String logPatientIn(String email, String password) throws RuntimeException {
+        try {
+            Auth.LoginResponse response = authService.logPatientIn(
+                Auth.LoginRequest.newBuilder()
+                    .setEmail(email)
+                    .setPassword(password)
+                    .build()
+            );
 
-        if (response.getIsSuccessful()) {
             return response.getToken();
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
-        return null;
     }
 
-    public String logAdminIn(String email, String password) throws StatusRuntimeException {
-        Auth.LoginResponse response = authService.logAdminIn(
-            Auth.LoginRequest.newBuilder()
-                .setEmail(email)
-                .setPassword(password)
-                .build()
-        );
-
-        if (response.getIsSuccessful()) {
+    public String logDoctorIn(String email, String password) throws RuntimeException{
+        try {
+            Auth.LoginResponse response = authService.logDoctorIn(
+                Auth.LoginRequest.newBuilder()
+                    .setEmail(email)
+                    .setPassword(password)
+                    .build()
+            );
             return response.getToken();
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
-        return null;
     }
 
-    public boolean isRequestAuthorized(String token, List<String> requiredRoles) throws StatusRuntimeException {
-        Auth.AuthorizationRequest request = Auth.AuthorizationRequest.newBuilder()
-            .setToken(token)
-            .addAllRequiredRoles(requiredRoles)
-            .build();
+    public String logAdminIn(String email, String password) throws RuntimeException {
+        try {
+            Auth.LoginResponse response = authService.logAdminIn(
+                Auth.LoginRequest.newBuilder()
+                    .setEmail(email)
+                    .setPassword(password)
+                    .build()
+            );
+            return response.getToken();
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 
-        Auth.AuthorizationResponse response = authService.authorizeRequest(request);
+    public boolean isRequestAuthorized(String token, List<String> requiredRoles) throws RuntimeException {
+        try {
+            Auth.AuthorizationRequest request = Auth.AuthorizationRequest.newBuilder()
+                .setToken(token)
+                .addAllRequiredRoles(requiredRoles)
+                .build();
 
-        return response.getIsTokenAuthorized();
+            Auth.AuthorizationResponse response = authService.authorizeRequest(request);
+
+            return response.getIsTokenAuthorized();
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
     }
 
     @PreDestroy

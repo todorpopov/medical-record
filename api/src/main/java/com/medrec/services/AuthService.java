@@ -23,8 +23,9 @@ public class AuthService {
     }
 
     public AuthResponseDTO registerDoctor(RegisterDoctorDTO dto) throws RuntimeException {
+        this.logger.info("Trying to register doctor with email: " + dto.getEmail());
         try {
-            return this.authGateway.registerDoctor(
+            AuthResponseDTO response = this.authGateway.registerDoctor(
                 dto.getFirstName(),
                 dto.getLastName(),
                 dto.getEmail(),
@@ -32,15 +33,19 @@ public class AuthService {
                 dto.isGeneralPractitioner(),
                 dto.getSpecialtyId()
             );
+
+            this.logger.info("Doctor registered with email: " + dto.getEmail());
+            return response;
         } catch (StatusRuntimeException e) {
-            throw ExceptionsMapper.translateStatusRuntimeException(e);
+            this.logger.warning("Could not register doctor with email: " + dto.getEmail());
+            throw e;
         }
     }
 
     public AuthResponseDTO registerPatient(RegisterPatientDTO dto) throws RuntimeException {
-        this.logger.info(dto.getPassword());
+        this.logger.info("Trying to register patient with email: " + dto.getEmail());
         try {
-            return this.authGateway.registerPatient(
+            AuthResponseDTO response = this.authGateway.registerPatient(
                 dto.getFirstName(),
                 dto.getLastName(),
                 dto.getEmail(),
@@ -49,55 +54,68 @@ public class AuthService {
                 dto.getGpId(),
                 dto.isInsured()
             );
+            this.logger.info("Patient registered with email: " + dto.getEmail());
+            return response;
         } catch (StatusRuntimeException e) {
-            throw ExceptionsMapper.translateStatusRuntimeException(e);
+            this.logger.warning("Could not register patient with email: " + dto.getEmail());
+            throw e;
         }
     }
 
     public AuthResponseDTO logDoctorIn(LogUserInDTO dto) throws RuntimeException {
+        this.logger.info("Trying to log in doctor with email: " + dto.getEmail());
         try {
             String token = authGateway.logDoctorIn(dto.getEmail(), dto.getPassword());
+            this.logger.info("Doctor logged in with email: " + dto.getEmail());
             return new AuthResponseDTO(
-                token != null,
                 token,
                 "doctor"
             );
         } catch (StatusRuntimeException e) {
-            throw ExceptionsMapper.translateStatusRuntimeException(e);
+            this.logger.warning("Could not log in doctor with email: " + dto.getEmail());
+            throw e;
         }
     }
 
     public AuthResponseDTO logPatientIn(LogUserInDTO dto) throws StatusRuntimeException {
+        this.logger.info("Trying to log in patient with email: " + dto.getEmail());
         try {
             String token = authGateway.logPatientIn(dto.getEmail(), dto.getPassword());
+            this.logger.info("Patient logged in with email: " + dto.getEmail());
             return new AuthResponseDTO(
-                token != null,
                 token,
                 "patient"
             );
         } catch (StatusRuntimeException e) {
-            throw ExceptionsMapper.translateStatusRuntimeException(e);
+            this.logger.warning("Could not log in patient with email: " + dto.getEmail());
+            throw e;
         }
     }
 
     public AuthResponseDTO logAdminIn(LogUserInDTO dto) throws StatusRuntimeException {
+        this.logger.info("Trying to log in admin with email: " + dto.getEmail());
         try {
             String token = authGateway.logAdminIn(dto.getEmail(), dto.getPassword());
+            this.logger.info("Admin logged in with email: " + dto.getEmail());
             return new AuthResponseDTO(
-                token != null,
                 token,
                 "admin"
             );
         } catch (StatusRuntimeException e) {
-            throw ExceptionsMapper.translateStatusRuntimeException(e);
+            this.logger.warning("Could not log in admin with email: " + dto.getEmail());
+            throw e;
         }
     }
 
     public boolean isRequestAuthorized(String token, List<String> requiredRoles) throws StatusRuntimeException {
+        this.logger.info("Checking if request is authorized for roles: " + requiredRoles.toString());
         try {
-            return authGateway.isRequestAuthorized(token, requiredRoles);
+            boolean response = authGateway.isRequestAuthorized(token, requiredRoles);
+            this.logger.info("Request is authorized for roles: " + requiredRoles.toString());
+            return response;
         } catch (StatusRuntimeException e) {
-            throw ExceptionsMapper.translateStatusRuntimeException(e);
+            this.logger.warning("Could not check if request is authorized for roles: " + requiredRoles.toString());
+            throw e;
         }
     }
 }
