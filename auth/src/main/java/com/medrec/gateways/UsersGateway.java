@@ -3,7 +3,6 @@ package com.medrec.gateways;
 import com.google.protobuf.StringValue;
 import com.medrec.dtos.UsersLogInRequestDTO;
 import com.medrec.dtos.UsersLogInResponseDTO;
-import com.medrec.exceptions.UserNotFoundException;
 import com.medrec.grpc.users.DoctorServiceGrpc;
 import com.medrec.grpc.users.PatientServiceGrpc;
 import com.medrec.grpc.users.Users;
@@ -40,37 +39,48 @@ public class UsersGateway {
         return instance;
     }
 
-    public Users.isSuccessfulResponse registerDoctor(Users.DoctorSpecialtyId doctor) throws StatusRuntimeException {
-        return doctorService.createDoctorSpecialtyId(doctor);
+    public Users.Doctor registerDoctor(Users.CreateDoctorRequest doctor) throws StatusRuntimeException {
+        try {
+            return doctorService.createDoctor(doctor);
+        } catch (StatusRuntimeException e) {
+            this.logger.info("Could not register doctor with email " + doctor.getEmail());
+            throw e;
+        }
     }
 
-    public Users.isSuccessfulResponse registerPatient(Users.PatientDoctorId patient) throws StatusRuntimeException {
-        return patientService.createPatientDoctorId(patient);
+    public Users.Patient registerPatient(Users.CreatePatientRequest patient) throws StatusRuntimeException {
+        try {
+            return patientService.createPatient(patient);
+        } catch (StatusRuntimeException e) {
+            this.logger.info("Could not register patient with email " + patient.getEmail());
+            throw e;
+        }
     }
 
     public UsersLogInResponseDTO getPatientByEmail(UsersLogInRequestDTO request) throws StatusRuntimeException {
-        Users.PatientResponse response = patientService.getPatientByEmail(StringValue.of(request.getEmail()));
-        if (response.getExists()) {
+        try {
+            Users.Patient patient = patientService.getPatientByEmail(StringValue.of(request.getEmail()));
             return new UsersLogInResponseDTO(
-                true,
-                response.getPatient().getEmail(),
-                response.getPatient().getPassword()
+                patient.getEmail(),
+                patient.getPassword()
             );
+        } catch (StatusRuntimeException e) {
+            this.logger.info("Could not find patient with email" + request.getEmail());
+            throw e;
         }
-
-        throw new UserNotFoundException("Could not find patient with email " + request.getEmail());
     }
 
     public UsersLogInResponseDTO getDoctorByEmail(UsersLogInRequestDTO request) throws StatusRuntimeException {
-        Users.DoctorResponse response = doctorService.getDoctorByEmail(StringValue.of(request.getEmail()));
-        if (response.getExists()) {
+        try {
+            Users.Doctor response = doctorService.getDoctorByEmail(StringValue.of(request.getEmail()));
             return new UsersLogInResponseDTO(
-                true,
-                response.getDoctor().getEmail(),
-                response.getDoctor().getPassword()
+                response.getEmail(),
+                response.getPassword()
             );
+        } catch (StatusRuntimeException e) {
+            this.logger.info("Could not find doctor with email " + request.getEmail());
+            throw e;
         }
-        throw new UserNotFoundException("Could not find doctor with email " + request.getEmail());
     }
 
     @PreDestroy

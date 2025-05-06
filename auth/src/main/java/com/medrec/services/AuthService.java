@@ -34,10 +34,10 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void registerPatient(Users.PatientDoctorId request, StreamObserver<Auth.RegisterResponse> responseObserver) {
+    public void registerPatient(Users.CreatePatientRequest request, StreamObserver<Auth.RegisterResponse> responseObserver) {
         this.logger.info("Called RPC Register Patient");
 
-        Users.PatientDoctorId requestWithHashedPass = Users.PatientDoctorId.newBuilder()
+        Users.CreatePatientRequest requestWithHashedPass = Users.CreatePatientRequest.newBuilder()
             .setFirstName(request.getFirstName())
             .setLastName(request.getLastName())
             .setEmail(request.getEmail())
@@ -48,18 +48,15 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
             .build();
 
         try {
-            Users.isSuccessfulResponse response = usersGateway.registerPatient(requestWithHashedPass);
+            Users.Patient savedPatient= usersGateway.registerPatient(requestWithHashedPass);
+            String token = jwtService.generateToken(request.getEmail(), "patient");
+            responseObserver.onNext(
+                Auth.RegisterResponse.newBuilder()
+                    .setToken(token)
+                    .setRole("patient")
+                    .build()
+            );
 
-            if(response.getIsSuccessful()) {
-                String token = jwtService.generateToken(request.getEmail(), "patient");
-                responseObserver.onNext(
-                    Auth.RegisterResponse.newBuilder()
-                        .setIsSuccessful(true)
-                        .setToken(token)
-                        .setRole("patient")
-                        .build()
-                );
-            }
         } catch (StatusRuntimeException e) {
             responseObserver.onError(e);
         } finally {
@@ -68,10 +65,10 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void registerDoctor(Users.DoctorSpecialtyId request, StreamObserver<Auth.RegisterResponse> responseObserver) {
+    public void registerDoctor(Users.CreateDoctorRequest request, StreamObserver<Auth.RegisterResponse> responseObserver) {
         this.logger.info("Called RPC Register Doctor");
 
-        Users.DoctorSpecialtyId requestWithHashedPass = Users.DoctorSpecialtyId.newBuilder()
+        Users.CreateDoctorRequest requestWithHashedPass = Users.CreateDoctorRequest.newBuilder()
             .setFirstName(request.getFirstName())
             .setLastName(request.getLastName())
             .setEmail(request.getEmail())
@@ -81,17 +78,14 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
             .build();
 
         try {
-            Users.isSuccessfulResponse response = usersGateway.registerDoctor(requestWithHashedPass);
-            if(response.getIsSuccessful()) {
-                String token = jwtService.generateToken(request.getEmail(), "doctor");
-                responseObserver.onNext(
-                    Auth.RegisterResponse.newBuilder()
-                        .setIsSuccessful(true)
-                        .setToken(token)
-                        .setRole("doctor")
-                        .build()
-                );
-            }
+            Users.Doctor doctor = usersGateway.registerDoctor(requestWithHashedPass);
+            String token = jwtService.generateToken(request.getEmail(), "doctor");
+            responseObserver.onNext(
+                Auth.RegisterResponse.newBuilder()
+                    .setToken(token)
+                    .setRole("doctor")
+                    .build()
+            );
         } catch (StatusRuntimeException e) {
             responseObserver.onError(e);
         } finally {
@@ -107,18 +101,19 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String password = request.getPassword();
 
         UsersLogInRequestDTO requestDTO = new UsersLogInRequestDTO(email, password);
+
         try {
             UsersLogInResponseDTO responseDTO = usersGateway.getPatientByEmail(requestDTO);
 
-            if(responseDTO.getExists() && BcryptService.checkPassword(password, responseDTO.getPassword())) {
+            if(BcryptService.checkPassword(password, responseDTO.getPassword())) {
                 String token = jwtService.generateToken(email, "patient");
                 responseObserver.onNext(
                     Auth.LoginResponse.newBuilder()
-                        .setIsSuccessful(true)
                         .setToken(token)
                         .setRole("patient")
                         .build());
             } else {
+                this.logger.warning("Invalid credentials for patient: " + email);
                 responseObserver.onError(Status.UNAUTHENTICATED.withDescription("Invalid credentials").asRuntimeException());
             }
         } catch (StatusRuntimeException e) {
@@ -136,6 +131,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String password = request.getPassword();
 
         UsersLogInRequestDTO requestDTO = new UsersLogInRequestDTO(email, password);
+
         try {
             UsersLogInResponseDTO responseDTO = usersGateway.getDoctorByEmail(requestDTO);
 
@@ -143,7 +139,6 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                 String token = jwtService.generateToken(email, "doctor");
                 responseObserver.onNext(
                     Auth.LoginResponse.newBuilder()
-                        .setIsSuccessful(true)
                         .setToken(token)
                         .setRole("patient")
                         .build());
@@ -169,7 +164,6 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
             String token = jwtService.generateToken(email, "admin");
             responseObserver.onNext(
                 Auth.LoginResponse.newBuilder()
-                    .setIsSuccessful(true)
                     .setToken(token)
                     .setRole("admin")
                     .build());
