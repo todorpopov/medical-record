@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TextInputComponent } from "../../components/text-input/text-input.component";
-import { NgIf } from '@angular/common';
-import { RadioComponent } from "../../components/radio/radio.component";
+import {Component} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {TextInputComponent} from "../../components/text-input/text-input.component";
+import {NgIf} from '@angular/common';
+import {RadioComponent} from "../../components/radio/radio.component";
 import {AuthService} from '../../services/auth.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';

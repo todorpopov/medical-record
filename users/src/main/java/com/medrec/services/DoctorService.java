@@ -1,14 +1,14 @@
 package com.medrec.services;
 
+import com.google.protobuf.Empty;
+import com.google.protobuf.Int32Value;
+import com.google.protobuf.StringValue;
 import com.medrec.dtos.CreateDoctorDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.users.DoctorServiceGrpc;
 import com.medrec.grpc.users.Users;
-import com.google.protobuf.Empty;
 import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.doctor.DoctorRepository;
-import com.google.protobuf.Int32Value;
-import com.google.protobuf.StringValue;
 import io.grpc.stub.StreamObserver;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
 import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
 

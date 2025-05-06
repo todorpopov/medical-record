@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../../environments/environment';
 
-import { Specialty } from '../common/interfaces/specialty';
-import { DoctorSummary } from '../common/interfaces/doctor.summary';
-import {firstValueFrom, map} from 'rxjs';
+import {Specialty} from '../common/interfaces/specialty';
+import {DoctorSummary} from '../common/interfaces/doctor.summary';
+import {firstValueFrom} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

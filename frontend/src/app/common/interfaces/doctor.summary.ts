@@ -1,4 +1,4 @@
-import { Specialty } from "./specialty";
+import {Specialty} from "./specialty";
 
 export interface DoctorSummary {
   id: number,

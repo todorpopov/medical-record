@@ -10,10 +10,10 @@ import com.medrec.persistence.specialty.SpecialtyRepository;
 import jakarta.persistence.EntityExistsException;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.Query;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,5 @@
 package com.medrec.dtos.users.patient;
 
-import com.medrec.dtos.users.doctor.DoctorDTO;
 import com.medrec.exception_handling.exceptions.IdNotSetException;
 import com.medrec.grpc.users.Users;
 

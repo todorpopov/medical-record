@@ -6,7 +6,10 @@ import com.medrec.grpc.users.Users;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
 import jakarta.persistence.EntityExistsException;
-import org.hibernate.*;
+import org.hibernate.HibernateException;
+import org.hibernate.ObjectNotFoundException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.exception.ConstraintViolationException;
 
 import java.util.List;

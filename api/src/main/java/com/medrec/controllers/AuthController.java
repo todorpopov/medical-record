@@ -5,9 +5,11 @@ import com.medrec.dtos.auth.LogUserInDTO;
 import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
 import com.medrec.dtos.users.patient.RegisterPatientDTO;
 import com.medrec.services.AuthService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.logging.Logger;
 

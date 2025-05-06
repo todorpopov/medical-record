@@ -11,7 +11,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
