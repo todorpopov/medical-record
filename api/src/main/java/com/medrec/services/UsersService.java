@@ -135,7 +135,7 @@ public class UsersService {
     }
 
     public DoctorDTO updateDoctor(UpdateDoctorDTO doctor) throws RuntimeException {
-        this.logger.info("Updating doctor with id: " + doctor.getId());
+        this.logger.info("Updating doctor");
 
         try {
             Users.Doctor updatedDoctor = this.usersGateway.updateDoctor(doctor.safeConvertToGrpcRequest());

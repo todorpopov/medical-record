@@ -41,10 +41,6 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
         try {
             Specialty specialty = specialtyRepository.findById(dto.getSpecialtyId());
 
-//            if (specialty == null) {
-//                throw new NotFoundException("");
-//            }
-
             Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             Doctor doctor = dto.createDoctorWithSpecialty(specialty);
@@ -57,7 +53,8 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (NotFoundException e) {
-            throw new NotFoundException("specialty_not_found");
+            this.logger.severe("Specialty with id + " + dto.getSpecialtyId() + " not found: " + e.getMessage());
+            throw e;
         } catch (ConstraintViolationException e){
             this.logger.severe("Constraint violation: " + e.getMessage());
             throw new ConstrainException("Constraint exception");
@@ -78,14 +75,18 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
             Doctor doctor = session.get(Doctor.class, id);
             tx.commit();
 
-            this.logger.info(String.format("Doctor %s found", doctor.toString()));
+            if (doctor == null) {
+                throw new NotFoundException("doctor_not_found");
+            }
+
+            this.logger.info(String.format("Doctor with id %s found", id));
             return doctor;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (ObjectNotFoundException e) {
+        } catch (NotFoundException e) {
             this.logger.severe("Doctor with id + " + id + " not found: " + e.getMessage());
-            throw new NotFoundException("Not found exception");
+            throw e;
         } catch (HibernateException e) {
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
@@ -102,14 +103,18 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
             Doctor doctor = (Doctor) query.uniqueResult();
             tx.commit();
 
+            if (doctor == null) {
+                throw new NotFoundException("doctor_not_found");
+            }
+
             this.logger.info(String.format("Doctor with email %s found", email));
             return doctor;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (ObjectNotFoundException e) {
+        } catch (NotFoundException e) {
             this.logger.severe("Doctor with email + " + email + " not found: " + e.getMessage());
-            throw new NotFoundException("Not found exception");
+            throw e;
         } catch (HibernateException e) {
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
@@ -194,6 +199,11 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
             Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             Doctor doctor = session.get(Doctor.class, id);
+
+            if (doctor == null) {
+                throw new NotFoundException("doctor_not_found");
+            }
+
             session.remove(doctor);
             tx.commit();
 
@@ -201,9 +211,9 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (ObjectNotFoundException e) {
+        } catch (NotFoundException e) {
             this.logger.severe(String.format("Specialty with id + %s not found", id));
-            throw new NotFoundException("Not found exception");
+            throw e;
         } catch (ConstraintViolationException e) {
             this.logger.severe("Constraint exception: " + e.getMessage());
             throw new ConstrainException("Constraint exception");

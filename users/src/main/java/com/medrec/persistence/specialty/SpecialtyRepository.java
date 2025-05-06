@@ -6,6 +6,7 @@ import com.medrec.grpc.users.Users;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.ICrudRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
@@ -65,14 +66,18 @@ public class SpecialtyRepository implements ICrudRepository<Specialty, CreateSpe
             Specialty specialty = session.get(Specialty.class, id);
             tx.commit();
 
+            if (specialty == null) {
+                throw new NotFoundException("specialty_not_found");
+            }
+
             this.logger.info(String.format("Specialty with id %s found", id));
             return specialty;
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (ObjectNotFoundException e) {
+        } catch (NotFoundException e) {
             this.logger.severe("Specialty with id + " + id + " not found: " + e.getMessage());
-            throw new NotFoundException("Not found exception");
+            throw e;
         } catch (HibernateException e) {
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");

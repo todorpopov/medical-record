@@ -31,7 +31,7 @@ public class UpdateDoctorDTO {
         Users.UpdateDoctorRequest.Builder requestBuilder = Users.UpdateDoctorRequest.newBuilder();
 
         if (this.id == null) {
-            throw new IdNotSetException("");
+            throw new IdNotSetException("Doctor id is not set. Cannot update doctor");
         }
 
         requestBuilder.setDoctorId(this.id);
