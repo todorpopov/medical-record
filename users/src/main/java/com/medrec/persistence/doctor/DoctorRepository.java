@@ -85,7 +85,7 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (NotFoundException e) {
-            this.logger.severe("Doctor with id + " + id + " not found: " + e.getMessage());
+            this.logger.severe("Doctor with id " + id + " not found: " + e.getMessage());
             throw e;
         } catch (HibernateException e) {
             this.logger.severe("Database exception found: " + e.getMessage());

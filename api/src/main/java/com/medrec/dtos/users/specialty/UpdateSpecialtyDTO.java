@@ -1,5 +1,6 @@
 package com.medrec.dtos.users.specialty;
 
+import com.medrec.exception_handling.exceptions.IdNotSetException;
 import com.medrec.grpc.users.Users;
 
 public class UpdateSpecialtyDTO {
@@ -8,6 +9,10 @@ public class UpdateSpecialtyDTO {
     private String description;
 
     public UpdateSpecialtyDTO() {
+    }
+
+    public UpdateSpecialtyDTO(Integer id) {
+        this.id = id;
     }
 
     public UpdateSpecialtyDTO(Integer id, String name, String description) {
@@ -20,7 +25,7 @@ public class UpdateSpecialtyDTO {
         Users.UpdateSpecialtyRequest.Builder requestBuilder = Users.UpdateSpecialtyRequest.newBuilder();
 
         if (this.id == null) {
-            throw new RuntimeException("Specialty ID cannot be null");
+            throw new IdNotSetException("Specialty id is not set. Cannot update specialty");
         }
 
         requestBuilder.setId(this.id);

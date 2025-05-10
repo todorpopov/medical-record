@@ -339,6 +339,7 @@ public class UsersService {
             this.logger.info("Deleted specialty with id: " + id);
         } catch (RuntimeException e) {
             this.logger.info("Error deleting specialty: " + e.getMessage());
+            throw e;
         }
     }
 

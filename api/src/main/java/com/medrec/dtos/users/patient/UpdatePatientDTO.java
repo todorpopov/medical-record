@@ -7,7 +7,6 @@ public class UpdatePatientDTO {
     private Integer id;
     private String firstName;
     private String lastName;
-    private String password;
     private Integer gpId;
     private Boolean insured;
 
@@ -18,11 +17,10 @@ public class UpdatePatientDTO {
         this.id = id;
     }
 
-    public UpdatePatientDTO(Integer id, String firstName, String lastName, String password, Integer gpId, Boolean insured) {
+    public UpdatePatientDTO(Integer id, String firstName, String lastName, Integer gpId, Boolean insured) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.password = password;
         this.gpId = gpId;
         this.insured = insured;
     }
@@ -31,7 +29,7 @@ public class UpdatePatientDTO {
         Users.UpdatePatientRequest.Builder requestBuilder = Users.UpdatePatientRequest.newBuilder();
 
         if (this.id == null) {
-            throw new IdNotSetException("");
+            throw new IdNotSetException("Patient id is not set. Cannot update patient");
         }
 
         requestBuilder.setPatientId(this.id);
@@ -42,10 +40,6 @@ public class UpdatePatientDTO {
 
         if (this.lastName != null) {
             requestBuilder.setLastName(this.lastName);
-        }
-
-        if (this.password != null) {
-            requestBuilder.setPassword(this.password);
         }
 
         if (this.gpId != null) {
@@ -81,14 +75,6 @@ public class UpdatePatientDTO {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Integer getGpId() {

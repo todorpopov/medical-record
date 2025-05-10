@@ -14,7 +14,7 @@ public class Specialty {
     @Column(name = "specialty_name", nullable = false, unique = true)
     private String specialtyName;
 
-    @Column(name = "specialty_description")
+    @Column(name = "specialty_description", nullable = false, unique = true)
     private String specialtyDescription;
 
     @OneToMany(mappedBy = "specialty", cascade = CascadeType.ALL)

@@ -146,16 +146,21 @@ public class SpecialtyRepository implements ICrudRepository<Specialty, CreateSpe
             Session session = DBUtils.getCurrentSession();
             Transaction tx = session.beginTransaction();
             Specialty specialty = session.get(Specialty.class, id);
+
+            if (specialty == null) {
+                throw new NotFoundException("specialty_not_found");
+            }
+
             session.remove(specialty);
             tx.commit();
 
-            this.logger.info("Specialty deleted successfully");
+            this.logger.info(String.format("Specialty with id %s deleted successfully", id));
         } catch (ExceptionInInitializerError e) {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (ObjectNotFoundException e) {
-            this.logger.severe(String.format("Specialty with id + %s not found", id));
-            throw new NotFoundException("Not found exception");
+        } catch (NotFoundException e) {
+            this.logger.severe(String.format("Specialty with id %s not found", id));
+            throw e;
         } catch (ConstraintViolationException e) {
             this.logger.severe("Constraint exception: " + e.getMessage());
             throw new ConstrainException("Constraint exception");

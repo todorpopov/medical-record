@@ -7,8 +7,7 @@ public class UpdateDoctorDTO {
     private Integer id;
     private String firstName;
     private String lastName;
-    private String password;
-    private Boolean isGp;
+    private Boolean generalPractitioner;
     private Integer specialtyId;
 
     public UpdateDoctorDTO() {
@@ -18,12 +17,11 @@ public class UpdateDoctorDTO {
         this.id = id;
     }
 
-    public UpdateDoctorDTO(Integer id, String firstName, String lastName, String password, Boolean isGp, Integer specialtyId) {
+    public UpdateDoctorDTO(Integer id, String firstName, String lastName, Boolean generalPractitioner, Integer specialtyId) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.password = password;
-        this.isGp = isGp;
+        this.generalPractitioner = generalPractitioner;
         this.specialtyId = specialtyId;
     }
 
@@ -44,12 +42,8 @@ public class UpdateDoctorDTO {
             requestBuilder.setLastName(this.lastName);
         }
 
-        if (this.password != null) {
-            requestBuilder.setPassword(this.password);
-        }
-
-        if (this.isGp != null) {
-            requestBuilder.setIsGp(this.isGp);
+        if (this.generalPractitioner != null) {
+            requestBuilder.setIsGp(this.generalPractitioner);
         }
 
         if (this.specialtyId != null) {
@@ -83,20 +77,12 @@ public class UpdateDoctorDTO {
         this.lastName = lastName;
     }
 
-    public String getPassword() {
-        return password;
+    public boolean isGeneralPractitioner() {
+        return generalPractitioner;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isGp() {
-        return isGp;
-    }
-
-    public void setGp(boolean gp) {
-        isGp = gp;
+    public void setGeneralPractitioner(boolean gp) {
+        generalPractitioner = gp;
     }
 
     public int getSpecialtyId() {

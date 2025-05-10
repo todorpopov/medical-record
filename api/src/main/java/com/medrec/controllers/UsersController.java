@@ -4,7 +4,12 @@ import com.medrec.dtos.users.doctor.DoctorDTO;
 import com.medrec.dtos.users.doctor.DoctorSummaryDTO;
 import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
 import com.medrec.dtos.users.doctor.UpdateDoctorDTO;
+import com.medrec.dtos.users.patient.PatientDTO;
+import com.medrec.dtos.users.patient.RegisterPatientDTO;
+import com.medrec.dtos.users.patient.UpdatePatientDTO;
+import com.medrec.dtos.users.specialty.RegisterSpecialtyDTO;
 import com.medrec.dtos.users.specialty.SpecialtyDTO;
+import com.medrec.dtos.users.specialty.UpdateSpecialtyDTO;
 import com.medrec.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -67,9 +72,71 @@ public class UsersController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("specialty/all")
+    @PostMapping("patients/create")
+    public ResponseEntity<PatientDTO> createPatient(@RequestBody RegisterPatientDTO dto) {
+        this.logger.info("Creating new patient endpoint called");
+        return ResponseEntity.ok(this.usersService.createPatient(dto));
+    }
+
+    @GetMapping("patients/get/id")
+    public ResponseEntity<PatientDTO> getPatientById(@RequestParam("id") int id) {
+        this.logger.info(String.format("Get patient by id %s endpoint called", id));
+        return ResponseEntity.ok(this.usersService.getPatientById(id));
+    }
+
+    @GetMapping("patients/get/email")
+    public ResponseEntity<PatientDTO> getPatientByEmail(@RequestParam("email") String email) {
+        this.logger.info(String.format("Get patient by email %s endpoint called", email));
+        return ResponseEntity.ok(this.usersService.getPatientByEmail(email));
+    }
+
+    @GetMapping("patients/list/all")
+    public ResponseEntity<List<PatientDTO>> listAllPatients() {
+        this.logger.info("List all patients endpoint called");
+        return ResponseEntity.ok(this.usersService.getAllPatients());
+    }
+
+    @PutMapping("patients/update")
+    public ResponseEntity<PatientDTO> updatePatient(@RequestBody UpdatePatientDTO dto) {
+        this.logger.info("Updating patient endpoint called");
+        return ResponseEntity.ok(this.usersService.updatePatient(dto));
+    }
+
+    @DeleteMapping("patients/delete")
+    public ResponseEntity<Void> deletePatientById(@RequestParam("id") int id) {
+        this.logger.info(String.format("Deleting patient by id %s endpoint called", id));
+        this.usersService.deletePatientById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("specialty/create")
+    public ResponseEntity<SpecialtyDTO> createSpecialty(@RequestBody RegisterSpecialtyDTO dto) {
+        logger.info("Creating new specialty endpoint called");
+        return ResponseEntity.ok(this.usersService.createSpecialty(dto));
+    }
+
+    @GetMapping("specialty/get/id")
+    public ResponseEntity<SpecialtyDTO> getSpecialtyById(@RequestParam("id") int id) {
+        logger.info(String.format("Get specialty by id %s endpoint called", id));
+        return ResponseEntity.ok(this.usersService.getSpecialtyById(id));
+    }
+
+    @GetMapping("specialty/list/all")
     public ResponseEntity<List<SpecialtyDTO>> getAllSpecialties() {
         logger.info("Retrieving all specialties");
         return ResponseEntity.ok(this.usersService.getAllSpecialties());
+    }
+
+    @PutMapping("specialty/update")
+    public ResponseEntity<SpecialtyDTO> updateSpecialty(@RequestBody UpdateSpecialtyDTO dto) {
+        logger.info("Updating specialty endpoint called");
+        return ResponseEntity.ok(this.usersService.updateSpecialty(dto));
+    }
+
+    @DeleteMapping("specialty/delete")
+    public ResponseEntity<Void> deleteSpecialtyById(@RequestParam("id") int id) {
+        logger.info(String.format("Deleting specialty by id %s endpoint called", id));
+        this.usersService.deleteSpecialtyById(id);
+        return ResponseEntity.ok().build();
     }
 }

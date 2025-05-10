@@ -18,7 +18,7 @@ export class UsersService {
 
   public async getSpecialties(): Promise<Specialty[]> {
     try {
-      return await firstValueFrom(this.httpClient.get<Specialty[]>(`${this.apiUrl}/specialty/all`));
+      return await firstValueFrom(this.httpClient.get<Specialty[]>(`${this.apiUrl}/specialty/list/all`));
     } catch (error) {
       console.log('Error fetching specialties: ', error)
       return [];
@@ -27,7 +27,7 @@ export class UsersService {
 
   public async getGpDoctors(): Promise<DoctorSummary[]> {
     try {
-      return await firstValueFrom(this.httpClient.get<DoctorSummary[]>(`${this.apiUrl}/doctors/all-gp`));
+      return await firstValueFrom(this.httpClient.get<DoctorSummary[]>(`${this.apiUrl}/doctors/list/gp`));
     } catch (error) {
       console.log('Error fetching doctors: ', error);
       return [];
