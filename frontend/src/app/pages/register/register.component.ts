@@ -6,11 +6,11 @@ import {RadioComponent} from "../../components/radio/radio.component";
 import {TextInputComponent} from '../../components/text-input/text-input.component';
 import {CheckboxComponent} from "../../components/checkbox/checkbox.component";
 import {DropdownComponent} from '../../components/dropdown/dropdown.component';
-import {DoctorSummary} from '../../common/interfaces/doctor.summary';
-import {Specialty} from '../../common/interfaces/specialty';
+import {DoctorSummary} from '../../common/interfaces/doctor.dto';
 import {AuthService} from '../../services/auth.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
+import {SpecialtyDto} from '../../common/interfaces/specialty.dto';
 
 @Component({
   selector: 'app-register',
@@ -30,8 +30,8 @@ export class RegisterComponent implements ReactiveFormsModule{
   label: string = 'Register';
   selectedUserType: 'patient' | 'doctor' = 'patient';
 
-  specialties: Specialty[] = []
-  selectedSpecialty: Specialty | null = null;
+  specialties: SpecialtyDto[] = []
+  selectedSpecialty: SpecialtyDto | null = null;
   specialtyError: string = ''
 
   gpDoctors: DoctorSummary[] = []
@@ -75,32 +75,36 @@ export class RegisterComponent implements ReactiveFormsModule{
   }
 
   private async getGpDoctors() {
-    const apiData = await this.usersService.getGpDoctors();
-    this.gpDoctors = apiData;
-
-    if (apiData.length === 0) {
-      this.doctorError = 'Error retrieving doctors';
-    } else {
-      this.doctorError = '';
-    }
+    this.gpDoctors = await this.usersService.getGpDoctors()
+      .then(data => {
+        return data;
+      })
+      .catch(error => {
+        console.log(error)
+        this.doctorError = 'Error retrieving doctors';
+        return [];
+      });
+    this.doctorError = '';
   }
 
   private async getSpecialties() {
-    const apiData = await this.usersService.getSpecialties();
-    this.specialties = apiData;
-
-    if (apiData.length === 0) {
-      this.specialtyError = 'Error retrieving specialties';
-    } else  {
-      this.specialtyError = '';
-    }
+    this.specialties = await this.usersService.getAllSpecialties()
+      .then(data => {
+        return data;
+      })
+      .catch(error => {
+        console.log(error)
+        this.specialtyError = 'Error retrieving specialties';
+        return [];
+      });
+    this.specialtyError = '';
   }
 
   onDoctorSelected(doctor: DoctorSummary) {
     this.selectedDoctor = doctor;
   }
 
-  onSpecialtySelected(specialty: Specialty) {
+  onSpecialtySelected(specialty: SpecialtyDto) {
     this.selectedSpecialty = specialty;
   }
 

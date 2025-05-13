@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpResponse} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 
-import {Specialty} from '../common/interfaces/specialty';
-import {DoctorSummary} from '../common/interfaces/doctor.summary';
-import {firstValueFrom} from 'rxjs';
+import {DoctorDto, DoctorSummary} from '../common/interfaces/doctor.dto';
+import {firstValueFrom, Observable} from 'rxjs';
+import {PatientDto} from '../common/interfaces/patient.dto';
+import {SpecialtyDto} from '../common/interfaces/specialty.dto';
+import {ApiResponse} from '../common/interfaces/api.response';
 
 @Injectable({
   providedIn: 'root'
@@ -16,21 +18,23 @@ export class UsersService {
     private httpClient: HttpClient
   ) {}
 
-  public async getSpecialties(): Promise<Specialty[]> {
-    try {
-      return await firstValueFrom(this.httpClient.get<Specialty[]>(`${this.apiUrl}/specialty/list/all`));
-    } catch (error) {
-      console.log('Error fetching specialties: ', error)
-      return [];
-    }
+  public async getGpDoctors(): Promise<DoctorSummary[]> {
+    return await firstValueFrom(this.httpClient.get<DoctorSummary[]>(`${this.apiUrl}/doctors/list/gp`));
   }
 
-  public async getGpDoctors(): Promise<DoctorSummary[]> {
-    try {
-      return await firstValueFrom(this.httpClient.get<DoctorSummary[]>(`${this.apiUrl}/doctors/list/gp`));
-    } catch (error) {
-      console.log('Error fetching doctors: ', error);
-      return [];
-    }
+  public async getAllPatients(): Promise<PatientDto[]> {
+    return await firstValueFrom(this.httpClient.get<PatientDto[]>(`${this.apiUrl}/patients/list/all`));
+  }
+
+  public async getAllDoctors(): Promise<DoctorDto[]> {
+    return await firstValueFrom(this.httpClient.get<DoctorDto[]>(`${this.apiUrl}/doctors/list/all`));
+  }
+
+  public async getAllSpecialties(): Promise<SpecialtyDto[]> {
+    return await firstValueFrom(this.httpClient.get<SpecialtyDto[]>(`${this.apiUrl}/specialty/list/all`));
+  }
+
+  public deletePatient(id: number): Observable<HttpResponse<ApiResponse>> {
+    return this.httpClient.delete<ApiResponse>(`${this.apiUrl}/patients/delete?id=${id}`, {observe: 'response'});
   }
 }

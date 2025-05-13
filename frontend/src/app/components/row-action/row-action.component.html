@@ -1,0 +1,140 @@
+<form [formGroup]="rowActionForm" (ngSubmit)="onSubmit()">
+  <div class="mx-2 my-3">
+    <app-dropdown
+      label="Select row action"
+      [items]="actions"
+      [valueField]="'name'"
+      [displayField]="'name'"
+      (selectionChanged)="onActionSelected($event)"
+      formControlName="action"
+    ></app-dropdown>
+  </div>
+
+  <div *ngIf="selectedAction.name === 'Update' || selectedAction.name === 'Delete'" class="my-3 mx-2">
+    <app-dropdown
+      label="Entity ID"
+      [items]="entitiesList"
+      [valueField]="'id'"
+      [displayField]="'id'"
+      formControlName="entityId"
+    ></app-dropdown>
+  </div>
+
+  <!-- First, Last name, Email, Password-->
+  <div *ngIf="(selectedEntity === 'Patients' && selectedAction.name !== 'Delete') || (selectedEntity === 'Doctors' && selectedAction.name !== 'Delete')">
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="First name"
+        type="text"
+        placeholder="Enter first name"
+        formControlName="firstName"
+      ></app-text-input>
+    </div>
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="Last name"
+        type="text"
+        placeholder="Enter last name"
+        formControlName="lastName"
+      ></app-text-input>
+    </div>
+
+    <div *ngIf="selectedAction.name === 'Create'">
+      <div class="my-3 mx-2">
+        <app-text-input
+          label="Email"
+          type="email"
+          placeholder="Enter email"
+          formControlName="email"
+          [error]="rowActionForm.get('email')?.errors && rowActionForm.get('email')?.touched ? 'Please enter valid email!': ''"
+        ></app-text-input>
+      </div>
+      <div class="my-3 mx-2">
+        <app-text-input
+          label="Password"
+          type="password"
+          placeholder="Enter a password"
+          formControlName="password"
+          [error]="rowActionForm.get('password')?.errors && rowActionForm.get('password')?.touched ? 'Password must be at least 6 characters!': ''"
+        ></app-text-input>
+      </div>
+    </div>
+
+    <!-- Create Patient specific -->
+    <div *ngIf="(selectedEntity === 'Patients' && selectedAction.name === 'Create') || (selectedEntity === 'Patients' && selectedAction.name === 'Update')">
+      <div *ngIf="selectedAction.name === 'Create'" class="my-3 mx-2">
+        <app-text-input
+          label="PIN"
+          type="text"
+          placeholder="Personal Identification Number"
+          formControlName="pin"
+          [error]="rowActionForm.get('pin')?.errors && rowActionForm.get('pin')?.touched ? 'The PIN is exactly 10 digits!' : ''"
+        ></app-text-input>
+      </div>
+      <div class="my-3 mx-2">
+        <app-checkbox
+          label="Are you health insured"
+          formControlName="isHealthInsured"
+        ></app-checkbox>
+      </div>
+      <div class="my-3 mx-2">
+        <app-text-input
+          label="General Practitioner ID"
+          type="text"
+          placeholder="Enter the ID of the patient's general practitioner"
+          formControlName="gpId"
+        ></app-text-input>
+      </div>
+    </div>
+
+    <div *ngIf="(selectedEntity === 'Doctors' && selectedAction.name === 'Create') || (selectedEntity === 'Doctors' && selectedAction.name === 'Update')">
+      <div class="my-3 mx-2">
+        <app-checkbox
+          label="Is General Practitioner"
+          formControlName="isGp"
+        ></app-checkbox>
+      </div>
+      <div class="my-3 mx-2">
+        <app-text-input
+          label="Specialty ID"
+          type="text"
+          placeholder="Enter the ID of the doctor's specialty"
+          formControlName="gpId"
+        ></app-text-input>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selectedEntity === 'Specialties' && selectedAction.name !== 'Delete'">
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="Name"
+        type="text"
+        placeholder="Enter the specialty name"
+        formControlName="specialtyName"
+      ></app-text-input>
+    </div>
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="Description"
+        type="text"
+        placeholder="Enter the specialty description"
+        formControlName="specialtyDescription"
+      ></app-text-input>
+    </div>
+  </div>
+
+  <button
+    class="mx-2 my-3 btn btn-primary"
+    type="submit"
+    [disabled]="rowActionForm.invalid"
+  >Perform Action</button>
+
+  <div class="my-3 mx-2 text-danger">
+    <label *ngIf="rowActionError">{{ rowActionError }}</label>
+  </div>
+
+  <div class="my-3 mx-2 text-success">
+    <label *ngIf="rowActionSuccess">{{ rowActionSuccess }}</label>
+  </div>
+</form>

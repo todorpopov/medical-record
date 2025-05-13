@@ -1,13 +1,15 @@
 import {Component} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {RouterOutlet} from '@angular/router';
+import {AgGridModule} from 'ag-grid-angular';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     RouterOutlet,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AgGridModule
   ],
   template: `
     <div class="app-container">

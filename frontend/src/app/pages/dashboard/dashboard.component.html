@@ -1,0 +1,47 @@
+<div class="container mx-auto w-80 m-5 border rounded">
+  <div class="my-3 mx-2">
+    <h4>Admin Dashboard</h4>
+  </div>
+
+  <div class="my-3 mx-2">
+    <div class="btn-group" role="group">
+      <button
+        *ngFor="let option of entityOptions"
+        class="btn"
+        [class.btn-primary]="selectedEntity === option"
+        [class.btn-outline-primary]="selectedEntity !== option"
+        (click)="selectEntity(option)">
+        {{ option }}
+      </button>
+    </div>
+  </div>
+
+  <hr class="my-3 mx-2"/>
+
+  <div class="my-3 mx-2">
+    <button
+      class="btn btn-outline-primary"
+      (click)="loadGridData()"
+    >Load Grid Data</button>
+  </div>
+
+  <div *ngIf="error" class="my-3 mx-2 invalid-feedback d-block">{{ error }}</div>
+
+  <div class="my-3 mx-2">
+    <app-grid
+      [columnDefs]="currentColumnDefs"
+      [rowData]="currentRowData"
+    ></app-grid>
+  </div>
+
+  <hr class="my-3 mx-2"/>
+
+  <div class="my-3 mx-2">
+    <h4>Row Action for {{ selectedEntity }}</h4>
+  </div>
+
+  <app-row-action
+    [selectedEntity]="selectedEntity"
+    [entitiesList]="currentRowData"
+  ></app-row-action>
+</div>
