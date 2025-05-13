@@ -11,6 +11,7 @@ import com.medrec.dtos.users.specialty.RegisterSpecialtyDTO;
 import com.medrec.dtos.users.specialty.SpecialtyDTO;
 import com.medrec.dtos.users.specialty.UpdateSpecialtyDTO;
 import com.medrec.services.UsersService;
+import com.medrec.utils.SuccessHTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,10 +67,11 @@ public class UsersController {
     }
 
     @DeleteMapping("doctors/delete")
-    public ResponseEntity<Void> deleteDoctorById(@RequestParam("id") int id) {
+    public ResponseEntity<SuccessHTTPResponse> deleteDoctorById(@RequestParam("id") int id) {
         this.logger.info(String.format("Deleting doctor by id %s endpoint called", id));
         this.usersService.deleteDoctorById(id);
-        return ResponseEntity.ok().build();
+        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Doctor deleted successfully");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("patients/create")
@@ -103,10 +105,11 @@ public class UsersController {
     }
 
     @DeleteMapping("patients/delete")
-    public ResponseEntity<Void> deletePatientById(@RequestParam("id") int id) {
+    public ResponseEntity<SuccessHTTPResponse> deletePatientById(@RequestParam("id") int id) {
         this.logger.info(String.format("Deleting patient by id %s endpoint called", id));
         this.usersService.deletePatientById(id);
-        return ResponseEntity.ok().build();
+        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Patient deleted successfully");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("specialty/create")
@@ -134,9 +137,10 @@ public class UsersController {
     }
 
     @DeleteMapping("specialty/delete")
-    public ResponseEntity<Void> deleteSpecialtyById(@RequestParam("id") int id) {
+    public ResponseEntity<SuccessHTTPResponse> deleteSpecialtyById(@RequestParam("id") int id) {
         logger.info(String.format("Deleting specialty by id %s endpoint called", id));
         this.usersService.deleteSpecialtyById(id);
-        return ResponseEntity.ok().build();
+        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Specialty deleted successfully");
+        return ResponseEntity.ok(response);
     }
 }
