@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: auth-service:latest
-          imagePullPolicy: Never
+          image: docker.io/todorpopov02/auth-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 9091
           resources:
@@ -48,6 +48,8 @@ spec:
               port: 9091
             initialDelaySeconds: 5
             periodSeconds: 10
+      imagePullSecrets:
+        - name: regcred
 
 ---
 

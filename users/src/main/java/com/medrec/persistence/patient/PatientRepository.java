@@ -9,7 +9,6 @@ import com.medrec.persistence.doctor.Doctor;
 import com.medrec.persistence.doctor.DoctorRepository;
 import jakarta.persistence.EntityExistsException;
 import org.hibernate.HibernateException;
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.exception.ConstraintViolationException;
@@ -38,6 +37,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
 
     @Override
     public Patient save(CreatePatientDTO dto) throws RuntimeException {
+        Transaction tx = null;
         try {
             Doctor gp = doctorRepository.findById(dto.getGpId());
 
@@ -46,7 +46,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
             }
 
             Session session = DBUtils.getCurrentSession();
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             Patient patient = dto.getDomainModel(gp);
             session.persist(patient);
             tx.commit();
@@ -54,21 +54,27 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
             this.logger.info(String.format("Patient %s saved successfully", patient.toString()));
             return patient;
         } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("General Practitioner not found");
             throw e;
         } catch (InvalidPropertyException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Doctor not GP");
             throw e;
-        } catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Constraint violation: " + e.getMessage());
             throw new ConstrainException("Constraint exception");
         } catch (EntityExistsException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Entity already exists: " + e.getMessage());
             throw new AlreadyExistsException("Entity already exists");
         } catch (HibernateException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
         }
@@ -76,9 +82,10 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
 
     @Override
     public Patient findById(int id) throws RuntimeException {
+        Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             Patient patient = session.get(Patient.class, id);
             tx.commit();
 
@@ -86,25 +93,28 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
                 throw new NotFoundException("patient_not_found");
             }
 
-            this.logger.info(String.format("Patient %s found", patient.toString()));
+            this.logger.info(String.format("Patient with id %s found", id));
             return patient;
         } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Patient with id + " + id + " not found: " + e.getMessage());
             throw e;
         } catch (HibernateException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
         }
     }
 
     public Patient findByEmail(String email) throws RuntimeException {
+        Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            Transaction tx = session.beginTransaction();
-            String hql = "from Doctor where email = :email";
+            tx = session.beginTransaction();
             Query query = session.createQuery("from Patient where email = :email").setParameter("email", email);
             Patient patient = (Patient) query.uniqueResult();
             tx.commit();
@@ -113,15 +123,18 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
                 throw new NotFoundException("patient_not_found");
             }
 
-            this.logger.info(String.format("Doctor %s found", patient.toString()));
+            this.logger.info(String.format("Patient with email %s found", email));
             return patient;
         } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Patient with email + " + email + " not found: " + e.getMessage());
             throw e;
         } catch (HibernateException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
         }
@@ -129,16 +142,19 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
 
     @Override
     public List<Patient> findAll() throws RuntimeException {
+        Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             List<Patient> patients = session.createQuery("from Patient", Patient.class).getResultList();
             tx.commit();
             return patients;
         } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (HibernateException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
         }
@@ -149,6 +165,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
         int id = request.getPatientId();
         Optional<Patient> patientOptional = Optional.ofNullable(findById(id));
 
+        Transaction tx = null;
         try {
             if (patientOptional.isEmpty()) {
                 throw new NotFoundException("patient_not_found");
@@ -185,22 +202,26 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
             }
 
             Session session = DBUtils.getCurrentSession();
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             Patient updatedPatient = session.merge(patient);
             tx.commit();
 
             this.logger.info("Patient updated successfully");
             return updatedPatient;
         } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Not found: " + e.getMessage());
             throw e;
         } catch (DoctorIsNotGpException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Doctor is not GP: " + e.getMessage());
             throw e;
         } catch (HibernateException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
         }
@@ -208,9 +229,10 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
 
     @Override
     public void delete(int id) throws RuntimeException {
+        Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             Patient patient = session.get(Patient.class, id);
 
             if (patient == null) {
@@ -222,15 +244,19 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
 
             this.logger.info(String.format("Patient with id %s deleted successfully", id));
         } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
             this.logger.severe(String.format("Patient with id + %s not found", id));
             throw e;
         } catch (ConstraintViolationException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Constraint exception: " + e.getMessage());
             throw new ConstrainException("Constraint exception");
         } catch (HibernateException e) {
+            DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
         }

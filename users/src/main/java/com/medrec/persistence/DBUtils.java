@@ -3,6 +3,7 @@ package com.medrec.persistence;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import java.util.logging.Logger;
@@ -34,6 +35,12 @@ public class DBUtils {
     public static void shutdown() throws HibernateException {
         if (sessionFactory != null) {
             sessionFactory.close();
+        }
+    }
+
+    public static void rollback(Transaction tx) {
+        if (tx != null && tx.isActive()) {
+            tx.rollback();
         }
     }
 }

@@ -17,37 +17,39 @@ spec:
         app: users-service
     spec:
       containers:
-        - name: users-service
-          image: users-service:latest
-          imagePullPolicy: Never
-          ports:
-            - containerPort: 9090
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "100m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-          env:
-            - name: USERS_PORT
-              value: "9090"
-            - name: DB_URL
-              value: "jdbc:postgresql://localhost:31001/users"
-            - name: DB_USERNAME
-              value: "admin"
-            - name: DB_PASSWORD
-              value: "admin"
-          livenessProbe:
-            grpc:
-              port: 9090
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          readinessProbe:
-            grpc:
-              port: 9090
-            initialDelaySeconds: 5
-            periodSeconds: 10
+      - name: users-service
+        image: docker.io/todorpopov02/users-service:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 9090
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+          - name: USERS_PORT
+            value: "9090"
+          - name: DB_URL
+            value: "jdbc:postgresql://postgres:5432/users"
+          - name: DB_USERNAME
+            value: "admin"
+          - name: DB_PASSWORD
+            value: "admin"
+        livenessProbe:
+          grpc:
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          grpc:
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      imagePullSecrets:
+        - name: regcred
 
 ---
 

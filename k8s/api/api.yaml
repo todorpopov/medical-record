@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: api-service
-          image: api-service:latest
-          imagePullPolicy: Never
+          image: docker.io/todorpopov02/api-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           resources:
@@ -40,6 +40,8 @@ spec:
               value: "9091"
             - name: AUTH_HOST
               value: "auth-service"
+      imagePullSecrets:
+        - name: regcred
 
 ---
 
