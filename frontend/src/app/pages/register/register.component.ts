@@ -108,11 +108,10 @@ export class RegisterComponent implements ReactiveFormsModule{
   }
 
   private updateFormValidation(): void {
-    const patientFields = ['gpId', 'pin', 'isHealthInsured'];
-    const doctorFields = ['specialtyId', 'isGp'];
+    const patientFields = ['gpId', 'pin',];
+    const doctorFields = ['specialtyId'];
 
     if (this.selectedUserType === 'patient') {
-      // Set required validation for patient fields
       patientFields.forEach(field => {
         const control = this.registerForm.get(field);
         if (control) {
@@ -126,17 +125,15 @@ export class RegisterComponent implements ReactiveFormsModule{
         }
       });
 
-      // Clear validation for doctor fields
       doctorFields.forEach(field => {
         const control = this.registerForm.get(field);
         if (control) {
           control.clearValidators();
           control.updateValueAndValidity();
-          control.setValue(null); // Reset the value
+          control.setValue(null);
         }
       });
     } else {
-      // Set required validation for doctor fields
       doctorFields.forEach(field => {
         const control = this.registerForm.get(field);
         if (control) {
@@ -145,13 +142,12 @@ export class RegisterComponent implements ReactiveFormsModule{
         }
       });
 
-      // Clear validation for patient fields
       patientFields.forEach(field => {
         const control = this.registerForm.get(field);
         if (control) {
           control.clearValidators();
           control.updateValueAndValidity();
-          control.setValue(null); // Reset the value
+          control.setValue(null);
         }
       });
     }

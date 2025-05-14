@@ -104,7 +104,6 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     const action = this.rowActionForm.get('action')?.value;
     const entity = this.selectedEntity;
 
-    console.log(`Action: ${action}, Entity: ${entity}`);
     this.resetAllFields();
     if (action === 'Create') {
       switch (entity) {
