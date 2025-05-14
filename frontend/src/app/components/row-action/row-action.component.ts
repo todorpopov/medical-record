@@ -40,32 +40,51 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
   ];
   selectedAction: Action =  { name: 'Create' };
 
+  private readonly createPatientFields: string[] = ['firstName', 'lastName', 'email', 'password', 'pin', 'gpId'];
+  private readonly createDoctorFields: string[] = ['firstName', 'lastName', 'email', 'password', 'specialtyId'];
+  private readonly createSpecialtyFields: string[] = ['specialtyName', 'specialtyDescription'];
+
+  private readonly entityIdField: string[] = ['entityId'];
+
+  private readonly allFields: string[] = [
+    'entityId',
+    'email',
+    'password',
+    'firstName',
+    'lastName',
+    'gpId',
+    'pin',
+    'specialtyId',
+    'specialtyName',
+    'specialtyDescription'
+  ]
+
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private usersService: UsersService,
   ) {
-    this.rowActionForm = this.fb.group({
+    this.rowActionForm = this.formBuilder.group({
       action: [null, [Validators.required]],
-      entityId: [null, [Validators.required]],
 
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      firstName: [''],
-      lastName: [''],
+      entityId: [null],
+
+      email: [null],
+      password: [null],
+      firstName: [null],
+      lastName: [null],
 
       gpId: [null],
-      pin: ['', [Validators.required, Validators.pattern('[0-9]{10}')]],
+      pin: [null],
       isHealthInsured: [true],
 
       specialtyId: [null],
-      isGp: [true],
+      isGp: [null],
 
-      specialtyName: [''],
-      specialtyDescription: [''],
+      specialtyName: [null],
+      specialtyDescription: [null],
     });
 
     this.rowActionForm.get('action')?.valueChanges.subscribe(action => {
-      this.onActionSelected(action);
       this.updateFormValidation();
     })
 
@@ -81,66 +100,80 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     this.clearLabels();
   }
 
-  onActionSelected(action: Action): void {
-    this.selectedAction = action
-  }
-
   updateFormValidation() {
-    const createPatientFields = ['firstName', 'lastName', 'email', 'password', 'gpId', 'pin', 'isHealthInsured'];
-    const clearFieldsPatientCreate = ['entityId', 'specialtyId', 'isGp', 'specialtyName', 'specialtyDescription']
+    const action = this.rowActionForm.get('action')?.value;
+    const entity = this.selectedEntity;
 
-    const createDoctorFields = ['firstName', 'lastName', 'email', 'password', 'isGp', 'specialtyId'];
-    const clearFieldsDoctorCreate = ['entityId', 'gpId', 'pin', 'specialtyName', 'specialtyDescription', 'isHealthInsured']
-
-    const createSpecialtyFields = ['name', 'description'];
-    const clearFieldsSpecialtyCreate = ['entityId', 'firstName', 'lastName', 'email', 'password', 'gpId', 'pin', 'isHealthInsured', 'specialtyId', 'isGp']
-
-    const onlyId = ['entityId'];
-    const allFieldsExceptId = ['name', 'description', 'firstName', 'lastName', 'email', 'password', 'gpId', 'pin', 'isHealthInsured', 'specialtyId', 'isGp']
-
-    if (this.selectedAction.name === 'Create') {
-      switch (this.selectedEntity) {
+    console.log(`Action: ${action}, Entity: ${entity}`);
+    this.resetAllFields();
+    if (action === 'Create') {
+      switch (entity) {
         case 'Patients': {
-          this.setFormValidation(createPatientFields);
-          this.clearForm(clearFieldsPatientCreate);
+          this.setFormValidation(this.createPatientFields);
           break;
         }
         case 'Doctors': {
-          this.setFormValidation(createDoctorFields);
-          this.clearForm(clearFieldsDoctorCreate);
+          this.setFormValidation(this.createDoctorFields);
           break;
         }
         case 'Specialties': {
-          this.setFormValidation(createSpecialtyFields);
-          this.clearForm(clearFieldsSpecialtyCreate);
+          this.setFormValidation(this.createSpecialtyFields);
           break;
         }
       }
     } else {
-      this.clearForm(allFieldsExceptId);
-      this.setFormValidation(onlyId);
-    }
-  }
-
-  private clearForm(fields: string[]) {
-    for (const field of fields) {
-      const control = this.rowActionForm.get(field);
-      if (control) {
-        control.clearValidators();
-        control.updateValueAndValidity();
-        control.setValue(null);
-      }
+      this.setFormValidation(this.entityIdField);
     }
   }
 
   private setFormValidation(fields: string[]) {
-    for (const field of fields) {
+    fields.forEach(field => {
       const control = this.rowActionForm.get(field);
       if (control) {
-        control.setValidators([Validators.required]);
+        switch (field) {
+          case 'email': {
+            control.setValidators([Validators.required, Validators.email]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'password': {
+            control.setValidators([Validators.required, Validators.minLength(6)]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'pin': {
+            control.setValidators([Validators.required, Validators.pattern('[0-9]{10}')]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'specialtyId': {
+            control.setValidators([Validators.required, Validators.min(1), Validators.pattern("^[0-9]*$")]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'gpId': {
+            control.setValidators([Validators.required, Validators.min(1), Validators.pattern("^[0-9]*$")]);
+            control.updateValueAndValidity();
+            break;
+          }
+          default: {
+            control.setValidators([Validators.required]);
+            control.updateValueAndValidity();
+          }
+        }
+      }
+    })
+  }
+
+  private resetAllFields(): void {
+    this.allFields.forEach(field => {
+      const control = this.rowActionForm.get(field);
+      if (control) {
+        control.clearValidators();
+        control.setValue(null);
         control.updateValueAndValidity();
       }
-    }
+    });
   }
 
   onSubmit() {
@@ -160,5 +193,9 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
         })
       }
     }
+  }
+
+  onActionSelected($event: Action) {
+    this.selectedAction = $event;
   }
 }

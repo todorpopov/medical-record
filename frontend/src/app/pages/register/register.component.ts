@@ -57,12 +57,12 @@ export class RegisterComponent implements ReactiveFormsModule{
 
       // Patient specific
       gpId: [null],
-      pin: ['', [Validators.required, Validators.pattern('[0-9]{10}')]],
-      isHealthInsured: [true],
+      pin: [null],
+      isHealthInsured: [null],
 
       // Doctor specific
       specialtyId: [null],
-      isGp: [true]
+      isGp: [null]
     })
 
     this.registerForm.get('userType')?.valueChanges.subscribe(userType => {
@@ -70,7 +70,6 @@ export class RegisterComponent implements ReactiveFormsModule{
       this.updateFormValidation();
     })
 
-    // Initialize validation based on initial user type
     this.updateFormValidation();
   }
 
@@ -117,8 +116,13 @@ export class RegisterComponent implements ReactiveFormsModule{
       patientFields.forEach(field => {
         const control = this.registerForm.get(field);
         if (control) {
-          control.setValidators([Validators.required]);
-          control.updateValueAndValidity();
+          if (field === 'pin') {
+            control.setValidators([Validators.required, Validators.pattern('[0-9]{10}')]);
+            control.updateValueAndValidity();
+          } else {
+            control.setValidators([Validators.required]);
+            control.updateValueAndValidity();
+          }
         }
       });
 

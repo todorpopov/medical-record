@@ -83,6 +83,7 @@
           type="text"
           placeholder="Enter the ID of the patient's general practitioner"
           formControlName="gpId"
+          [error]="rowActionForm.get('gpId')?.errors && rowActionForm.get('gpId')?.touched ? 'The ID must be a positive integer!' : ''"
         ></app-text-input>
       </div>
     </div>
@@ -99,7 +100,8 @@
           label="Specialty ID"
           type="text"
           placeholder="Enter the ID of the doctor's specialty"
-          formControlName="gpId"
+          formControlName="specialtyId"
+          [error]="rowActionForm.get('specialtyId')?.errors && rowActionForm.get('specialtyId')?.touched ? 'The ID must be a positive integer!' : ''"
         ></app-text-input>
       </div>
     </div>
