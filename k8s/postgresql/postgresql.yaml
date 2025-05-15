@@ -87,4 +87,5 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
-  type: ClusterIP
+      nodePort: 31001
+  type: NodePort
