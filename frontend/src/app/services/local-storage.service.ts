@@ -20,7 +20,6 @@ export class LocalStorageService {
     return {
       'token': token !== null ? token : '',
       'role': role !== null ? role : '',
-      'successful': true,
     }
   }
 

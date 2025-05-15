@@ -5,6 +5,10 @@ import {NgIf} from '@angular/common';
 import {TextInputComponent} from '../text-input/text-input.component';
 import {CheckboxComponent} from '../checkbox/checkbox.component';
 import {UsersService} from '../../services/users.service';
+import {RegisterPatientDto, UpdatePatientDto} from '../../common/dtos/patient.dto';
+import {AuthService} from '../../services/auth.service';
+import {RegisterDoctorDto, UpdateDoctorDto} from '../../common/dtos/doctor.dto';
+import {CreateSpecialtyDto, UpdateSpecialtyDto} from '../../common/dtos/specialty.dto';
 
 interface Action {
   name: 'Create' | 'Update' | 'Delete';
@@ -62,6 +66,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
   constructor(
     private formBuilder: FormBuilder,
     private usersService: UsersService,
+    private authService: AuthService,
   ) {
     this.rowActionForm = this.formBuilder.group({
       action: [null, [Validators.required]],
@@ -98,6 +103,10 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
 
   ngOnChanges(): void {
     this.clearLabels();
+  }
+
+  onActionSelected($event: Action) {
+    this.selectedAction = $event;
   }
 
   updateFormValidation() {
@@ -179,22 +188,271 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     if (this.rowActionForm.valid) {
       const formValue = this.rowActionForm.value;
 
-      if (this.selectedAction.name === 'Delete' && this.selectedEntity === 'Patients') {
-        this.usersService.deletePatient(formValue.entityId).subscribe({
-          next: value => {
-            this.rowActionSuccess = 'Patient deleted successfully';
-            this.rowActionError = '';
-          },
-          error: err => {
-            this.rowActionError = err.error.message;
-            this.rowActionSuccess = '';
+      const entityId = formValue.entityId;
+
+      const firstName = formValue.firstName;
+      const lastName = formValue.lastName;
+
+      const email = formValue.email;
+      const password = formValue.password;
+
+      const pin = formValue.pin;
+      const gpId = formValue.gpId;
+      const isHealthInsured = formValue.isHealthInsured;
+      const isGp = formValue.isGp;
+      const specialtyId = formValue.specialtyId;
+
+      switch (this.selectedEntity) {
+        case 'Patients': {
+          switch (this.selectedAction.name) {
+            case 'Create': {
+              const dto: RegisterPatientDto = {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: password,
+                pin: pin,
+                gpId: gpId,
+                isInsured: isHealthInsured
+              }
+
+              this.handlePatientCreate(dto);
+              break;
+            }
+
+            case 'Update': {
+              const dto: UpdatePatientDto = {
+                id: entityId,
+                firstName: firstName,
+                lastName: lastName,
+                gpId: gpId,
+                isInsured: isHealthInsured
+              }
+
+              this.handlePatientUpdate(dto);
+              break;
+            }
+
+            case 'Delete': {
+              this.handlePatientDelete(entityId);
+              break;
+            }
           }
-        })
+
+          break;
+        }
+        case 'Doctors': {
+          switch (this.selectedAction.name) {
+            case 'Create': {
+              const dto: RegisterDoctorDto = {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: password,
+                generalPractitioner: isGp,
+                specialtyId: specialtyId
+              }
+
+              this.handleDoctorCreate(dto);
+              break;
+            }
+
+            case 'Update': {
+              const dto: UpdateDoctorDto = {
+                id: entityId,
+                firstName: firstName,
+                lastName: lastName,
+                specialtyId: specialtyId,
+                generalPractitioner: isGp
+              }
+
+              this.handleDoctorUpdate(dto);
+              break;
+            }
+
+            case 'Delete': {
+              this.handleDoctorDelete(entityId);
+              break;
+            }
+          }
+
+          break;
+        }
+
+        case 'Specialties': {
+          switch (this.selectedAction.name) {
+            case 'Create': {
+              const dto: CreateSpecialtyDto = {
+                name: formValue.specialtyName,
+                description: formValue.specialtyDescription
+              }
+
+              this.handleCreateSpecialty(dto);
+              break;
+            }
+
+            case 'Update': {
+              const dto: UpdateSpecialtyDto = {
+                id: entityId,
+                name: formValue.specialtyName,
+                description: formValue.specialtyDescription
+              }
+
+              this.handleUpdateSpecialty(dto);
+              break;
+            }
+
+            case 'Delete': {
+              this.handleDeleteSpecialty(entityId);
+              break;
+            }
+          }
+        }
       }
     }
   }
 
-  onActionSelected($event: Action) {
-    this.selectedAction = $event;
+  private handlePatientCreate(dto: RegisterPatientDto): void {
+    this.authService.registerPatient(
+      dto.firstName,
+      dto.lastName,
+      dto.email,
+      dto.password,
+      dto.pin,
+      dto.gpId,
+      dto.isInsured
+    ).subscribe({
+      next: () => {
+        this.rowActionSuccess = 'Patient created successfully';
+        this.rowActionError = '';
+      },
+      error: (error) => {
+        this.rowActionError = error.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handlePatientUpdate(dto: UpdatePatientDto): void {
+    this.usersService.updatePatient(
+      dto.id,
+      dto.firstName,
+      dto.lastName,
+      dto.gpId,
+      dto.isInsured,
+    ).subscribe({
+      next: () => {
+        this.rowActionSuccess = 'Patient updated successfully';
+        this.rowActionError = '';
+      },
+      error: (error) => {
+        this.rowActionError = error.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handlePatientDelete(id: number): void {
+    this.usersService.deletePatient(id).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Patient deleted successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleDoctorCreate(dto: RegisterDoctorDto): void {
+    this.authService.registerDoctor(
+      dto.firstName,
+      dto.lastName,
+      dto.email,
+      dto.password,
+      dto.generalPractitioner,
+      dto.specialtyId,
+    ).subscribe({
+      next: () => {
+        this.rowActionSuccess = 'Doctor created successfully';
+        this.rowActionError = '';
+      },
+      error: (error) => {
+        this.rowActionError = error.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleDoctorUpdate(dto: UpdateDoctorDto): void {
+    this.usersService.updateDoctor(
+      dto.id,
+      dto.firstName,
+      dto.lastName,
+      dto.specialtyId,
+      dto.generalPractitioner,
+    ).subscribe({
+      next: () => {
+        this.rowActionSuccess = 'Doctor updated successfully';
+        this.rowActionError = '';
+      },
+      error: (error) => {
+        this.rowActionError = error.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleDoctorDelete(id: number): void {
+    this.usersService.deleteDoctor(id).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Doctor deleted successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleCreateSpecialty(dto: CreateSpecialtyDto): void {
+    this.usersService.createSpecialty(dto.name, dto.description).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Specialty created successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleUpdateSpecialty(dto: UpdateSpecialtyDto): void {
+    this.usersService.updateSpecialty(dto.id, dto.name, dto.description).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Specialty updated successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleDeleteSpecialty(id: number): void {
+    this.usersService.deleteSpecialty(id).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Specialty deleted successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
   }
 }

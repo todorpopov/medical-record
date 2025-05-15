@@ -6,11 +6,11 @@ import {RadioComponent} from "../../components/radio/radio.component";
 import {TextInputComponent} from '../../components/text-input/text-input.component';
 import {CheckboxComponent} from "../../components/checkbox/checkbox.component";
 import {DropdownComponent} from '../../components/dropdown/dropdown.component';
-import {DoctorSummary} from '../../common/interfaces/doctor.dto';
+import {DoctorSummary} from '../../common/dtos/doctor.dto';
 import {AuthService} from '../../services/auth.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
-import {SpecialtyDto} from '../../common/interfaces/specialty.dto';
+import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 
 @Component({
   selector: 'app-register',
@@ -169,9 +169,10 @@ export class RegisterComponent implements ReactiveFormsModule{
             formValue.isHealthInsured
           ).subscribe({
             next: (authResponse: AuthResponse) => {
-              if (authResponse.successful) {
-                this.localStorageService.storeUserAuth(authResponse);
-              }
+              this.localStorageService.storeUserAuth(authResponse);
+            },
+            error: (error) => {
+              console.log(error);
             }
           });
           break;
@@ -186,11 +187,9 @@ export class RegisterComponent implements ReactiveFormsModule{
             formValue.specialtyId
           ).subscribe({
             next: (authResponse: AuthResponse) => {
-              if (authResponse.successful) {
-                this.localStorageService.storeUserAuth(authResponse);
-              }
-            }
-          })
+              this.localStorageService.storeUserAuth(authResponse);
+            },
+          });
           break;
         }
       }

@@ -1,5 +1,5 @@
 import { ColDef } from 'ag-grid-community';
-import {PatientSummary} from '../../common/interfaces/patient.dto';
+import {PatientSummary} from '../../common/dtos/patient.dto';
 
 export const patientsColumnDefs: ColDef<PatientSummary>[] = [
   {
@@ -35,49 +35,55 @@ export const patientsColumnDefs: ColDef<PatientSummary>[] = [
   {
     field: 'insured',
     headerName: 'Is Insured',
-    editable: false,
-    cellRenderer: (data: boolean) => {
-      return data ? 'Yes' : 'No';
-    }
+    cellDataType: 'text',
+    valueFormatter: params => params.value ? 'Yes' : 'No'
   },
 ]
 
 export const doctorColumnDefs: ColDef[] = [
   {
-    field: 'id'
+    field: 'id',
+    cellDataType: 'text',
   },
   {
-    field: 'firstName'
+    field: 'firstName',
+    cellDataType: 'text',
   },
   {
-    field: 'lastName'
+    field: 'lastName',
+    cellDataType: 'text',
   },
   {
-    field: 'email'
+    field: 'email',
+    cellDataType: 'text',
   },
   {
-    field: 'password'
+    field: 'password',
+    cellDataType: 'text',
   },
   {
-    field: 'specialtyId'
+    field: 'specialtyId',
+    cellDataType: 'text',
   },
   {
     field: 'gp',
+    cellDataType: 'text',
     headerName: 'Is General Practitioner',
-    cellRenderer: (data: boolean) => {
-      return data ? 'Yes' : 'No';
-    }
+    valueFormatter: params => params.value ? 'Yes' : 'No'
   },
 ]
 
 export const specialtyColumnDefs: ColDef[] = [
   {
-    field: 'id'
+    field: 'id',
+    cellDataType: 'text',
   },
   {
-    field: 'name'
+    field: 'name',
+    cellDataType: 'text',
   },
   {
-    field: 'description'
+    field: 'description',
+    cellDataType: 'text',
   },
 ]

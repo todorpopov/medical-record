@@ -19,3 +19,20 @@ export interface DoctorSummary {
   specialtyId: number
   gp: boolean,
 }
+
+export interface RegisterDoctorDto {
+  firstName: string,
+  lastName: string,
+  email: string,
+  password: string,
+  specialtyId: number,
+  generalPractitioner: boolean
+}
+
+export interface UpdateDoctorDto {
+  id: number,
+  firstName: string,
+  lastName: string,
+  specialtyId: number,
+  generalPractitioner: boolean
+}

@@ -21,3 +21,21 @@ export interface PatientSummary {
   gpId: number,
   insured: boolean
 }
+
+export interface RegisterPatientDto {
+  firstName: string,
+  lastName: string,
+  email: string,
+  password: string,
+  pin: string,
+  gpId: number,
+  isInsured: boolean
+}
+
+export interface UpdatePatientDto {
+  id: number,
+  firstName: string,
+  lastName: string,
+  gpId: number,
+  isInsured: boolean
+}

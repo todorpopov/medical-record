@@ -5,9 +5,9 @@ import {NgForOf, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {doctorColumnDefs, patientsColumnDefs, specialtyColumnDefs} from './entity.def';
 import {UsersService} from '../../services/users.service';
-import { PatientSummary} from '../../common/interfaces/patient.dto';
-import {DoctorSummary} from '../../common/interfaces/doctor.dto';
-import {SpecialtyDto} from '../../common/interfaces/specialty.dto';
+import { PatientSummary} from '../../common/dtos/patient.dto';
+import {DoctorSummary} from '../../common/dtos/doctor.dto';
+import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {RowActionComponent} from '../../components/row-action/row-action.component';
 
 @Component({
@@ -93,6 +93,7 @@ export class DashboardComponent implements OnInit {
               gpId: patient.gp.id,
               insured: patient.insured,
             }
+            console.log(patientSummary)
             summaryData.push(patientSummary)
           })
 
