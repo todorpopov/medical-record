@@ -1,5 +1,6 @@
 package com.medrec;
 
+import com.medrec.services.AppointmentsService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.health.v1.HealthCheckResponse;
@@ -19,10 +20,10 @@ public class GrpcServer {
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         Server server = ServerBuilder.forPort(port)
-                // ADD APPOINTMENTS SERVICE HERE
-                .executor(executor)
-                .addService(healthStatusManager.getHealthService())
-                .build();
+            .executor(executor)
+            .addService(AppointmentsService.getInstance())
+            .addService(healthStatusManager.getHealthService())
+            .build();
 
         healthStatusManager.setStatus("users", HealthCheckResponse.ServingStatus.SERVING);
 

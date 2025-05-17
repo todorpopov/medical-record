@@ -219,7 +219,7 @@ public class AppointmentsRepository {
         }
     }
 
-    public Appointment updateStatus(int id, String status) throws RuntimeException {
+    public Appointment update(int id, String status) throws RuntimeException {
         logger.info("Updating appointment with id " + id);
 
         if (id < 1) {
@@ -300,6 +300,47 @@ public class AppointmentsRepository {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
             throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public void genericCascadeDelete(int entityId, String type) throws RuntimeException {
+
+        logger.info("Cascading appointments for " + type + " with id " + entityId);
+
+        if (entityId < 1) {
+            logger.severe("Id is invalid");
+            throw new BadRequestException("invalid_id");
+        }
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = session.beginTransaction();
+
+            int num = 0;
+            if (type.equals("doctor")) {
+                String hql = "DELETE FROM Appointment a WHERE a.doctorId=:doctorId";
+                num = session.createQuery(hql, Appointment.class).setParameter("doctorId", entityId).executeUpdate();
+            } else if (type.equals("patient")) {
+                String hql = "DELETE FROM Appointment a WHERE a.patientId=:patientId";
+                num = session.createQuery(hql, Appointment.class).setParameter("patientId", entityId).executeUpdate();
+            } else {
+                logger.severe("Type is invalid");
+                throw new BadRequestException("invalid_entity_type");
+            }
+
+            tx.commit();
+            this.logger.info(String.format("Successfully deleted %d appointments for %s with id %d", num, type, entityId));
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (BadRequestException e) {
+            logger.severe("Bad request exception found: " + e.getMessage());
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
         }
     }
 }

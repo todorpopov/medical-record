@@ -30,6 +30,8 @@ public class ExceptionsMapper {
                 return Status.ABORTED.withDescription("Invalid id").asRuntimeException();
             } else if (message.contains("invalid_status")) {
                 return Status.ABORTED.withDescription("Invalid status").asRuntimeException();
+            } else if (message.contains("invalid_entity_type")) {
+                return Status.ABORTED.withDescription("Invalid entity type").asRuntimeException();
             } else {
                 return Status.ABORTED.withDescription("Bad request").asRuntimeException();
             }
