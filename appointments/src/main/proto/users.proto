@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+package com.medrec.grpc.users;
+
+service DoctorService {
+  rpc CreateDoctor (CreateDoctorRequest) returns (Doctor);
+  rpc GetDoctorById (google.protobuf.Int32Value) returns (Doctor);
+  rpc GetDoctorByEmail (google.protobuf.StringValue) returns (Doctor);
+  rpc GetAllDoctors (google.protobuf.Empty) returns (DoctorList);
+  rpc GetAllGPDoctors (google.protobuf.Empty) returns (DoctorList);
+  rpc UpdateDoctor (UpdateDoctorRequest) returns (Doctor);
+  rpc DeleteDoctorById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+}
+
+message Doctor {
+  int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string password = 5;
+  bool isGp = 6;
+  Specialty specialty = 7;
+}
+
+message DoctorList {
+  repeated Doctor doctors = 1;
+}
+
+message CreateDoctorRequest {
+  string firstName = 1;
+  string lastName = 2;
+  string email = 3;
+  string password = 4;
+  bool isGp = 5;
+  int32 specialtyId = 6;
+}
+
+message UpdateDoctorRequest {
+  int32 doctorId = 1;
+  optional string firstName = 2;
+  optional string lastName = 3;
+  optional string email = 4;
+  optional string password = 5;
+  optional bool isGp = 6;
+  optional int32 specialtyId = 7;
+}
+
+service PatientService {
+  rpc CreatePatient (CreatePatientRequest) returns (Patient);
+  rpc GetPatientById (google.protobuf.Int32Value) returns (Patient);
+  rpc GetPatientByEmail (google.protobuf.StringValue) returns (Patient);
+  rpc GetAllPatients (google.protobuf.Empty) returns (PatientList);
+  rpc UpdatePatient (UpdatePatientRequest) returns (Patient);
+  rpc DeletePatientById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+}
+
+message Patient {
+  int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string email = 4;
+  string password = 5;
+  string pin = 6;
+  Doctor gp = 7;
+  bool isHealthInsured = 8;
+}
+
+message PatientList {
+  repeated Patient patients = 1;
+}
+
+message CreatePatientRequest {
+  string firstName = 1;
+  string lastName = 2;
+  string email = 3;
+  string password = 4;
+  string pin = 5;
+  int32 gpId = 6;
+  bool isHealthInsured = 7;
+}
+
+message UpdatePatientRequest {
+  int32 patientId = 1;
+  optional string firstName = 2;
+  optional string lastName = 3;
+  optional string email = 4;
+  optional string password = 5;
+  optional string pin = 6;
+  optional int32 gpId = 7;
+  optional bool isHealthInsured = 8;
+}
+
+service SpecialtyService {
+  rpc CreateSpecialty (CreateSpecialtyRequest) returns (Specialty);
+  rpc GetSpecialtyById (google.protobuf.Int32Value) returns (Specialty);
+  rpc GetAllSpecialties (google.protobuf.Empty) returns (SpecialtiesList);
+  rpc UpdateSpecialty (UpdateSpecialtyRequest) returns (Specialty);
+  rpc DeleteSpecialtyById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+}
+
+message Specialty {
+  int32 id = 1;
+  string specialtyName = 2;
+  string specialtyDescription = 3;
+}
+
+message SpecialtiesList {
+  repeated Specialty specialties = 1;
+}
+
+message CreateSpecialtyRequest {
+  string specialtyName = 1;
+  string specialtyDescription = 2;
+}
+
+message UpdateSpecialtyRequest {
+  int32 id = 1;
+  optional string specialtyName = 2;
+  optional string specialtyDescription = 3;
+}
