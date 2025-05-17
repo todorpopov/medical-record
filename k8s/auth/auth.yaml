@@ -38,6 +38,10 @@ spec:
               value: "9090"
             - name: USERS_HOST
               value: "users-service"
+            - name: ADMIN_EMAIL
+              value: "admin"
+            - name: ADMIN_PASSWORD
+              value: "admin"
           livenessProbe:
             grpc:
               port: 9091
