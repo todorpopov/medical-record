@@ -79,4 +79,16 @@ public class GlobalHTTPExceptionHandler {
         ErrorHTTPResponse error = new ErrorHTTPResponse("ID_NOT_SET_EXCEPTION", e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleUnauthorizedException(UnauthorizedException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("UNAUTHORIZED_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleBadRequestException(BadRequestException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("BAD_REQUEST_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

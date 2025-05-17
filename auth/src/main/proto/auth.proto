@@ -11,11 +11,20 @@ service AuthService {
   rpc LogDoctorIn (LoginRequest) returns (LoginResponse);
   rpc LogAdminIn (LoginRequest) returns (LoginResponse);
   rpc AuthorizeRequest (AuthorizationRequest) returns (AuthorizationResponse);
+  rpc ValidateToken (TokenRequest) returns (ValidateTokeResponse);
 }
 
 message LoginRequest {
   string email = 1;
   string password = 2;
+}
+
+message TokenRequest {
+  string token = 1;
+}
+
+message ValidateTokeResponse {
+  bool valid = 1;
 }
 
 message LoginResponse {

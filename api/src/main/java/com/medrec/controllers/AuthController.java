@@ -2,14 +2,12 @@ package com.medrec.controllers;
 
 import com.medrec.dtos.auth.AuthResponseDTO;
 import com.medrec.dtos.auth.LogUserInDTO;
+import com.medrec.dtos.auth.TokenRequestDTO;
 import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
 import com.medrec.dtos.users.patient.RegisterPatientDTO;
 import com.medrec.services.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
@@ -50,6 +48,18 @@ public class AuthController {
     @PostMapping("log-admin-in")
     public ResponseEntity<AuthResponseDTO> logAdminIn(@RequestBody LogUserInDTO dto) {
         this.logger.info("Trying to fulfil log admin in request");
-        return ResponseEntity.ok( this.authService.logAdminIn(dto));
+        return ResponseEntity.ok(this.authService.logAdminIn(dto));
+    }
+
+    @GetMapping("is-request-authorized")
+    public ResponseEntity<Boolean> isRequestAuthorized(@RequestBody TokenRequestDTO dto){
+        this.logger.info("Checking if request is authorized");
+        return ResponseEntity.ok(this.authService.isRequestAuthorized(dto.getToken(), dto.getRoleAsList()));
+    }
+
+    @GetMapping("validate-token")
+    public ResponseEntity<Boolean> isTokenValid(@RequestParam("token") String token){
+        this.logger.info("Validating token");
+        return ResponseEntity.ok(this.authService.isTokenValid(token));
     }
 }

@@ -110,10 +110,22 @@ public class AuthService {
         this.logger.info("Checking if request is authorized for roles: " + requiredRoles.toString());
         try {
             boolean response = authGateway.isRequestAuthorized(token, requiredRoles);
-            this.logger.info("Request is authorized for roles: " + requiredRoles.toString());
+            this.logger.info("Request is authorized for roles: " + requiredRoles);
             return response;
         } catch (StatusRuntimeException e) {
-            this.logger.warning("Could not check if request is authorized for roles: " + requiredRoles.toString());
+            this.logger.warning("Could not check if request is authorized for roles: " + requiredRoles);
+            throw e;
+        }
+    }
+
+    public boolean isTokenValid(String token) throws StatusRuntimeException{
+        this.logger.info("Checking if token is valid");
+        try {
+            boolean response = authGateway.isTokenValid(token);
+            this.logger.info("Token is valid");
+            return response;
+        } catch (StatusRuntimeException e) {
+            this.logger.warning("Could not check if token is valid");
             throw e;
         }
     }

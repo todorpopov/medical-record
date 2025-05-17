@@ -148,6 +148,20 @@ public class AuthGateway {
         }
     }
 
+    public boolean isTokenValid(String token) throws RuntimeException{
+        try {
+            Auth.ValidateTokeResponse response = authService.validateToken(
+                Auth.TokenRequest.newBuilder()
+                .setToken(token)
+                .build()
+            );
+
+            return response.getValid();
+        } catch (StatusRuntimeException e){
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
     @PreDestroy
     public void shutdown() {
         logger.info("Shutting down channel");

@@ -181,6 +181,12 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String token = request.getToken();
         List<String> requiredRole = request.getRequiredRolesList();
 
+        if(token.isBlank() || requiredRole.isEmpty() || requiredRole.contains(null) || requiredRole.contains("") || requiredRole.contains(" ")) {
+            responseObserver.onError(Status.ABORTED.withDescription("Bad request").asRuntimeException());
+            responseObserver.onCompleted();
+            return;
+        }
+
         boolean isAuthorized = jwtService.isUserAuthorized(token, requiredRole);
 
         if(isAuthorized) {
@@ -191,6 +197,33 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
             );
         } else {
             responseObserver.onError(Status.PERMISSION_DENIED.withDescription("Unauthorized").asRuntimeException());
+        }
+
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void validateToken(Auth.TokenRequest request, StreamObserver<Auth.ValidateTokeResponse> responseObserver) {
+        this.logger.info("Called RPC Validate Token");
+
+        String token = request.getToken();
+
+        if(token.isBlank()) {
+            responseObserver.onError(Status.ABORTED.withDescription("Bad request").asRuntimeException());
+            responseObserver.onCompleted();
+            return;
+        }
+
+        boolean isValid = this.jwtService.isTokenValid(token);
+
+        if(isValid) {
+            responseObserver.onNext(
+                Auth.ValidateTokeResponse.newBuilder()
+                    .setValid(true)
+                    .build()
+            );
+        } else {
+            responseObserver.onError(Status.PERMISSION_DENIED.withDescription("Invalid token").asRuntimeException());
         }
 
         responseObserver.onCompleted();

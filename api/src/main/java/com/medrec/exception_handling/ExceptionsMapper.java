@@ -16,7 +16,12 @@ public class ExceptionsMapper {
             case UNKNOWN:
                 return new ServiceException(statusRuntimeException.getStatus().getDescription());
             case ABORTED:
-                return new UniqueConstrainException(statusRuntimeException.getStatus().getDescription());
+                assert message != null;
+                if (message.contains("Constraint Violation")) {
+                    return new UniqueConstrainException(statusRuntimeException.getStatus().getDescription());
+                } else {
+                    return new BadRequestException(statusRuntimeException.getStatus().getDescription());
+                }
             case NOT_FOUND:
                 assert message != null;
                 if (message.contains("specialty_not_found")) {
@@ -37,6 +42,8 @@ public class ExceptionsMapper {
                 }
             case UNAUTHENTICATED:
                 return new UnauthenticatedException(statusRuntimeException.getStatus().getDescription());
+            case PERMISSION_DENIED:
+                return new UnauthorizedException(statusRuntimeException.getStatus().getDescription());
             default:
                 return new ServiceException("Service Error");
         }
