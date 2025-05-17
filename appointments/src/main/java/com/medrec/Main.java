@@ -1,10 +1,6 @@
 package com.medrec;
 
-import com.medrec.persistence.appointment.Appointment;
-import com.medrec.persistence.appointment.AppointmentsRepository;
-
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class Main {

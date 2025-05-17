@@ -40,6 +40,10 @@ spec:
               value: "9091"
             - name: AUTH_HOST
               value: "auth-service"
+            - name: APPOINTMENTS_PORT
+              value: "9092"
+            - name: APPOINTMENTS_HOST
+              value: "appointments-service"
       imagePullSecrets:
         - name: regcred
 

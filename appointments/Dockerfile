@@ -5,7 +5,7 @@ FROM amazoncorretto:17-alpine AS packager
 
 WORKDIR /opt
 
-COPY /target/auth-1.0.0.jar app.jar
+COPY /target/appointments-1.0.0.jar app.jar
 
 # Show all needed modules for the .jar file and pipe them into a text file
 RUN jdeps --print-module-deps --ignore-missing-deps app.jar > deps.txt
@@ -25,6 +25,6 @@ FROM alpine:latest
 COPY --from=packager /opt/jre /opt/jre
 COPY --from=packager /opt/app.jar /opt/app.jar
 
-EXPOSE 9091
+EXPOSE 9092
 
 CMD ["/opt/jre/bin/java", "-jar", "/opt/app.jar"]

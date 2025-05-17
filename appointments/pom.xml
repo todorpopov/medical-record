@@ -58,10 +58,6 @@
       <groupId>io.grpc</groupId>
       <artifactId>grpc-services</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-services</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
@@ -111,6 +107,7 @@
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>com.medrec.Main</mainClass>
                 </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
               </transformers>
             </configuration>
           </execution>

@@ -25,7 +25,14 @@ public class UsersGateway {
     private UsersGateway() {
         int port = Integer.parseInt(System.getenv("USERS_PORT"));
         String host = System.getenv("USERS_HOST");
-        channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+
+        try {
+            this.logger.info("Initializing Users Gateway with host: " + host + " and port: " + port);
+            channel = ManagedChannelBuilder.forTarget("dns:///" + host + ":" + port).usePlaintext().build();
+        } catch (Exception e) {
+            this.logger.severe("Could not connect to Users Service");
+            throw e;
+        }
 
         patientService = PatientServiceGrpc.newBlockingStub(channel);
         doctorService = DoctorServiceGrpc.newBlockingStub(channel);

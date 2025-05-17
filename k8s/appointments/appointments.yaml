@@ -1,0 +1,72 @@
+# Appointments Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appointments-service
+  namespace: medical-record
+  labels:
+    app: appointments-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appointments-service
+  template:
+    metadata:
+      labels:
+        app: appointments-service
+    spec:
+      containers:
+      - name: appointments-service
+        image: docker.io/todorpopov02/appointments-service:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 9092
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+          - name: APPOINTMENTS_PORT
+            value: "9092"
+          - name: USERS_PORT
+            value: "9090"
+          - name: USERS_HOST
+            value: "users-service"
+          - name: DB_URL
+            value: "jdbc:postgresql://postgres:5432/appointments"
+          - name: DB_USERNAME
+            value: "admin"
+          - name: DB_PASSWORD
+            value: "admin"
+        livenessProbe:
+          grpc:
+            port: 9092
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          grpc:
+            port: 9092
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      imagePullSecrets:
+        - name: regcred
+
+---
+
+# Users Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointments-service
+  namespace: medical-record
+spec:
+  selector:
+    app: appointments-service
+  ports:
+    - port: 9092
+      targetPort: 9092
+  type: ClusterIP
