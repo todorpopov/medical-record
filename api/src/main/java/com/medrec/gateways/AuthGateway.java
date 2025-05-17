@@ -25,7 +25,14 @@ public class AuthGateway {
     public AuthGateway() {
         int port = Integer.parseInt(System.getenv("AUTH_PORT"));
         String host = System.getenv("AUTH_HOST");
-        channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+
+        try {
+            this.logger.info("Initializing Auth Gateway with host: " + host + " and port: " + port);
+            channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+        } catch (Exception e) {
+            this.logger.severe("Could not connect to Users Service");
+            throw e;
+        }
 
         authService = AuthServiceGrpc.newBlockingStub(channel);
     }

@@ -42,10 +42,9 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
 
             Specialty specialty = specialtyRepository.save(dto);
             responseObserver.onNext(grpcFromDomainModel(specialty));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -57,10 +56,9 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
         try {
             Specialty specialty = specialtyRepository.findById(id);
             responseObserver.onNext(grpcFromDomainModel(specialty));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -78,10 +76,9 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
 
             this.logger.info(String.format("Found %s specialties", specialties.size()));
             responseObserver.onNext(specialtiesList);
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -93,10 +90,9 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
 
             Specialty specialty = specialtyRepository.update(request);
             responseObserver.onNext(grpcFromDomainModel(specialty));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -108,10 +104,9 @@ public class SpecialtyService extends SpecialtyServiceGrpc.SpecialtyServiceImplB
         try {
             specialtyRepository.delete(id);
             responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 

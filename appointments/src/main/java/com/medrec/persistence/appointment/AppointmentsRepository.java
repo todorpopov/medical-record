@@ -56,8 +56,15 @@ public class AppointmentsRepository {
             this.usersGateway.patientExists(patientId);
             this.usersGateway.doctorExists(doctorId);
         } catch (StatusRuntimeException e) {
-            logger.severe("Users service returned exception: " + e.getMessage());
-            throw e;
+            String message = e.getMessage();
+            logger.severe("Users service returned exception: " + message);
+            if (message.contains("Doctor")) {
+                throw new NotFoundException("doctor_not_found");
+            } else if (message.contains("Patient")) {
+                throw new NotFoundException("patient_not_found");
+            } else {
+                throw e;
+            }
         }
 
         Transaction tx = null;
@@ -160,8 +167,13 @@ public class AppointmentsRepository {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (StatusRuntimeException e) {
-            logger.severe("Users service returned exception: " + e.getMessage());
-            throw e;
+            String message = e.getMessage();
+            logger.severe("Users service returned exception: " + message);
+            if (message.contains("Patient")) {
+                throw new NotFoundException("patient_not_found");
+            } else {
+                throw e;
+            }
         } catch (HibernateException e) {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
@@ -189,8 +201,13 @@ public class AppointmentsRepository {
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (StatusRuntimeException e) {
-            logger.severe("Users service returned exception: " + e.getMessage());
-            throw e;
+            String message = e.getMessage();
+            logger.severe("Users service returned exception: " + message);
+            if (message.contains("Doctor")) {
+                throw new NotFoundException("doctor_not_found");
+            } else {
+                throw e;
+            }
         } catch (HibernateException e) {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());

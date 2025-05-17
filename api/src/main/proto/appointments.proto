@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+package com.medrec.grpc.users;
+
+service AppointmentsService {
+  rpc CreateAppointment (CreateAppointmentRequest) returns (Appointment);
+  rpc GetAppointmentById (google.protobuf.Int32Value) returns (Appointment);
+  rpc GetAllAppointments (google.protobuf.Empty) returns (AppointmentsList);
+  rpc GetAllByPatientEmail (google.protobuf.StringValue) returns (AppointmentsList);
+  rpc GetAllByDoctorEmail (google.protobuf.StringValue) returns (AppointmentsList);
+  rpc UpdateAppointment (UpdateAppointmentRequest) returns (Appointment);
+  rpc DeleteAppointmentById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+  rpc CascadeDeletePatientAppointments (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+  rpc CascadeDeleteDoctorAppointments (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+}
+
+message Appointment {
+  int32 id = 1;
+  string date = 2;
+  string time = 3;
+  int32 patientId = 4;
+  int32 doctorId = 5;
+  string status = 6;
+}
+
+message CreateAppointmentRequest {
+  string date = 2;
+  string time = 3;
+  int32 patientId = 4;
+  int32 doctorId = 5;
+}
+
+message AppointmentsList {
+  repeated Appointment appointments = 1;
+}
+
+message UpdateAppointmentRequest {
+  int32 id = 1;
+  string status = 2;
+}

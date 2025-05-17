@@ -45,12 +45,10 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
 
         try {
             Doctor savedDoctor = doctorRepository.save(dto);
-            responseObserver.onNext(grpcFromDomainModel(savedDoctor)
-            );
+            responseObserver.onNext(grpcFromDomainModel(savedDoctor));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -62,10 +60,9 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         try {
             Doctor doctor = doctorRepository.findById(id);
             responseObserver.onNext(grpcFromDomainModel(doctor));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -77,10 +74,9 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         try {
             Doctor doctor = doctorRepository.findByEmail(email);
             responseObserver.onNext(grpcFromDomainModel(doctor));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -98,10 +94,9 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
                 .build();
 
             responseObserver.onNext(list);
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -119,10 +114,9 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
                 .build();
 
             responseObserver.onNext(doctorList);
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -133,10 +127,9 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         try {
             Doctor updatedDoctor = doctorRepository.update(request);
             responseObserver.onNext(grpcFromDomainModel(updatedDoctor));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -148,10 +141,9 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         try {
             doctorRepository.delete(id);
             responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 

@@ -29,7 +29,7 @@ public class GrpcServer {
                 .addService(healthStatusManager.getHealthService())
                 .build();
 
-        healthStatusManager.setStatus("users", HealthCheckResponse.ServingStatus.SERVING);
+        healthStatusManager.setStatus("users-service", HealthCheckResponse.ServingStatus.SERVING);
 
         server.start();
         logger.info(String.format("gRPC server started on port %s", port));

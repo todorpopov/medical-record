@@ -39,6 +39,10 @@ public class ExceptionsMapper {
             logger.info("Not found exception");
             if (message.contains("appointment_not_found")) {
                 return Status.NOT_FOUND.withDescription("Appointment Not Found").asRuntimeException();
+            } else if (message.contains("patient_not_found")) {
+                return Status.NOT_FOUND.withDescription("Patient Not Found").asRuntimeException();
+            } else if (message.contains("doctor_not_found")) {
+                return Status.NOT_FOUND.withDescription("Doctor Not Found").asRuntimeException();
             } else {
                 return Status.NOT_FOUND.withDescription("Entity Not Found").asRuntimeException();
             }

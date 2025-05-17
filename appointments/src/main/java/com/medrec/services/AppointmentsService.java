@@ -9,7 +9,6 @@ import com.medrec.grpc.users.AppointmentsServiceGrpc;
 import com.medrec.persistence.appointment.Appointment;
 import com.medrec.persistence.appointment.AppointmentsRepository;
 import io.grpc.stub.StreamObserver;
-import jakarta.persistence.OrderBy;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,10 +47,9 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
             );
 
             responseObserver.onNext(grpcFromDomainModel(appointment));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -63,10 +61,9 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         try {
             Appointment appointment = this.appointmentsRepository.getById(id);
             responseObserver.onNext(grpcFromDomainModel(appointment));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -85,10 +82,9 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
                 .build();
 
             responseObserver.onNext(list);
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -108,10 +104,9 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
                 .build();
 
             responseObserver.onNext(list);
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -131,10 +126,9 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
                 .build();
 
             responseObserver.onNext(list);
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -148,10 +142,9 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         try {
             Appointment appointment = this.appointmentsRepository.update(id, status);
             responseObserver.onNext(grpcFromDomainModel(appointment));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -163,10 +156,9 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         try {
             this.appointmentsRepository.delete(id);
             responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -177,10 +169,10 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
 
         try {
             this.appointmentsRepository.genericCascadeDelete(id, "patient");
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -191,10 +183,10 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
 
         try {
             this.appointmentsRepository.genericCascadeDelete(id, "doctor");
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 

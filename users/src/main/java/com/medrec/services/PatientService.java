@@ -49,10 +49,9 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         try {
             Patient patient = patientRepository.save(dto);
             responseObserver.onNext(grpcFromDomainModel(patient));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -64,10 +63,9 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         try {
             Patient patient = patientRepository.findById(id);
             responseObserver.onNext(grpcFromDomainModel(patient));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -79,10 +77,9 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         try {
             Patient patient = patientRepository.findByEmail(email);
             responseObserver.onNext(grpcFromDomainModel(patient));
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -100,10 +97,9 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
                 .build();
 
             responseObserver.onNext(patientList);
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -114,12 +110,11 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         try {
             Patient updatedPatient = patientRepository.update(request);
             responseObserver.onNext(grpcFromDomainModel(updatedPatient));
+            responseObserver.onCompleted();
         } catch (DoctorIsNotGpException e) {
             responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("doctor_not_gp").asRuntimeException());
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -131,10 +126,9 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         try {
             patientRepository.delete(id);
             responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 

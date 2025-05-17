@@ -28,7 +28,7 @@ public class UsersGateway {
 
         try {
             this.logger.info("Initializing Users Gateway with host: " + host + " and port: " + port);
-            channel = ManagedChannelBuilder.forTarget("dns:///" + host + ":" + port).usePlaintext().build();
+            channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
         } catch (Exception e) {
             this.logger.severe("Could not connect to Users Service");
             throw e;

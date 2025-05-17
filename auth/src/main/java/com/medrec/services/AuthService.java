@@ -56,11 +56,9 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     .setRole("patient")
                     .build()
             );
-
+            responseObserver.onCompleted();
         } catch (StatusRuntimeException e) {
             responseObserver.onError(e);
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -86,10 +84,9 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     .setRole("doctor")
                     .build()
             );
+            responseObserver.onCompleted();
         } catch (StatusRuntimeException e) {
             responseObserver.onError(e);
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -111,15 +108,15 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     Auth.LoginResponse.newBuilder()
                         .setToken(token)
                         .setRole("patient")
-                        .build());
+                        .build()
+                );
+                responseObserver.onCompleted();
             } else {
                 this.logger.warning("Invalid credentials for patient: " + email);
                 responseObserver.onError(Status.UNAUTHENTICATED.withDescription("Invalid credentials").asRuntimeException());
             }
         } catch (StatusRuntimeException e) {
             responseObserver.onError(e);
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -142,14 +139,13 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                         .setToken(token)
                         .setRole("patient")
                         .build());
+                responseObserver.onCompleted();
             } else {
                 this.logger.warning("Invalid credentials for doctor: " + email);
                 responseObserver.onError(Status.UNAUTHENTICATED.withDescription("Invalid credentials").asRuntimeException());
             }
         } catch (StatusRuntimeException e) {
             responseObserver.onError(e);
-        } finally {
-            responseObserver.onCompleted();
         }
     }
 
@@ -167,6 +163,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     .setToken(token)
                     .setRole("admin")
                     .build());
+            responseObserver.onCompleted();
         } else {
             responseObserver.onError(Status.UNAUTHENTICATED.withDescription("Invalid credentials").asRuntimeException());
         }
@@ -183,7 +180,6 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
         if(token.isBlank() || requiredRole.isEmpty() || requiredRole.contains(null) || requiredRole.contains("") || requiredRole.contains(" ")) {
             responseObserver.onError(Status.ABORTED.withDescription("Bad request").asRuntimeException());
-            responseObserver.onCompleted();
             return;
         }
 
@@ -195,11 +191,10 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                     .setIsTokenAuthorized(true)
                     .build()
             );
+            responseObserver.onCompleted();
         } else {
             responseObserver.onError(Status.PERMISSION_DENIED.withDescription("Unauthorized").asRuntimeException());
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -208,24 +203,22 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
         String token = request.getToken();
 
-        if(token.isBlank()) {
+        if (token.isBlank()) {
             responseObserver.onError(Status.ABORTED.withDescription("Bad request").asRuntimeException());
-            responseObserver.onCompleted();
             return;
         }
 
         boolean isValid = this.jwtService.isTokenValid(token);
 
-        if(isValid) {
+        if (isValid) {
             responseObserver.onNext(
                 Auth.ValidateTokeResponse.newBuilder()
                     .setValid(true)
                     .build()
             );
+            responseObserver.onCompleted();
         } else {
             responseObserver.onError(Status.PERMISSION_DENIED.withDescription("Invalid token").asRuntimeException());
         }
-
-        responseObserver.onCompleted();
     }
 }
