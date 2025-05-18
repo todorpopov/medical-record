@@ -87,3 +87,32 @@ export const specialtyColumnDefs: ColDef[] = [
     cellDataType: 'text',
   },
 ]
+
+export const appointmentsColumnDefs: ColDef[] = [
+  {
+    field: 'id',
+    cellDataType: 'text',
+  },
+  {
+    field: 'patientId',
+    headerName: 'Patient Id',
+    cellDataType: 'text',
+  },
+  {
+    field: 'doctorId',
+    headerName: 'Doctor Id',
+    cellDataType: 'text',
+  },
+  {
+    field: 'date',
+    cellDataType: 'text',
+  },
+  {
+    field: 'time',
+    cellDataType: 'text',
+  },
+  {
+    field: 'status',
+    cellDataType: 'text',
+  }
+]

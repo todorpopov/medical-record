@@ -9,6 +9,9 @@ import {RegisterPatientDto, UpdatePatientDto} from '../../common/dtos/patient.dt
 import {AuthService} from '../../services/auth.service';
 import {RegisterDoctorDto, UpdateDoctorDto} from '../../common/dtos/doctor.dto';
 import {CreateSpecialtyDto, UpdateSpecialtyDto} from '../../common/dtos/specialty.dto';
+import {allowedValuesValidator, isoDateValidator, timeValidator} from '../../common/validators/validators';
+import {AppointmentStatus, CreateAppointmentsDto, UpdateAppointmentsDto} from '../../common/dtos/appointments.dto';
+import {AppointmentsService} from '../../services/appointments.service';
 
 interface Action {
   name: 'Create' | 'Update' | 'Delete';
@@ -33,6 +36,11 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
 
   @Input() entitiesList: any[] = [];
 
+  appointmentStatusList: AppointmentStatus[] = [
+    { status: 'upcoming' },
+    { status: 'started' },
+    { status: 'finished' }
+  ];
 
   rowActionError: string = '';
   rowActionSuccess: string = '';
@@ -47,6 +55,9 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
   private readonly createPatientFields: string[] = ['firstName', 'lastName', 'email', 'password', 'pin', 'gpId'];
   private readonly createDoctorFields: string[] = ['firstName', 'lastName', 'email', 'password', 'specialtyId'];
   private readonly createSpecialtyFields: string[] = ['specialtyName', 'specialtyDescription'];
+  private readonly createAppointmentFields: string[] = ['date', 'time', 'doctorId', 'patientId'];
+
+  private readonly updateAppointmentFields: string[] = ['entityId', 'status'];
 
   private readonly entityIdField: string[] = ['entityId'];
 
@@ -60,12 +71,17 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     'pin',
     'specialtyId',
     'specialtyName',
-    'specialtyDescription'
+    'specialtyDescription',
+    'date',
+    'time',
+    'doctorId',
+    'patientId'
   ]
 
   constructor(
     private formBuilder: FormBuilder,
     private usersService: UsersService,
+    private appointmentsService: AppointmentsService,
     private authService: AuthService,
   ) {
     this.rowActionForm = this.formBuilder.group({
@@ -87,6 +103,12 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
 
       specialtyName: [null],
       specialtyDescription: [null],
+
+      date: [null],
+      time: [null],
+      doctorId: [null],
+      patientId: [null],
+      status: [null]
     });
 
     this.rowActionForm.get('action')?.valueChanges.subscribe(action => {
@@ -128,9 +150,17 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
           this.setFormValidation(this.createSpecialtyFields);
           break;
         }
+        case 'Appointments': {
+          this.setFormValidation(this.createAppointmentFields);
+          break;
+        }
       }
     } else {
-      this.setFormValidation(this.entityIdField);
+      if (entity === 'Appointments') {
+        this.setFormValidation(this.updateAppointmentFields);
+      } else {
+        this.setFormValidation(this.entityIdField);
+      }
     }
   }
 
@@ -160,6 +190,26 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
             break;
           }
           case 'gpId': {
+            control.setValidators([Validators.required, Validators.min(1), Validators.pattern("^[0-9]*$")]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'date': {
+            control.setValidators([Validators.required, isoDateValidator()]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'time': {
+            control.setValidators([Validators.required, timeValidator()]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'doctorId': {
+            control.setValidators([Validators.required, Validators.min(1), Validators.pattern("^[0-9]*$")]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'patientId': {
             control.setValidators([Validators.required, Validators.min(1), Validators.pattern("^[0-9]*$")]);
             control.updateValueAndValidity();
             break;
@@ -201,6 +251,12 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
       const isHealthInsured = formValue.isHealthInsured;
       const isGp = formValue.isGp;
       const specialtyId = formValue.specialtyId;
+
+      const date = formValue.date;
+      const time = formValue.time;
+      const doctorId = formValue.doctorId;
+      const patientId = formValue.patientId;
+      const status = formValue.status;
 
       switch (this.selectedEntity) {
         case 'Patients': {
@@ -304,6 +360,39 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
 
             case 'Delete': {
               this.handleDeleteSpecialty(entityId);
+              break;
+            }
+          }
+
+          break;
+        }
+
+        case 'Appointments': {
+          switch (this.selectedAction.name) {
+            case "Create": {
+              const dto: CreateAppointmentsDto = {
+                date: date,
+                time: time,
+                patientId: patientId,
+                doctorId: doctorId
+              }
+
+              this.handleAppointmentCreate(dto);
+              break;
+            }
+
+            case "Update": {
+              const dto: UpdateAppointmentsDto = {
+                id: entityId,
+                status: status
+              }
+
+              this.handleAppointmentUpdate(dto);
+              break;
+            }
+
+            case "Delete": {
+              this.handleAppointmentDelete(entityId);
               break;
             }
           }
@@ -447,6 +536,53 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     this.usersService.deleteSpecialty(id).subscribe({
       next: value => {
         this.rowActionSuccess = 'Specialty deleted successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleAppointmentCreate(dto: CreateAppointmentsDto): void {
+    this.appointmentsService.createAppointment(
+      dto.date,
+      dto.time,
+      dto.patientId,
+      dto.doctorId
+    ).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Appointment created successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleAppointmentUpdate(dto: UpdateAppointmentsDto): void {
+    this.appointmentsService.updateAppointment(
+      dto.id,
+      dto.status
+    ).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Appointment updated successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleAppointmentDelete(id: number): void {
+    this.appointmentsService.deleteAppointment(id).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Appointment deleted successfully';
         this.rowActionError = '';
       },
       error: err => {

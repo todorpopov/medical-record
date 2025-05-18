@@ -51,7 +51,7 @@ export class UsersService {
       body.gpId = gpId;
     }
 
-    body.insured = insured !== null;
+    body.insured = insured;
 
     return this.httpClient.put<ApiResponse>(`${this.apiUrl}/patients/update`, body, {observe: 'response'});
   }

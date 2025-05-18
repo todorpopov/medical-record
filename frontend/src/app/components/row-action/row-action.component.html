@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <!-- Create Patient specific -->
+    <!-- Patient specific -->
     <div *ngIf="(selectedEntity === 'Patients' && selectedAction.name === 'Create') || (selectedEntity === 'Patients' && selectedAction.name === 'Update')">
       <div *ngIf="selectedAction.name === 'Create'" class="my-3 mx-2">
         <app-text-input
@@ -88,6 +88,7 @@
       </div>
     </div>
 
+    <!-- Doctor specific -->
     <div *ngIf="(selectedEntity === 'Doctors' && selectedAction.name === 'Create') || (selectedEntity === 'Doctors' && selectedAction.name === 'Update')">
       <div class="my-3 mx-2">
         <app-checkbox
@@ -107,6 +108,7 @@
     </div>
   </div>
 
+  <!-- Specialty specific -->
   <div *ngIf="selectedEntity === 'Specialties' && selectedAction.name !== 'Delete'">
     <div class="my-3 mx-2">
       <app-text-input
@@ -124,6 +126,51 @@
         formControlName="specialtyDescription"
       ></app-text-input>
     </div>
+  </div>
+
+  <!-- Appointment specific-->
+  <div *ngIf="selectedEntity === 'Appointments' && selectedAction.name !== 'Delete'">
+    <div *ngIf="selectedAction.name === 'Create'; else update" class="my-3 mx-2">
+      <app-text-input
+        label="Date"
+        type="text"
+        placeholder="Enter the date of the appointment"
+        formControlName="date"
+        [error]="rowActionForm.get('date')?.errors && rowActionForm.get('date')?.touched ? 'The date must be in the format yyyy-mm-dd!' : ''"
+      ></app-text-input>
+      <app-text-input
+        label="Time"
+        type="text"
+        placeholder="Enter the time of the appointment"
+        formControlName="time"
+        [error]="rowActionForm.get('time')?.errors && rowActionForm.get('time')?.touched ? 'The time must be in the format hh:mm!' : ''"
+      ></app-text-input>
+      <app-text-input
+        label="Doctor ID"
+        type="text"
+        placeholder="Enter the ID of the doctor"
+        formControlName="doctorId"
+        [error]="rowActionForm.get('doctorId')?.errors && rowActionForm.get('doctorId')?.touched ? 'The ID must be a positive integer!' : ''"
+      ></app-text-input>
+      <app-text-input
+        label="Patient ID"
+        type="text"
+        placeholder="Enter the ID of the patient"
+        formControlName="patientId"
+        [error]="rowActionForm.get('patientId')?.errors && rowActionForm.get('patientId')?.touched ? 'The ID must be a positive integer!' : ''"
+       ></app-text-input>
+    </div>
+    <ng-template #update>
+      <div class="my-3 mx-2">
+        <app-dropdown
+          label="Status"
+          [items]="appointmentStatusList"
+          [valueField]="'status'"
+          [displayField]="'status'"
+          formControlName="status"
+        ></app-dropdown>
+      </div>
+    </ng-template>
   </div>
 
   <button
