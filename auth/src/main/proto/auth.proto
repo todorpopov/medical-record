@@ -5,13 +5,13 @@ import "users.proto";
 package com.medrec.grpc.auth;
 
 service AuthService {
-  rpc RegisterPatient (com.medrec.grpc.users.CreatePatientRequest) returns (RegisterResponse);
-  rpc RegisterDoctor (com.medrec.grpc.users.CreateDoctorRequest) returns (RegisterResponse);
-  rpc LogPatientIn (LoginRequest) returns (LoginResponse);
-  rpc LogDoctorIn (LoginRequest) returns (LoginResponse);
-  rpc LogAdminIn (LoginRequest) returns (LoginResponse);
+  rpc RegisterPatient (com.medrec.grpc.users.CreatePatientRequest) returns (AuthResponse);
+  rpc RegisterDoctor (com.medrec.grpc.users.CreateDoctorRequest) returns (AuthResponse);
+  rpc LogPatientIn (LoginRequest) returns (AuthResponse);
+  rpc LogDoctorIn (LoginRequest) returns (AuthResponse);
+  rpc LogAdminIn (LoginRequest) returns (AuthResponse);
   rpc AuthorizeRequest (AuthorizationRequest) returns (AuthorizationResponse);
-  rpc ValidateToken (TokenRequest) returns (TokenResponse);
+  rpc ValidateToken (TokenRequest) returns (AuthResponse);
 }
 
 message LoginRequest {
@@ -23,23 +23,13 @@ message TokenRequest {
   string token = 1;
 }
 
-message TokenResponse {
-  bool valid = 1;
-  int32 id = 2;
-  string firstName = 3;
-  string lastName = 4;
-  string email = 5;
-  string role = 6;
-}
-
-message LoginResponse {
-  optional string token = 2;
-  optional string role = 3;
-}
-
-message RegisterResponse {
-  optional string token = 2;
-  optional string role = 3;
+message AuthResponse {
+  string token = 1;
+  int32 id = 3;
+  string email = 4;
+  string firstName = 5;
+  string lastName = 6;
+  string role = 7;
 }
 
 message AuthorizationRequest {

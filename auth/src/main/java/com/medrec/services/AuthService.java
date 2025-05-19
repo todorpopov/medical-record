@@ -34,7 +34,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void registerPatient(Users.CreatePatientRequest request, StreamObserver<Auth.RegisterResponse> responseObserver) {
+    public void registerPatient(Users.CreatePatientRequest request, StreamObserver<Auth.AuthResponse> responseObserver) {
         this.logger.info("Called RPC Register Patient");
 
         Users.CreatePatientRequest requestWithHashedPass = Users.CreatePatientRequest.newBuilder()
@@ -49,16 +49,26 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
         try {
             Users.Patient savedPatient= usersGateway.registerPatient(requestWithHashedPass);
+
+            int id = savedPatient.getId();
+            String email = savedPatient.getEmail();
+            String firstName = savedPatient.getFirstName();
+            String lastName = savedPatient.getLastName();
+
             String token = jwtService.generateToken(
-                savedPatient.getId(),
-                savedPatient.getFirstName(),
-                savedPatient.getLastName(),
-                savedPatient.getEmail(),
+                id,
+                firstName,
+                lastName,
+                email,
                 "patient"
             );
             responseObserver.onNext(
-                Auth.RegisterResponse.newBuilder()
+                Auth.AuthResponse.newBuilder()
                     .setToken(token)
+                    .setEmail(email)
+                    .setId(id)
+                    .setFirstName(firstName)
+                    .setLastName(lastName)
                     .setRole("patient")
                     .build()
             );
@@ -69,7 +79,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void registerDoctor(Users.CreateDoctorRequest request, StreamObserver<Auth.RegisterResponse> responseObserver) {
+    public void registerDoctor(Users.CreateDoctorRequest request, StreamObserver<Auth.AuthResponse> responseObserver) {
         this.logger.info("Called RPC Register Doctor");
 
         Users.CreateDoctorRequest requestWithHashedPass = Users.CreateDoctorRequest.newBuilder()
@@ -82,17 +92,27 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
             .build();
 
         try {
-            Users.Doctor doctor = usersGateway.registerDoctor(requestWithHashedPass);
+            Users.Doctor savedDoctor = usersGateway.registerDoctor(requestWithHashedPass);
+
+            int id = savedDoctor.getId();
+            String email = savedDoctor.getEmail();
+            String firstName = savedDoctor.getFirstName();
+            String lastName = savedDoctor.getLastName();
+
             String token = jwtService.generateToken(
-                doctor.getId(),
-                doctor.getFirstName(),
-                doctor.getLastName(),
-                doctor.getEmail(),
+                id,
+                firstName,
+                lastName,
+                email,
                 "doctor"
             );
             responseObserver.onNext(
-                Auth.RegisterResponse.newBuilder()
+                Auth.AuthResponse.newBuilder()
                     .setToken(token)
+                    .setEmail(email)
+                    .setId(id)
+                    .setFirstName(firstName)
+                    .setLastName(lastName)
                     .setRole("doctor")
                     .build()
             );
@@ -103,7 +123,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void logPatientIn(Auth.LoginRequest request,StreamObserver<Auth.LoginResponse> responseObserver ) {
+    public void logPatientIn(Auth.LoginRequest request,StreamObserver<Auth.AuthResponse> responseObserver ) {
         this.logger.info("Called RPC Log Patient In");
 
         String email = request.getEmail();
@@ -114,17 +134,26 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         try {
             Users.Patient savedPatient = usersGateway.getPatientByEmail(requestDTO);
 
+            int id = savedPatient.getId();
+            String firstName = savedPatient.getFirstName();
+            String lastName = savedPatient.getLastName();
+            String email1 = savedPatient.getEmail();
+
             if(BcryptService.checkPassword(password, savedPatient.getPassword())) {
                 String token = jwtService.generateToken(
-                    savedPatient.getId(),
-                    savedPatient.getFirstName(),
-                    savedPatient.getLastName(),
-                    savedPatient.getEmail(),
+                    id,
+                    firstName,
+                    lastName,
+                    email,
                     "patient"
                 );
                 responseObserver.onNext(
-                    Auth.LoginResponse.newBuilder()
+                    Auth.AuthResponse.newBuilder()
                         .setToken(token)
+                        .setEmail(email)
+                        .setId(id)
+                        .setFirstName(firstName)
+                        .setLastName(lastName)
                         .setRole("patient")
                         .build()
                 );
@@ -139,7 +168,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void logDoctorIn(Auth.LoginRequest request,StreamObserver<Auth.LoginResponse> responseObserver ) {
+    public void logDoctorIn(Auth.LoginRequest request,StreamObserver<Auth.AuthResponse> responseObserver ) {
         this.logger.info("Called RPC Log Doctor In");
 
         String email = request.getEmail();
@@ -150,17 +179,25 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         try {
             Users.Doctor savedDoctor = usersGateway.getDoctorByEmail(requestDTO);
 
+            int id = savedDoctor.getId();
+            String firstName = savedDoctor.getFirstName();
+            String lastName = savedDoctor.getLastName();
+
             if(BcryptService.checkPassword(password, savedDoctor.getPassword())) {
                 String token = jwtService.generateToken(
-                    savedDoctor.getId(),
-                    savedDoctor.getFirstName(),
-                    savedDoctor.getLastName(),
-                    savedDoctor.getEmail(),
+                    id,
+                    firstName,
+                    lastName,
+                    email,
                     "doctor"
                 );
                 responseObserver.onNext(
-                    Auth.LoginResponse.newBuilder()
+                    Auth.AuthResponse.newBuilder()
                         .setToken(token)
+                        .setEmail(email)
+                        .setId(id)
+                        .setFirstName(firstName)
+                        .setLastName(lastName)
                         .setRole("patient")
                         .build());
                 responseObserver.onCompleted();
@@ -174,7 +211,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void logAdminIn(Auth.LoginRequest request,StreamObserver<Auth.LoginResponse> responseObserver ) {
+    public void logAdminIn(Auth.LoginRequest request,StreamObserver<Auth.AuthResponse> responseObserver ) {
         this.logger.info("Called RPC Log Admin In");
 
         String email = request.getEmail();
@@ -189,8 +226,12 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                 "admin"
             );
             responseObserver.onNext(
-                Auth.LoginResponse.newBuilder()
+                Auth.AuthResponse.newBuilder()
                     .setToken(token)
+                    .setEmail(email)
+                    .setId(1)
+                    .setFirstName("Admin")
+                    .setLastName("Admin")
                     .setRole("admin")
                     .build());
             responseObserver.onCompleted();
@@ -228,7 +269,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void validateToken(Auth.TokenRequest request, StreamObserver<Auth.TokenResponse> responseObserver) {
+    public void validateToken(Auth.TokenRequest request, StreamObserver<Auth.AuthResponse> responseObserver) {
         this.logger.info("Called RPC Validate Token");
 
         String token = request.getToken();
@@ -244,8 +285,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
             TokenDataDTO data = this.jwtService.getDataFromToken(token);
             this.logger.info(data.toString());
             responseObserver.onNext(
-                Auth.TokenResponse.newBuilder()
-                    .setValid(true)
+                Auth.AuthResponse.newBuilder()
                     .setId(data.getId())
                     .setEmail(data.getEmail())
                     .setFirstName(data.getFirstName())

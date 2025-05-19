@@ -1,7 +1,6 @@
 package com.medrec.gateways;
 
 import com.medrec.dtos.auth.AuthResponseDTO;
-import com.medrec.dtos.auth.TokenResponseDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
@@ -56,10 +55,14 @@ public class AuthGateway {
                 .setSpecialtyId(specialtyId)
                 .build();
 
-            Auth.RegisterResponse response = authService.registerDoctor(doctor);
+            Auth.AuthResponse response = authService.registerDoctor(doctor);
 
             return new AuthResponseDTO(
                 response.getToken(),
+                response.getId(),
+                response.getEmail(),
+                response.getFirstName(),
+                response.getLastName(),
                 response.getRole()
             );
         } catch (StatusRuntimeException e) {
@@ -87,10 +90,14 @@ public class AuthGateway {
                 .setIsHealthInsured(isHealthInsured)
                 .build();
 
-            Auth.RegisterResponse response = authService.registerPatient(patient);
+            Auth.AuthResponse response = authService.registerPatient(patient);
 
             return new AuthResponseDTO(
                 response.getToken(),
+                response.getId(),
+                response.getEmail(),
+                response.getFirstName(),
+                response.getLastName(),
                 response.getRole()
             );
         } catch (StatusRuntimeException e) {
@@ -98,44 +105,67 @@ public class AuthGateway {
         }
     }
 
-    public String logPatientIn(String email, String password) throws RuntimeException {
+    public AuthResponseDTO logPatientIn(String email, String password) throws RuntimeException {
         try {
-            Auth.LoginResponse response = authService.logPatientIn(
+            Auth.AuthResponse response = authService.logPatientIn(
                 Auth.LoginRequest.newBuilder()
                     .setEmail(email)
                     .setPassword(password)
                     .build()
             );
 
-            return response.getToken();
+            return new AuthResponseDTO(
+                response.getToken(),
+                response.getId(),
+                response.getEmail(),
+                response.getFirstName(),
+                response.getLastName(),
+                response.getRole()
+            );
         } catch (StatusRuntimeException e) {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
 
-    public String logDoctorIn(String email, String password) throws RuntimeException{
+    public AuthResponseDTO logDoctorIn(String email, String password) throws RuntimeException{
         try {
-            Auth.LoginResponse response = authService.logDoctorIn(
+            Auth.AuthResponse response = authService.logDoctorIn(
                 Auth.LoginRequest.newBuilder()
                     .setEmail(email)
                     .setPassword(password)
                     .build()
             );
-            return response.getToken();
+
+            return new AuthResponseDTO(
+                response.getToken(),
+                response.getId(),
+                response.getEmail(),
+                response.getFirstName(),
+                response.getLastName(),
+                response.getRole()
+            );
         } catch (StatusRuntimeException e) {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
 
-    public String logAdminIn(String email, String password) throws RuntimeException {
+    public AuthResponseDTO logAdminIn(String email, String password) throws RuntimeException {
         try {
-            Auth.LoginResponse response = authService.logAdminIn(
+            Auth.AuthResponse response = authService.logAdminIn(
                 Auth.LoginRequest.newBuilder()
                     .setEmail(email)
                     .setPassword(password)
                     .build()
             );
-            return response.getToken();
+
+            return new AuthResponseDTO(
+                response.getToken(),
+                response.getId(),
+                response.getEmail(),
+                response.getFirstName(),
+                response.getLastName(),
+                response.getRole()
+            );
         } catch (StatusRuntimeException e) {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
@@ -156,12 +186,21 @@ public class AuthGateway {
         }
     }
 
-    public Auth.TokenResponse isTokenValid(String token) throws RuntimeException {
+    public AuthResponseDTO isTokenValid(String token) throws RuntimeException {
         try {
-            return authService.validateToken(
+            Auth.AuthResponse response = authService.validateToken(
                 Auth.TokenRequest.newBuilder()
                 .setToken(token)
                 .build()
+            );
+
+            return new AuthResponseDTO(
+                response.getToken(),
+                response.getId(),
+                response.getEmail(),
+                response.getFirstName(),
+                response.getLastName(),
+                response.getRole()
             );
         } catch (StatusRuntimeException e){
             throw ExceptionsMapper.translateStatusRuntimeException(e);

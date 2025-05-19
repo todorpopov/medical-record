@@ -2,11 +2,9 @@ package com.medrec.services;
 
 import com.medrec.dtos.auth.AuthResponseDTO;
 import com.medrec.dtos.auth.LogUserInDTO;
-import com.medrec.dtos.auth.TokenResponseDTO;
 import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
 import com.medrec.dtos.users.patient.RegisterPatientDTO;
 import com.medrec.gateways.AuthGateway;
-import com.medrec.grpc.auth.Auth;
 import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Component;
 
@@ -66,12 +64,8 @@ public class AuthService {
     public AuthResponseDTO logDoctorIn(LogUserInDTO dto) throws RuntimeException {
         this.logger.info("Trying to log in doctor with email: " + dto.getEmail());
         try {
-            String token = authGateway.logDoctorIn(dto.getEmail(), dto.getPassword());
             this.logger.info("Doctor logged in with email: " + dto.getEmail());
-            return new AuthResponseDTO(
-                token,
-                "doctor"
-            );
+            return authGateway.logDoctorIn(dto.getEmail(), dto.getPassword());
         } catch (StatusRuntimeException e) {
             this.logger.warning("Could not log in doctor with email: " + dto.getEmail());
             throw e;
@@ -81,12 +75,8 @@ public class AuthService {
     public AuthResponseDTO logPatientIn(LogUserInDTO dto) throws StatusRuntimeException {
         this.logger.info("Trying to log in patient with email: " + dto.getEmail());
         try {
-            String token = authGateway.logPatientIn(dto.getEmail(), dto.getPassword());
             this.logger.info("Patient logged in with email: " + dto.getEmail());
-            return new AuthResponseDTO(
-                token,
-                "patient"
-            );
+            return authGateway.logPatientIn(dto.getEmail(), dto.getPassword());
         } catch (StatusRuntimeException e) {
             this.logger.warning("Could not log in patient with email: " + dto.getEmail());
             throw e;
@@ -96,12 +86,8 @@ public class AuthService {
     public AuthResponseDTO logAdminIn(LogUserInDTO dto) throws StatusRuntimeException {
         this.logger.info("Trying to log in admin with email: " + dto.getEmail());
         try {
-            String token = authGateway.logAdminIn(dto.getEmail(), dto.getPassword());
             this.logger.info("Admin logged in with email: " + dto.getEmail());
-            return new AuthResponseDTO(
-                token,
-                "admin"
-            );
+            return authGateway.logAdminIn(dto.getEmail(), dto.getPassword());
         } catch (StatusRuntimeException e) {
             this.logger.warning("Could not log in admin with email: " + dto.getEmail());
             throw e;
@@ -120,19 +106,11 @@ public class AuthService {
         }
     }
 
-    public TokenResponseDTO isTokenValid(String token) throws StatusRuntimeException{
+    public AuthResponseDTO isTokenValid(String token) throws StatusRuntimeException{
         this.logger.info("Checking if token is valid");
         try {
-            Auth.TokenResponse response = authGateway.isTokenValid(token);
             this.logger.info("Token is valid");
-            return new TokenResponseDTO(
-                response.getValid(),
-                response.getId(),
-                response.getEmail(),
-                response.getFirstName(),
-                response.getLastName(),
-                response.getRole()
-            );
+            return authGateway.isTokenValid(token);
         } catch (StatusRuntimeException e) {
             this.logger.warning("Could not check if token is valid");
             throw e;
