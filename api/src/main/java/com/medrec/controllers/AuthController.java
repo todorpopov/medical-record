@@ -51,6 +51,12 @@ public class AuthController {
         return ResponseEntity.ok(this.authService.logAdminIn(dto));
     }
 
+    @GetMapping("is-request-authorized")
+    public ResponseEntity<Boolean> isRequestAuthorized(@RequestBody TokenRequestDTO dto){
+        this.logger.info("Checking if request is authorized");
+        return ResponseEntity.ok(this.authService.isRequestAuthorized(dto.getToken(), dto.getRoleAsList()));
+    }
+
     @GetMapping("validate-token")
     public ResponseEntity<AuthResponseDTO> isTokenValid(@RequestParam("token") String token){
         this.logger.info("Validating token");

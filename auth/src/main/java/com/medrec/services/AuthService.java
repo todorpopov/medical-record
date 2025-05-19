@@ -198,7 +198,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
                         .setId(id)
                         .setFirstName(firstName)
                         .setLastName(lastName)
-                        .setRole("patient")
+                        .setRole("doctor")
                         .build());
                 responseObserver.onCompleted();
             } else {
