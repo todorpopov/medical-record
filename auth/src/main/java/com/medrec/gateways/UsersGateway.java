@@ -2,7 +2,6 @@ package com.medrec.gateways;
 
 import com.google.protobuf.StringValue;
 import com.medrec.dtos.UsersLogInRequestDTO;
-import com.medrec.dtos.UsersLogInResponseDTO;
 import com.medrec.grpc.users.DoctorServiceGrpc;
 import com.medrec.grpc.users.PatientServiceGrpc;
 import com.medrec.grpc.users.Users;
@@ -64,26 +63,18 @@ public class UsersGateway {
         }
     }
 
-    public UsersLogInResponseDTO getPatientByEmail(UsersLogInRequestDTO request) throws StatusRuntimeException {
+    public Users.Patient getPatientByEmail(UsersLogInRequestDTO request) throws StatusRuntimeException {
         try {
-            Users.Patient patient = patientService.getPatientByEmail(StringValue.of(request.getEmail()));
-            return new UsersLogInResponseDTO(
-                patient.getEmail(),
-                patient.getPassword()
-            );
+            return patientService.getPatientByEmail(StringValue.of(request.getEmail()));
         } catch (StatusRuntimeException e) {
             this.logger.info("Could not find patient with email" + request.getEmail());
             throw e;
         }
     }
 
-    public UsersLogInResponseDTO getDoctorByEmail(UsersLogInRequestDTO request) throws StatusRuntimeException {
+    public Users.Doctor getDoctorByEmail(UsersLogInRequestDTO request) throws StatusRuntimeException {
         try {
-            Users.Doctor response = doctorService.getDoctorByEmail(StringValue.of(request.getEmail()));
-            return new UsersLogInResponseDTO(
-                response.getEmail(),
-                response.getPassword()
-            );
+            return doctorService.getDoctorByEmail(StringValue.of(request.getEmail()));
         } catch (StatusRuntimeException e) {
             this.logger.info("Could not find doctor with email " + request.getEmail());
             throw e;

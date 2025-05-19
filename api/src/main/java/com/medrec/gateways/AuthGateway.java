@@ -1,6 +1,7 @@
 package com.medrec.gateways;
 
 import com.medrec.dtos.auth.AuthResponseDTO;
+import com.medrec.dtos.auth.TokenResponseDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
@@ -155,15 +156,13 @@ public class AuthGateway {
         }
     }
 
-    public boolean isTokenValid(String token) throws RuntimeException{
+    public Auth.TokenResponse isTokenValid(String token) throws RuntimeException {
         try {
-            Auth.ValidateTokeResponse response = authService.validateToken(
+            return authService.validateToken(
                 Auth.TokenRequest.newBuilder()
                 .setToken(token)
                 .build()
             );
-
-            return response.getValid();
         } catch (StatusRuntimeException e){
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }

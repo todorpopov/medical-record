@@ -2,9 +2,11 @@ package com.medrec.services;
 
 import com.medrec.dtos.auth.AuthResponseDTO;
 import com.medrec.dtos.auth.LogUserInDTO;
+import com.medrec.dtos.auth.TokenResponseDTO;
 import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
 import com.medrec.dtos.users.patient.RegisterPatientDTO;
 import com.medrec.gateways.AuthGateway;
+import com.medrec.grpc.auth.Auth;
 import io.grpc.StatusRuntimeException;
 import org.springframework.stereotype.Component;
 
@@ -118,12 +120,19 @@ public class AuthService {
         }
     }
 
-    public boolean isTokenValid(String token) throws StatusRuntimeException{
+    public TokenResponseDTO isTokenValid(String token) throws StatusRuntimeException{
         this.logger.info("Checking if token is valid");
         try {
-            boolean response = authGateway.isTokenValid(token);
+            Auth.TokenResponse response = authGateway.isTokenValid(token);
             this.logger.info("Token is valid");
-            return response;
+            return new TokenResponseDTO(
+                response.getValid(),
+                response.getId(),
+                response.getEmail(),
+                response.getFirstName(),
+                response.getLastName(),
+                response.getRole()
+            );
         } catch (StatusRuntimeException e) {
             this.logger.warning("Could not check if token is valid");
             throw e;

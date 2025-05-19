@@ -1,8 +1,7 @@
 package com.medrec.services;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.medrec.dtos.TokenDataDTO;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
@@ -30,18 +29,22 @@ public class JwtService {
         return instance;
     }
 
-    public String generateToken(String email, String role) {
+    public String generateToken(int id, String firstName, String lastName, String email, String role) {
         logger.info(String.format("Generating JWT token for email: %s and role: %s", email, role));
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + tokenValidityMs);
 
-        Map<String, Object> claims = new HashMap<>();
+        Map<String, String> claims = new HashMap<>();
+
+        claims.put("id", String.valueOf(id));
+        claims.put("firstName", firstName);
+        claims.put("lastName", lastName);
         claims.put("role", role);
 
         return Jwts.builder()
-            .setSubject(email)
             .setClaims(claims)
+            .setSubject(email)
             .setIssuedAt(now)
             .setExpiration(validity)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -52,10 +55,10 @@ public class JwtService {
         if(!isTokenValid(token)) {
             return false;
         }
-        String tokenRole = getRole(token);
+        TokenDataDTO tokenData = getDataFromToken(token);
 
         for(String requiredRole : requiredRoles) {
-            if(requiredRole.equals(tokenRole)) {
+            if(requiredRole.equals(tokenData.getRole())) {
                 return true;
             }
         }
@@ -77,21 +80,22 @@ public class JwtService {
         }
     }
 
-    public String getEmail(String token) {
-        return Jwts.parserBuilder()
+    public TokenDataDTO getDataFromToken(String token) {
+        Jws<Claims> claimsJws = Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
-            .parseClaimsJws(token)
-            .getBody()
-            .getSubject();
-    }
+            .parseClaimsJws(token);
 
-    public String getRole(String token) {
-        return Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody()
-            .get("role", String.class);
+        Claims claims = claimsJws.getBody();
+
+        int id = Integer.parseInt(claims.get("id", String.class));
+
+        return new TokenDataDTO(
+            id,
+            claims.get("firstName", String.class),
+            claims.get("lastName", String.class),
+            claims.getSubject(),
+            claims.get("role", String.class)
+        );
     }
 }

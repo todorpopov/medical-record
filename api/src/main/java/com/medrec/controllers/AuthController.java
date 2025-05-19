@@ -3,6 +3,7 @@ package com.medrec.controllers;
 import com.medrec.dtos.auth.AuthResponseDTO;
 import com.medrec.dtos.auth.LogUserInDTO;
 import com.medrec.dtos.auth.TokenRequestDTO;
+import com.medrec.dtos.auth.TokenResponseDTO;
 import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
 import com.medrec.dtos.users.patient.RegisterPatientDTO;
 import com.medrec.services.AuthService;
@@ -58,7 +59,7 @@ public class AuthController {
     }
 
     @GetMapping("validate-token")
-    public ResponseEntity<Boolean> isTokenValid(@RequestParam("token") String token){
+    public ResponseEntity<TokenResponseDTO> isTokenValid(@RequestParam("token") String token){
         this.logger.info("Validating token");
         return ResponseEntity.ok(this.authService.isTokenValid(token));
     }

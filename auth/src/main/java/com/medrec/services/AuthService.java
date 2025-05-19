@@ -1,7 +1,7 @@
 package com.medrec.services;
 
+import com.medrec.dtos.TokenDataDTO;
 import com.medrec.dtos.UsersLogInRequestDTO;
-import com.medrec.dtos.UsersLogInResponseDTO;
 import com.medrec.gateways.UsersGateway;
 import com.medrec.grpc.auth.Auth;
 import com.medrec.grpc.auth.AuthServiceGrpc;
@@ -49,7 +49,13 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
         try {
             Users.Patient savedPatient= usersGateway.registerPatient(requestWithHashedPass);
-            String token = jwtService.generateToken(request.getEmail(), "patient");
+            String token = jwtService.generateToken(
+                savedPatient.getId(),
+                savedPatient.getFirstName(),
+                savedPatient.getLastName(),
+                savedPatient.getEmail(),
+                "patient"
+            );
             responseObserver.onNext(
                 Auth.RegisterResponse.newBuilder()
                     .setToken(token)
@@ -77,7 +83,13 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
 
         try {
             Users.Doctor doctor = usersGateway.registerDoctor(requestWithHashedPass);
-            String token = jwtService.generateToken(request.getEmail(), "doctor");
+            String token = jwtService.generateToken(
+                doctor.getId(),
+                doctor.getFirstName(),
+                doctor.getLastName(),
+                doctor.getEmail(),
+                "doctor"
+            );
             responseObserver.onNext(
                 Auth.RegisterResponse.newBuilder()
                     .setToken(token)
@@ -100,10 +112,16 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         UsersLogInRequestDTO requestDTO = new UsersLogInRequestDTO(email, password);
 
         try {
-            UsersLogInResponseDTO responseDTO = usersGateway.getPatientByEmail(requestDTO);
+            Users.Patient savedPatient = usersGateway.getPatientByEmail(requestDTO);
 
-            if(BcryptService.checkPassword(password, responseDTO.getPassword())) {
-                String token = jwtService.generateToken(email, "patient");
+            if(BcryptService.checkPassword(password, savedPatient.getPassword())) {
+                String token = jwtService.generateToken(
+                    savedPatient.getId(),
+                    savedPatient.getFirstName(),
+                    savedPatient.getLastName(),
+                    savedPatient.getEmail(),
+                    "patient"
+                );
                 responseObserver.onNext(
                     Auth.LoginResponse.newBuilder()
                         .setToken(token)
@@ -130,10 +148,16 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         UsersLogInRequestDTO requestDTO = new UsersLogInRequestDTO(email, password);
 
         try {
-            UsersLogInResponseDTO responseDTO = usersGateway.getDoctorByEmail(requestDTO);
+            Users.Doctor savedDoctor = usersGateway.getDoctorByEmail(requestDTO);
 
-            if(BcryptService.checkPassword(password, responseDTO.getPassword())) {
-                String token = jwtService.generateToken(email, "doctor");
+            if(BcryptService.checkPassword(password, savedDoctor.getPassword())) {
+                String token = jwtService.generateToken(
+                    savedDoctor.getId(),
+                    savedDoctor.getFirstName(),
+                    savedDoctor.getLastName(),
+                    savedDoctor.getEmail(),
+                    "doctor"
+                );
                 responseObserver.onNext(
                     Auth.LoginResponse.newBuilder()
                         .setToken(token)
@@ -157,7 +181,13 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String password = request.getPassword();
 
         if(email.equals(ADMIN_EMAIL) && password.equals(ADMIN_PASSWORD)) {
-            String token = jwtService.generateToken(email, "admin");
+            String token = jwtService.generateToken(
+                1,
+                "Admin",
+                "Admin",
+                email,
+                "admin"
+            );
             responseObserver.onNext(
                 Auth.LoginResponse.newBuilder()
                     .setToken(token)
@@ -198,7 +228,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     @Override
-    public void validateToken(Auth.TokenRequest request, StreamObserver<Auth.ValidateTokeResponse> responseObserver) {
+    public void validateToken(Auth.TokenRequest request, StreamObserver<Auth.TokenResponse> responseObserver) {
         this.logger.info("Called RPC Validate Token");
 
         String token = request.getToken();
@@ -211,9 +241,16 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         boolean isValid = this.jwtService.isTokenValid(token);
 
         if (isValid) {
+            TokenDataDTO data = this.jwtService.getDataFromToken(token);
+            this.logger.info(data.toString());
             responseObserver.onNext(
-                Auth.ValidateTokeResponse.newBuilder()
+                Auth.TokenResponse.newBuilder()
                     .setValid(true)
+                    .setId(data.getId())
+                    .setEmail(data.getEmail())
+                    .setFirstName(data.getFirstName())
+                    .setLastName(data.getLastName())
+                    .setRole(data.getRole())
                     .build()
             );
             responseObserver.onCompleted();
