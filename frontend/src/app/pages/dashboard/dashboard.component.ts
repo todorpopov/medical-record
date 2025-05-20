@@ -11,6 +11,9 @@ import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {RowActionComponent} from '../../components/row-action/row-action.component';
 import {AppointmentsService} from '../../services/appointments.service';
 import {AppointmentsDto} from '../../common/dtos/appointments.dto';
+import {Page} from '../../common/util/page';
+import {AuthService} from '../../services/auth.service';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,11 +24,14 @@ import {AppointmentsDto} from '../../common/dtos/appointments.dto';
     NgForOf,
     FormsModule,
     NgIf,
+    RouterLink,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
+  private readonly page: Page = 'dashboard';
+
   entityOptions: string[] = ['Patients', 'Doctors', 'Specialties', 'Appointments'];
   selectedEntity: 'Patients' | 'Doctors' | 'Specialties' | 'Appointments' = 'Patients';
 
@@ -51,7 +57,10 @@ export class DashboardComponent {
   constructor(
     private usersService: UsersService,
     private appointmentsService: AppointmentsService,
-  ) {}
+    private authService: AuthService,
+  ) {
+    this.authService.fetchPages(this.page);
+  }
 
   get currentColumnDefs(): ColDef[] {
     switch (this.selectedEntity) {

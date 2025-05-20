@@ -6,6 +6,8 @@ import {RadioComponent} from "../../components/radio/radio.component";
 import {AuthService} from '../../services/auth.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
+import {Router} from '@angular/router';
+import {Page} from '../../common/util/page';
 
 @Component({
   selector: 'app-log-in',
@@ -20,28 +22,45 @@ import {LocalStorageService} from '../../services/local-storage.service';
   styleUrl: './log-in.component.css',
 })
 export class LogInComponent implements ReactiveFormsModule {
+  private readonly page: Page = 'login';
+
   loginForm: FormGroup;
   label: string = 'Log In';
+
   logInError: string = '';
+  logInSuccess: string = '';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private localStorageService: LocalStorageService,
+    private router: Router,
   ) {
+    this.authService.fetchPages(this.page);
+
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      email: [''],
+      password: [''],
       userType: ['patient']
     });
+
+    this.loginForm.get('userType')?.valueChanges.subscribe(userType => {
+      this.updateValidation();
+    })
+
+    this.updateValidation();
   }
 
-  private setLogInError(error: string): void {
-    this.logInError = error;
-  }
-
-  private removeLogInError(): void {
-    this.logInError = ''
+  updateValidation(): void {
+    const userType = this.loginForm.get('userType')?.value;
+    if (userType !== 'admin') {
+      this.loginForm.get('email')?.setValidators([Validators.required, Validators.email]);
+      this.loginForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+    } else {
+      this.loginForm.get('email')?.clearValidators();
+      this.loginForm.get('password')?.clearValidators();
+    }
+    this.loginForm.get('email')?.updateValueAndValidity();
   }
 
   onSubmit(): void {
@@ -52,12 +71,16 @@ export class LogInComponent implements ReactiveFormsModule {
       this.authService.logIn(userType, email, password)
         .subscribe({
           next: (auth: AuthResponse) => {
-            this.localStorageService.storeUserAuth(auth);
-            this.removeLogInError();
+            this.localStorageService.setUserAuth(auth);
+            this.logInSuccess = 'Logged in successfully! Redirecting to home page...';
+            this.logInError = '';
+            setTimeout(() => {
+              this.router.navigate(['/']).catch(err => {console.log(err);});
+            }, 1000);
           },
           error: err => {
             console.log('Error occurred: ', err)
-            this.setLogInError('An error occurred!')
+            this.logInError = err.error.message;
           }
       });
     }

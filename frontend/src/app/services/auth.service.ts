@@ -4,16 +4,21 @@ import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {AuthResponse} from '../common/interfaces/auth.response';
 import {LocalStorageService} from './local-storage.service';
+import {Page} from '../common/util/page';
+import {ApiResponse} from '../common/interfaces/api.response';
+import {Router} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-  private api: string = `${environment.apiGateway}/auth`
+  private api: string = environment.apiGateway
+
 
   constructor(
     private httpClient: HttpClient,
     private localStorageService: LocalStorageService,
+    private router: Router,
   ) {}
 
   public logIn(userType: 'patient' | 'doctor' | 'admin', email: string, password: string): Observable<AuthResponse> {
@@ -21,19 +26,19 @@ export class AuthService {
 
     switch (userType) {
       case "patient": {
-        url = `${this.api}/log-patient-in`;
+        url = `${this.api}/auth/log-patient-in`;
         break;
       }
       case "doctor": {
-        url = `${this.api}/log-doctor-in`;
+        url = `${this.api}/auth/log-doctor-in`;
         break;
       }
       case "admin": {
-        url = `${this.api}/log-admin-in`;
+        url = `${this.api}/auth/log-admin-in`;
         break;
       }
     }
-    return this.httpClient.post<AuthResponse>(url, {'email': email, 'password': password});
+    return this.httpClient.post<AuthResponse>(url, {'email': email, 'password': password})
   }
 
   public registerPatient(
@@ -45,7 +50,7 @@ export class AuthService {
     gpId: number,
     isInsured: boolean,
   ): Observable<AuthResponse> {
-    const url = `${this.api}/register-patient`;
+    const url = `${this.api}/auth/register-patient`;
     return this.httpClient.post<AuthResponse>(url, {
       'firstName': firstName,
       'lastName': lastName,
@@ -65,7 +70,7 @@ export class AuthService {
     generalPractitioner: boolean,
     specialtyId: number,
   ): Observable<AuthResponse> {
-    const url = `${this.api}/register-doctor`;
+    const url = `${this.api}/auth/register-doctor`;
     return this.httpClient.post<AuthResponse>(url, {
       'firstName': firstName,
       'lastName': lastName,
@@ -78,5 +83,24 @@ export class AuthService {
 
   public logOut(): void {
     this.localStorageService.removeUserAuth();
+  }
+
+  public fetchPages(page: Page): void {
+    const token = this.localStorageService.getUserToken();
+    let headers = {}
+
+    if (token) {
+      headers = {
+        'Authorization': token
+      }
+    }
+
+    this.httpClient.get<ApiResponse>(`${this.api}/pages/${page}`, {
+      headers: headers,
+    }).subscribe({
+      error: err => {
+        this.router.navigate(['/']).catch(err => {console.log(err);});
+      }
+    })
   }
 }

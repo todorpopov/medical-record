@@ -84,7 +84,7 @@
           [valueField]="'id'"
           [displayField]="'fullName'"
           (selectionChanged)="onDoctorSelected($event)"
-          [errorMessage]="doctorError"
+          [errorMessage]="gpError"
           formControlName="gpId"
         ></app-dropdown>
       </div>
@@ -119,6 +119,11 @@
         type="submit"
         [disabled]="registerForm.invalid"
       >Submit</button>
+    </div>
+
+    <div class="my-3 mx-2">
+      <span class="form-text text-danger" *ngIf="registerError">{{ registerError }}</span>
+      <span class="form-text text-success" *ngIf="registerSuccess">{{ registerSuccess }}</span>
     </div>
   </form>
 </div>

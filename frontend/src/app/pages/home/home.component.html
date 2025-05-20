@@ -5,34 +5,52 @@
         <img src="/healthcare.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
         MedRec
       </a>
-      <form class="justify-content-end">
-        <button class="btn btn-primary me-2" type="button" (click)="redirectToLogIn()">Log In</button>
-        <button class="btn btn-primary me-2" type="button" (click)="redirectToRegister()">Register</button>
-      </form>
+      <div class="justify-content-end d-flex">
+        <div class="d-flex align-items-center" *ngIf="isUserLogged(); else notLogged">
+          <span class="mx-3">Welcome, {{ userFirstName }}</span>
+          <div *ngIf="isUserAdmin(); else notAdmin">
+            <button class="btn btn-primary me-2" type="button" (click)="redirectToAdminDashboard()">Admin Dashboard</button>
+          </div>
+          <ng-template #notAdmin>
+            <button class="btn btn-primary me-2" type="button" (click)="redirectToMenu()">Main Menu</button>
+          </ng-template>
+          <button class="btn btn-primary me-2" type="button" (click)="logOut()">Log Out</button>
+        </div>
+        <ng-template #notLogged>
+          <button class="btn btn-primary me-2" type="button" (click)="redirectToLogIn()">Log In</button>
+          <button class="btn btn-primary me-2" type="button" (click)="redirectToRegister()">Register</button>
+        </ng-template>
+      </div>
     </div>
   </nav>
   <hr/>
   <div class="my-3 mx-2">
     <p class="text-break">
-      This project has been built as the final project to the 'CSCB869 Java Web Services' course at New Bulgarian
-      University by Todor Popov - F112420.
+      This project has been built as the final project to the <b>CSCB869 Java Web Services</b> course at <b>New Bulgarian
+      University</b> by <b>Todor Popov - F112420</b>.
     </p>
     <p class="text-break">
-      The system follows the microservices architecture, utilizing multiple Java/Maven services and an Angular frontend.
+      The system follows the microservices architecture, utilizing multiple <b>Java/Maven</b> services and an <b>Angular</b> frontend.
     </p>
     <p class="text-break">
-      It uses a Spring Boot RESTful API to act as a gateway between the services and the frontend. Inter-service
-      communication is handled synchronously via gRPC, and asynchronously via RabbitMQ message queues.
+      The frontend is served to the client's browser via <b>Nginx</b>.
     </p>
     <p class="text-break">
-      The system uses a shared PostgreSQL instance to persist data inside multiple, separate databases for individual microservices.
+      It uses a <b>Spring Boot</b> RESTful API to act as a gateway between the services and the frontend. Inter-service
+      communication is handled synchronously via <b>gRPC</b>, and asynchronously via <b>RabbitMQ</b> message queues.
     </p>
     <p class="text-break">
-      All of the individual services and dependencies run inside Docker containers, and are orchestrated using Kubernetes.
+      The system uses a shared <b>PostgreSQL</b> instance to persist data inside multiple, separate databases for individual microservices.
+    </p>
+    <p class="text-break">
+      All persistence operations are handled by the <b>Hibernate ORM</b>.
+    </p>
+    <p class="text-break">
+      All of the individual services and dependencies run inside <b>Docker</b> containers, and are orchestrated using <b>Kubernetes</b>.
     </p>
     <p class="text-break">
       To learn more about the project you can check out the repo on
-        <a target="_blank" href="https://github.com/todorpopov/medical-record" class="text-reset">GitHub</a>
+        <a target="_blank" href="https://github.com/todorpopov/medical-record" class="text-reset"><b>GitHub</b></a>
     </p>
   </div>
 </div>

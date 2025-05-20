@@ -54,7 +54,8 @@
     </div>
 
     <div class="my-3 mx-2">
-      <span class="form-text text-danger error" *ngIf="logInError">{{ logInError }}</span>
+      <span class="form-text text-danger" *ngIf="logInError">{{ logInError }}</span>
+      <span class="form-text text-success" *ngIf="logInSuccess">{{ logInSuccess }}</span>
     </div>
   </form>
 </div>

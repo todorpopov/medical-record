@@ -11,6 +11,8 @@ import {AuthService} from '../../services/auth.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {SpecialtyDto} from '../../common/dtos/specialty.dto';
+import {Router} from '@angular/router';
+import {Page} from '../../common/util/page';
 
 @Component({
   selector: 'app-register',
@@ -26,9 +28,14 @@ import {SpecialtyDto} from '../../common/dtos/specialty.dto';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements ReactiveFormsModule{
+  private readonly page: Page = 'register';
+
   registerForm: FormGroup;
   label: string = 'Register';
   selectedUserType: 'patient' | 'doctor' = 'patient';
+
+  registerError: string = '';
+  registerSuccess: string = '';
 
   specialties: SpecialtyDto[] = []
   selectedSpecialty: SpecialtyDto | null = null;
@@ -36,7 +43,7 @@ export class RegisterComponent implements ReactiveFormsModule{
 
   gpDoctors: DoctorSummary[] = []
   selectedDoctor: DoctorSummary | null = null;
-  doctorError: string = '';
+  gpError: string = '';
 
 
   constructor(
@@ -44,7 +51,10 @@ export class RegisterComponent implements ReactiveFormsModule{
     private usersService: UsersService,
     private authService: AuthService,
     private localStorageService: LocalStorageService,
+    private router: Router,
   ) {
+    this.authService.fetchPages(this.page);
+
     this.getGpDoctors();
     this.getSpecialties();
 
@@ -80,10 +90,10 @@ export class RegisterComponent implements ReactiveFormsModule{
       })
       .catch(error => {
         console.log(error)
-        this.doctorError = 'Error retrieving doctors';
+        this.gpError = 'Error retrieving doctors';
         return [];
       });
-    this.doctorError = '';
+    this.gpError = '';
   }
 
   private async getSpecialties() {
@@ -169,10 +179,16 @@ export class RegisterComponent implements ReactiveFormsModule{
             formValue.isHealthInsured
           ).subscribe({
             next: (authResponse: AuthResponse) => {
-              this.localStorageService.storeUserAuth(authResponse);
+              this.localStorageService.setUserAuth(authResponse);
+              this.registerSuccess = 'Registered successfully! Redirecting to home page...';
+              this.registerError = '';
+              setTimeout(() => {
+                this.router.navigate(['/']).catch(err => {console.log(err);});
+              }, 1000);
             },
             error: (error) => {
-              console.log(error);
+              this.registerError = error.error.message;
+              this.registerSuccess = '';
             }
           });
           break;
@@ -187,8 +203,17 @@ export class RegisterComponent implements ReactiveFormsModule{
             formValue.specialtyId
           ).subscribe({
             next: (authResponse: AuthResponse) => {
-              this.localStorageService.storeUserAuth(authResponse);
+              this.localStorageService.setUserAuth(authResponse);
+              this.registerSuccess = 'Registered successfully! Redirecting to home page...';
+              this.registerError = '';
+              setTimeout(() => {
+                this.router.navigate(['/']).catch(err => {console.log(err);});
+              }, 1000);
             },
+            error: (error) => {
+              this.registerError = error.error.message;
+              this.registerSuccess = '';
+            }
           });
           break;
         }
