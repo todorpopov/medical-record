@@ -6,6 +6,7 @@ import com.medrec.exception_handling.exceptions.DatabaseException;
 import com.medrec.exception_handling.exceptions.NotFoundException;
 import com.medrec.gateway.UsersGateway;
 import com.medrec.persistence.DBUtils;
+import com.medrec.utils.CascadeEntityType;
 import io.grpc.StatusRuntimeException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -320,7 +321,7 @@ public class AppointmentsRepository {
         }
     }
 
-    public void genericCascadeDelete(int entityId, String type) throws RuntimeException {
+    public void genericCascadeDelete(int entityId, CascadeEntityType type) throws RuntimeException {
 
         logger.info("Cascading appointments for " + type + " with id " + entityId);
 
@@ -334,17 +335,16 @@ public class AppointmentsRepository {
             Session session = DBUtils.getCurrentSession();
             tx = session.beginTransaction();
 
-            int num = 0;
-            if (type.equals("doctor")) {
-                String hql = "DELETE FROM Appointment a WHERE a.doctorId=:doctorId";
-                num = session.createQuery(hql, Appointment.class).setParameter("doctorId", entityId).executeUpdate();
-            } else if (type.equals("patient")) {
-                String hql = "DELETE FROM Appointment a WHERE a.patientId=:patientId";
-                num = session.createQuery(hql, Appointment.class).setParameter("patientId", entityId).executeUpdate();
-            } else {
-                logger.severe("Type is invalid");
-                throw new BadRequestException("invalid_entity_type");
-            }
+            int num = switch (type) {
+                case PATIENT -> {
+                    String hql = "DELETE FROM Appointment a WHERE a.patientId=:patientId";
+                    yield session.createQuery(hql, Appointment.class).setParameter("patientId", entityId).executeUpdate();
+                }
+                case DOCTOR -> {
+                    String hql = "DELETE FROM Appointment a WHERE a.doctorId=:doctorId";
+                    yield session.createQuery(hql, Appointment.class).setParameter("doctorId", entityId).executeUpdate();
+                }
+            };
 
             tx.commit();
             this.logger.info(String.format("Successfully deleted %d appointments for %s with id %d", num, type, entityId));

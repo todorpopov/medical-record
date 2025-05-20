@@ -8,6 +8,7 @@ import com.medrec.grpc.users.Appointments;
 import com.medrec.grpc.users.AppointmentsServiceGrpc;
 import com.medrec.persistence.appointment.Appointment;
 import com.medrec.persistence.appointment.AppointmentsRepository;
+import com.medrec.utils.CascadeEntityType;
 import io.grpc.stub.StreamObserver;
 
 import java.time.LocalDateTime;
@@ -168,7 +169,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         this.logger.info("Cascade deleting all appointments for patient with id: " + id);
 
         try {
-            this.appointmentsRepository.genericCascadeDelete(id, "patient");
+            this.appointmentsRepository.genericCascadeDelete(id, CascadeEntityType.PATIENT);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
@@ -182,7 +183,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         this.logger.info("Cascade deleting all appointments for doctor with id: " + id);
 
         try {
-            this.appointmentsRepository.genericCascadeDelete(id, "doctor");
+            this.appointmentsRepository.genericCascadeDelete(id, CascadeEntityType.DOCTOR);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
