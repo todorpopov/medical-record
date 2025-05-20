@@ -28,15 +28,6 @@ public class PageAuthController {
         return ResponseEntity.ok(response);
     }
 
-    @RequestMapping("/home")
-    public ResponseEntity<SuccessHTTPResponse> forgotPassword() {
-        SuccessHTTPResponse response = new SuccessHTTPResponse(
-            "SUCCESS",
-            "Home page is accessible to user"
-        );
-        return ResponseEntity.ok(response);
-    }
-
     @AuthGuard({"admin"})
     @RequestMapping("/dashboard")
     public ResponseEntity<SuccessHTTPResponse> adminDashboard() {
