@@ -1,5 +1,6 @@
 package com.medrec.interceptors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medrec.annotations.AuthGuard;
 import com.medrec.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,12 +10,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
     private final AuthService authService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AuthInterceptor(AuthService authService) {
         this.authService = authService;
@@ -37,7 +42,16 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         if (token == null || token.isEmpty()) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("Authentication required");
+            response.setContentType("application/json");
+
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("code", "UNAUTHORIZED");
+            errorResponse.put("message", "No authorization token provided");
+            errorResponse.put("timestamp", LocalDateTime.now().toString());
+
+            String json = objectMapper.writeValueAsString(errorResponse);
+            response.getWriter().write(json);
+            response.getWriter().flush();
             return false;
         }
 
