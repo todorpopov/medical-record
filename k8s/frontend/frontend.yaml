@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: frontend-service
-          image: frontend-service:latest
-          imagePullPolicy: Never
+          image: docker.io/todorpopov02/frontend-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           resources:
@@ -29,6 +29,8 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+      imagePullSecrets:
+        - name: regcred
 
 ---
 
