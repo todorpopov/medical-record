@@ -47,4 +47,14 @@ public class PageAuthController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @AuthGuard({})
+    @RequestMapping("/home")
+    public ResponseEntity<SuccessHTTPResponse> home() {
+        SuccessHTTPResponse response = new SuccessHTTPResponse(
+            "SUCCESS",
+            "Home page is accessible to user"
+        );
+        return ResponseEntity.ok(response);
+    }
 }

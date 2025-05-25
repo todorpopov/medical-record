@@ -1,1 +1,1 @@
-export type Page = 'dashboard' | 'login' | 'register' | 'menu';
+export type Page = 'dashboard' | 'login' | 'register' | 'menu' | 'home';

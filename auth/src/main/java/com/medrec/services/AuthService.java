@@ -217,7 +217,7 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String email = request.getEmail();
         String password = request.getPassword();
 
-        if(email.equals(ADMIN_EMAIL) && password.equals(ADMIN_PASSWORD)) {
+        if (email.equals(ADMIN_EMAIL) && password.equals(ADMIN_PASSWORD)) {
             String token = jwtService.generateToken(
                 1,
                 "Admin",
@@ -238,8 +238,6 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         } else {
             responseObserver.onError(Status.UNAUTHENTICATED.withDescription("Invalid credentials").asRuntimeException());
         }
-
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -249,8 +247,22 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
         String token = request.getToken();
         List<String> requiredRole = request.getRequiredRolesList();
 
-        if(token.isBlank() || requiredRole.isEmpty() || requiredRole.contains(null) || requiredRole.contains("") || requiredRole.contains(" ")) {
+        if(token.isBlank()) {
             responseObserver.onError(Status.ABORTED.withDescription("Bad request").asRuntimeException());
+            return;
+        }
+
+        if (requiredRole.isEmpty()) {
+            if(this.jwtService.isTokenValid(token)) {
+                responseObserver.onNext(
+                    Auth.AuthorizationResponse.newBuilder()
+                        .setIsTokenAuthorized(true)
+                        .build()
+                );
+                responseObserver.onCompleted();
+            } else {
+                responseObserver.onError(Status.PERMISSION_DENIED.withDescription("Unauthorized").asRuntimeException());
+            }
             return;
         }
 

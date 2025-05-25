@@ -3,6 +3,8 @@ import {Router} from '@angular/router';
 import {NgIf} from '@angular/common';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
+import {Page} from '../../common/util/page';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -13,12 +15,16 @@ import {AuthResponse} from '../../common/interfaces/auth.response';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
+  private readonly page: Page = 'home';
+
   userFirstName: string = '';
 
   constructor(
     private router: Router,
+    private authService: AuthService,
     private localStorageService: LocalStorageService,
   ) {
+    this.authService.fetchPages(this.page);
     const name = this.localStorageService.getUserFirstName();
     this.userFirstName = name ? name : 'User';
   }
