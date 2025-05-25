@@ -1,5 +1,6 @@
 package com.medrec.persistence.appointment;
 
+import com.medrec.persistence.diagnosis.Diagnosis;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,10 @@ public class Appointment {
     @Column(name = "patient_id", nullable = false)
     private int patientId;
 
+    @OneToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "diagnosis_id")
+    private Diagnosis diagnosis;
+
     public Appointment() {
     }
 
@@ -30,6 +35,14 @@ public class Appointment {
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.status = status;
+    }
+
+    public Appointment(LocalDateTime dateTime, String status, int doctorId, int patientId, Diagnosis diagnosis) {
+        this.dateTime = dateTime;
+        this.status = status;
+        this.doctorId = doctorId;
+        this.patientId = patientId;
+        this.diagnosis = diagnosis;
     }
 
     public int getId() {
@@ -70,6 +83,14 @@ public class Appointment {
 
     public void setPatientId(int patientId) {
         this.patientId = patientId;
+    }
+
+    public Diagnosis getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void setDiagnosis(Diagnosis diagnosis) {
+        this.diagnosis = diagnosis;
     }
 
     @Override

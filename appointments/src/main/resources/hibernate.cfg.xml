@@ -15,6 +15,9 @@
         <property name="hibernate.current_session_context_class">thread</property> <!-- Setup getCurrentSession for thread -->
 
         <mapping class="com.medrec.persistence.appointment.Appointment"/>
+        <mapping class="com.medrec.persistence.diagnosis.Diagnosis"/>
+        <mapping class="com.medrec.persistence.icd.Icd"/>
+        <mapping class="com.medrec.persistence.leave.SickLeave"/>
 
     </session-factory>
 </hibernate-configuration>
