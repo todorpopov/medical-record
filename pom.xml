@@ -135,7 +135,6 @@
     <module>api</module>
     <module>auth</module>
     <module>users</module>
-    <module>diagnoses</module>
     <module>appointments</module>
   </modules>
 </project>
