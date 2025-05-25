@@ -46,4 +46,5 @@ spec:
   ports:
     - port: 4000
       targetPort: 80
-  type: ClusterIP
+      nodePort: 32000
+  type: NodePort

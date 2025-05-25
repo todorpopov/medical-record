@@ -10,12 +10,10 @@ class DockerImageBuilder(AbstractModuleBuilder):
     def __init__(self, init_modules=None):
         super().__init__(["api", "appointments", "auth", "diagnoses", "users", "frontend"], init_modules)
 
-        sys.exit(self.main())
-
     def run_build_module_command(self, path):
         module_name = os.path.basename(path)
 
-        cmd = ["docker", "build", "-t", f"{module_name}-service:latest", f"{path}"]
+        cmd = ["docker", "buildx", "build", "--platform", "linux/amd64", "-t", f"todorpopov02/{module_name}-service:latest", "--push", "."]
 
         self._logger.info(f"Building Docker image for module '{module_name}' in '{path}")
         self._logger.info(f"Executing command: {cmd}")
@@ -42,6 +40,7 @@ class DockerImageBuilder(AbstractModuleBuilder):
 
         for module in modules:
             module_path = os.path.join(self.BASE_DIR, f"{module}")
+            print("PATH: " + module_path)
 
             result = self.run_build_module_command(module_path)
 

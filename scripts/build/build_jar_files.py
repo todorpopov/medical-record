@@ -10,8 +10,6 @@ class JarFileBuilder(AbstractModuleBuilder):
     def __init__(self, init_modules=None):
         super().__init__(["api", "appointments", "auth", "diagnoses", "users"], init_modules)
 
-        sys.exit(self.main())
-
     def run_build_module_command(self, path):
         module_name = os.path.basename(path)
 
@@ -57,4 +55,4 @@ class JarFileBuilder(AbstractModuleBuilder):
 
 
 if __name__ == "__main__":
-    obj = JarFileBuilder()
+    obj = JarFileBuilder().main()
