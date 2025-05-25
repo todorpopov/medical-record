@@ -38,7 +38,7 @@ public class PageAuthController {
         return ResponseEntity.ok(response);
     }
 
-    @AuthGuard({"doctor", "patient", "admin"})
+    @AuthGuard({"doctor", "patient"})
     @RequestMapping("/menu")
     public ResponseEntity<SuccessHTTPResponse> doctorDashboard() {
         SuccessHTTPResponse response = new SuccessHTTPResponse(
