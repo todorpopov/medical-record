@@ -1,5 +1,16 @@
 package com.medrec.persistence.icd;
 
+import com.medrec.exception_handling.exceptions.BadRequestException;
+import com.medrec.exception_handling.exceptions.DatabaseConnectionException;
+import com.medrec.exception_handling.exceptions.DatabaseException;
+import com.medrec.exception_handling.exceptions.NotFoundException;
+import com.medrec.persistence.DBUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class IcdRepository {
@@ -14,5 +25,181 @@ public class IcdRepository {
             instance = new IcdRepository();
         }
         return instance;
+    }
+
+    public Icd save(String code, String description) throws RuntimeException {
+        this.logger.info("Saving new ICD");
+
+        if (code.isBlank() || description.isBlank()) {
+            this.logger.severe("Code or description is invalid");
+            throw new BadRequestException("invalid_code_or_description");
+        }
+
+        Icd icd = new Icd(code, description);
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = session.beginTransaction();
+            session.persist(icd);
+            tx.commit();
+            this.logger.info("New ICD saved successfully");
+            return icd;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new RuntimeException("Exception found in database connection initialization!");
+        } catch (BadRequestException e) {
+            logger.severe("Bad request exception found: " + e.getMessage());
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public Icd getById(int id) throws RuntimeException {
+        this.logger.info("Getting ICD with id " + id);
+        if (id < 1) {
+            this.logger.severe("ICD id is invalid");
+            throw new BadRequestException("invalid_id");
+        }
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = session.beginTransaction();
+            Icd icd = session.get(Icd.class, id);
+            if (icd == null) {
+                this.logger.severe("Could not find ICD with id " + id);
+                throw new NotFoundException("icd_not_found");
+            }
+            tx.commit();
+
+            this.logger.info("ICD found successfully");
+            return icd;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (BadRequestException e) {
+            logger.severe("Bad request exception found: " + e.getMessage());
+            throw e;
+        } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
+            logger.severe("Not found exception found: " + e.getMessage());
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public List<Icd> findAll() throws RuntimeException {
+        this.logger.info("Getting all ICDs");
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = session.beginTransaction();
+            String hql = "SELECT i FROM Icd i";
+            List<Icd> icds = session.createQuery(hql, Icd.class).getResultList();
+            tx.commit();
+            return icds;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public Icd update(int icdId, Optional<String> code, Optional<String> description) throws RuntimeException {
+        this.logger.info("Updating ICD with id " + icdId);
+        if (icdId < 1) {
+            this.logger.severe("ICD id is invalid");
+            throw new BadRequestException("invalid_if");
+        }
+        if ((code.isPresent() && code.get().isBlank()) || (description.isPresent() && description.get().isBlank())) {
+            this.logger.severe("Code or description is invalid");
+            throw new BadRequestException("invalid_code_or_description");
+        }
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = session.beginTransaction();
+            Icd icd = session.get(Icd.class, icdId);
+            if (icd == null) {
+                this.logger.severe("Could not find ICD with id " + icdId);
+                throw new NotFoundException("icd_not_found");
+            }
+
+            code.ifPresent(icd::setCode);
+            description.ifPresent(icd::setDescription);
+
+            session.merge(icd);
+            tx.commit();
+
+            this.logger.info("ICD updated successfully");
+            return icd;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (BadRequestException e) {
+            logger.severe("Bad request exception found: " + e.getMessage());
+            throw e;
+        } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
+            logger.severe("Not found exception found: " + e.getMessage());
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public void delete(int id) throws RuntimeException {
+        this.logger.info("Deleting ICD with id " + id);
+        if (id < 1) {
+            this.logger.severe("ICD id is invalid");
+            throw new BadRequestException("invalid_id");
+        }
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = session.beginTransaction();
+            Icd icd = session.get(Icd.class, id);
+            if (icd == null) {
+                this.logger.severe("Could not find ICD with id " + id);
+                throw new NotFoundException("icd_not_found");
+            }
+
+            session.delete(icd);
+            tx.commit();
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (BadRequestException e) {
+            logger.severe("Bad request exception found: " + e.getMessage());
+            throw e;
+        } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
+            logger.severe("Not found exception found: " + e.getMessage());
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
     }
 }
