@@ -2,6 +2,7 @@ package com.medrec;
 
 import com.medrec.services.AppointmentsService;
 import com.medrec.services.DiagnosesService;
+import com.medrec.services.IcdService;
 import com.medrec.services.SickLeaveService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -23,6 +24,7 @@ public class GrpcServer {
 
         Server server = ServerBuilder.forPort(port)
             .executor(executor)
+            .addService(IcdService.getInstance())
             .addService(SickLeaveService.getInstance())
             .addService(DiagnosesService.getInstance())
             .addService(AppointmentsService.getInstance())
