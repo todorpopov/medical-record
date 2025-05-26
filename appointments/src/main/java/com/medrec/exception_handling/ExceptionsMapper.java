@@ -36,6 +36,8 @@ public class ExceptionsMapper {
                 return Status.ABORTED.withDescription("Invalid treatment description or ICD id").asRuntimeException();
             } else if (message.contains("invalid_code_or_description")) {
                 return Status.ABORTED.withDescription("Invalid code or description").asRuntimeException();
+            } else if (message.contains("invalid_start_date_or_number_of_days_leave")) {
+                return Status.ABORTED.withDescription("Invalid start date or number of days leave").asRuntimeException();
             } else {
                 return Status.ABORTED.withDescription("Bad request").asRuntimeException();
             }
@@ -49,6 +51,8 @@ public class ExceptionsMapper {
                 return Status.NOT_FOUND.withDescription("Doctor Not Found").asRuntimeException();
             } else if (message.contains("icd_not_found")) {
                 return Status.NOT_FOUND.withDescription("ICD Not Found").asRuntimeException();
+            } else if (message.contains("sick_leave_not_found")) {
+                return Status.NOT_FOUND.withDescription("Sick Leave Not Found").asRuntimeException();
             } else {
                 return Status.NOT_FOUND.withDescription("Entity Not Found").asRuntimeException();
             }
