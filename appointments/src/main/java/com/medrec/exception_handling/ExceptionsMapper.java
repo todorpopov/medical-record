@@ -32,6 +32,10 @@ public class ExceptionsMapper {
                 return Status.ABORTED.withDescription("Invalid status").asRuntimeException();
             } else if (message.contains("invalid_entity_type")) {
                 return Status.ABORTED.withDescription("Invalid entity type").asRuntimeException();
+            } else if (message.contains("invalid_treatment_description_or_icd_id")) {
+                return Status.ABORTED.withDescription("Invalid treatment description or ICD id").asRuntimeException();
+            } else if (message.contains("invalid_code_or_description")) {
+                return Status.ABORTED.withDescription("Invalid code or description").asRuntimeException();
             } else {
                 return Status.ABORTED.withDescription("Bad request").asRuntimeException();
             }
@@ -43,6 +47,8 @@ public class ExceptionsMapper {
                 return Status.NOT_FOUND.withDescription("Patient Not Found").asRuntimeException();
             } else if (message.contains("doctor_not_found")) {
                 return Status.NOT_FOUND.withDescription("Doctor Not Found").asRuntimeException();
+            } else if (message.contains("icd_not_found")) {
+                return Status.NOT_FOUND.withDescription("ICD Not Found").asRuntimeException();
             } else {
                 return Status.NOT_FOUND.withDescription("Entity Not Found").asRuntimeException();
             }

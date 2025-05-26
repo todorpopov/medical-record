@@ -18,7 +18,7 @@ public class Diagnosis {
     @JoinColumn(name = "icd_id", nullable = false)
     private Icd icd;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "sick_leave_id", referencedColumnName = "id")
     private SickLeave sickLeave;
 
@@ -31,6 +31,12 @@ public class Diagnosis {
     public Diagnosis(String treatmentDescription, Icd icd) {
         this.treatmentDescription = treatmentDescription;
         this.icd = icd;
+    }
+
+    public Diagnosis(String treatmentDescription, Icd icd, SickLeave leave) {
+        this.treatmentDescription = treatmentDescription;
+        this.icd = icd;
+        this.sickLeave = leave;
     }
 
     public int getId() {
