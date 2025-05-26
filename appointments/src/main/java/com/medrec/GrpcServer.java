@@ -1,6 +1,8 @@
 package com.medrec;
 
 import com.medrec.services.AppointmentsService;
+import com.medrec.services.DiagnosesService;
+import com.medrec.services.SickLeaveService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.health.v1.HealthCheckResponse;
@@ -21,6 +23,8 @@ public class GrpcServer {
 
         Server server = ServerBuilder.forPort(port)
             .executor(executor)
+            .addService(SickLeaveService.getInstance())
+            .addService(DiagnosesService.getInstance())
             .addService(AppointmentsService.getInstance())
             .addService(healthStatusManager.getHealthService())
             .build();
