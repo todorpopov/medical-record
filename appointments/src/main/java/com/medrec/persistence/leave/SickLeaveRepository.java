@@ -31,10 +31,10 @@ public class SickLeaveRepository {
         return instance;
     }
 
-    public SickLeave save(String startDate, int numberOfDaysLeave) throws RuntimeException {
+    public SickLeave save(String startDate, int daysOfLeave) throws RuntimeException {
         this.logger.info("Saving new Sick Leave");
 
-        if (startDate.isBlank() || numberOfDaysLeave < 1) {
+        if (startDate.isBlank() || daysOfLeave < 1) {
             this.logger.severe("Start date or number of days leave is invalid");
             throw new BadRequestException("invalid_start_date_or_number_of_days_leave");
         }
@@ -46,7 +46,7 @@ public class SickLeaveRepository {
             Session session = DBUtils.getCurrentSession();
             tx = session.beginTransaction();
 
-            SickLeave sickLeave = new SickLeave(startDateLocal, numberOfDaysLeave);
+            SickLeave sickLeave = new SickLeave(startDateLocal, daysOfLeave);
 
             session.persist(sickLeave);
             tx.commit();
@@ -132,14 +132,14 @@ public class SickLeaveRepository {
         }
     }
 
-    public SickLeave update(int id, Optional<String> startDate, Optional<Integer> numberOfDaysLeave) throws RuntimeException {
+    public SickLeave update(int id, Optional<String> startDate, Optional<Integer> daysOfLeave) throws RuntimeException {
         this.logger.info("Updating Sick Leave with id " + id);
         if (id < 1) {
             this.logger.warning("Id is invalid");
             throw new BadRequestException("invalid_id");
         }
 
-        if ((startDate.isPresent() && startDate.get().isBlank()) || (numberOfDaysLeave.isPresent() && numberOfDaysLeave.get() < 1)) {
+        if ((startDate.isPresent() && startDate.get().isBlank()) || (daysOfLeave.isPresent() && daysOfLeave.get() < 1)) {
             this.logger.warning("Start date or number of days leave is invalid");
             throw new BadRequestException("invalid_start_date_or_number_of_days_leave");
         }
@@ -160,7 +160,7 @@ public class SickLeaveRepository {
                 sickLeave.setStartDate(newDate);
             }
 
-            numberOfDaysLeave.ifPresent(sickLeave::setDaysOfLeave);
+            daysOfLeave.ifPresent(sickLeave::setDaysOfLeave);
 
             session.merge(sickLeave);
 
