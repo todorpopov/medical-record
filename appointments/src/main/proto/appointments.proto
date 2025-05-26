@@ -41,3 +41,95 @@ message UpdateAppointmentRequest {
   int32 id = 1;
   string status = 2;
 }
+
+service DiagnosesService {
+  rpc CreateDiagnosis (CreateDiagnosisRequest) returns (Diagnosis);
+  rpc GetDiagnosisById (google.protobuf.Int32Value) returns (Diagnosis);
+  rpc GetAllDiagnoses (google.protobuf.Empty) returns (DiagnosesList);
+  rpc UpdateDiagnosis (UpdateDiagnosisRequest) returns (Diagnosis);
+  rpc DeleteDiagnosisById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+}
+
+message Diagnosis {
+  int32 id = 1;
+  string treatmentDescription = 2;
+  Icd icd = 3;
+  optional SickLeave sickLeave = 4;
+}
+
+message CreateDiagnosisRequest {
+  string treatmentDescription = 1;
+  int32 icdId = 2;
+  optional string sickLeaveDate = 3;
+  optional int32 sickLeaveDays = 4;
+}
+
+message DiagnosesList {
+  repeated Diagnosis diagnoses = 1;
+}
+
+message UpdateDiagnosisRequest {
+  int32 id = 1;
+  optional string treatmentDescription = 2;
+  optional int32 icdId = 3;
+  optional string sickLeaveDate = 4;
+  optional int32 sickLeaveDays = 5;
+}
+
+service SickLeaveService {
+  rpc CreateSickLeave (CreateSickLeaveRequest) returns (SickLeave);
+  rpc GetSickLeaveById (google.protobuf.Int32Value) returns (SickLeave);
+  rpc GetAllSickLeaveEntities (google.protobuf.Empty) returns (SickLeaveEntitiesList);
+  rpc UpdateSickLeave (UpdateSickLeaveRequest) returns (SickLeave);
+  rpc DeleteSickLeaveById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+}
+
+message SickLeave {
+  int32 id = 1;
+  string date = 2;
+  int32 daysOfLeave = 3;
+}
+
+message CreateSickLeaveRequest {
+  string date = 1;
+  int32 daysOfLeave = 2;
+}
+
+message SickLeaveEntitiesList {
+  repeated SickLeave sickLeaveEntities = 2;
+}
+
+message UpdateSickLeaveRequest {
+  int32 id = 1;
+  optional string date = 2;
+  optional int32 daysOfLeave = 3;
+}
+
+service IcdService {
+  rpc CreateIcd (CreateIcdRequest) returns (Icd);
+  rpc GetIcdById (google.protobuf.Int32Value) returns (Icd);
+  rpc GetAllIcdEntities (google.protobuf.Empty) returns (IcdEntitiesList);
+  rpc UpdateIcd (UpdateIcdRequest) returns (Icd);
+  rpc DeleteIcdById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+}
+
+message Icd {
+  int32 id = 1;
+  string code = 2;
+  string description = 3;
+}
+
+message CreateIcdRequest {
+  string code = 1;
+  string description = 2;
+}
+
+message IcdEntitiesList {
+  repeated Icd icdEntities = 1;
+}
+
+message UpdateIcdRequest {
+  int32 id = 1;
+  optional string code = 2;
+  optional string description = 3;
+}
