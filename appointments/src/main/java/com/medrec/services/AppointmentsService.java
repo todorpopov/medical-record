@@ -4,17 +4,17 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import com.medrec.exception_handling.ExceptionsMapper;
-import com.medrec.grpc.users.Appointments;
-import com.medrec.grpc.users.AppointmentsServiceGrpc;
+import com.medrec.grpc.appointments.Appointments;
+import com.medrec.grpc.appointments.AppointmentsServiceGrpc;
 import com.medrec.persistence.appointment.Appointment;
 import com.medrec.persistence.appointment.AppointmentsRepository;
 import com.medrec.utils.CascadeEntityType;
+import com.medrec.utils.Utils;
 import io.grpc.stub.StreamObserver;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Logger;
+
 
 public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsServiceImplBase {
     private static AppointmentsService instance;
@@ -22,9 +22,6 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
     private final Logger logger = Logger.getLogger(AppointmentsService.class.getName());
 
     private final AppointmentsRepository appointmentsRepository = AppointmentsRepository.getInstance();
-
-    static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     private AppointmentsService() {}
 
@@ -47,7 +44,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
                 request.getPatientId()
             );
 
-            responseObserver.onNext(grpcFromDomainModel(appointment));
+            responseObserver.onNext(Utils.getAppointmentFromDomainModel(appointment));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
@@ -61,7 +58,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
 
         try {
             Appointment appointment = this.appointmentsRepository.getById(id);
-            responseObserver.onNext(grpcFromDomainModel(appointment));
+            responseObserver.onNext(Utils.getAppointmentFromDomainModel(appointment));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
@@ -75,7 +72,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         try {
             List<Appointment> appointments = this.appointmentsRepository.findAll();
             List<Appointments.Appointment> grpcAppointments = appointments.stream()
-                .map(AppointmentsService::grpcFromDomainModel)
+                .map(Utils::getAppointmentFromDomainModel)
                 .toList();
 
             Appointments.AppointmentsList list = Appointments.AppointmentsList.newBuilder()
@@ -97,7 +94,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         try {
             List<Appointment> appointments = this.appointmentsRepository.findAllByPatientEmail(email);
             List<Appointments.Appointment> grpcAppointments = appointments.stream()
-                .map(AppointmentsService::grpcFromDomainModel)
+                .map(Utils::getAppointmentFromDomainModel)
                 .toList();
 
             Appointments.AppointmentsList list = Appointments.AppointmentsList.newBuilder()
@@ -119,7 +116,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         try {
             List<Appointment> appointments = this.appointmentsRepository.findAllByDoctorEmail(email);
             List<Appointments.Appointment> grpcAppointments = appointments.stream()
-                .map(AppointmentsService::grpcFromDomainModel)
+                .map(Utils::getAppointmentFromDomainModel)
                 .toList();
 
             Appointments.AppointmentsList list = Appointments.AppointmentsList.newBuilder()
@@ -142,7 +139,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
 
         try {
             Appointment appointment = this.appointmentsRepository.update(id, status);
-            responseObserver.onNext(grpcFromDomainModel(appointment));
+            responseObserver.onNext(Utils.getAppointmentFromDomainModel(appointment));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
@@ -189,21 +186,5 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
-    }
-
-    static Appointments.Appointment grpcFromDomainModel(Appointment appointment) {
-        LocalDateTime dateTime = appointment.getDateTime();
-
-        String date = dateTime.format(dateFormatter);
-        String time = dateTime.format(timeFormatter);
-
-        return Appointments.Appointment.newBuilder()
-            .setId(appointment.getId())
-            .setDate(date)
-            .setTime(time)
-            .setStatus(appointment.getStatus())
-            .setDoctorId(appointment.getDoctorId())
-            .setPatientId(appointment.getPatientId())
-            .build();
     }
 }

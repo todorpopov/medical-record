@@ -2,8 +2,8 @@ package com.medrec.services;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
-import com.medrec.grpc.users.Appointments;
-import com.medrec.grpc.users.SickLeaveServiceGrpc;
+import com.medrec.grpc.appointments.Appointments;
+import com.medrec.grpc.appointments.SickLeaveServiceGrpc;
 import com.medrec.persistence.leave.SickLeave;
 import com.medrec.persistence.leave.SickLeaveRepository;
 import com.medrec.utils.Utils;

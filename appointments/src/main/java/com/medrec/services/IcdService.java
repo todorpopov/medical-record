@@ -2,8 +2,8 @@ package com.medrec.services;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
-import com.medrec.grpc.users.Appointments;
-import com.medrec.grpc.users.IcdServiceGrpc;
+import com.medrec.grpc.appointments.Appointments;
+import com.medrec.grpc.appointments.IcdServiceGrpc;
 import com.medrec.persistence.icd.Icd;
 import com.medrec.persistence.icd.IcdRepository;
 import com.medrec.utils.Utils;

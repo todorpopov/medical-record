@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
 
-package com.medrec.grpc.users;
+package com.medrec.grpc.appointments;
 
 service AppointmentsService {
   rpc CreateAppointment (CreateAppointmentRequest) returns (Appointment);
@@ -24,6 +24,7 @@ message Appointment {
   int32 patientId = 4;
   int32 doctorId = 5;
   string status = 6;
+  optional Diagnosis diagnosis = 7;
 }
 
 message CreateAppointmentRequest {
@@ -40,6 +41,7 @@ message AppointmentsList {
 message UpdateAppointmentRequest {
   int32 id = 1;
   string status = 2;
+  optional int32 diagnosisId = 3;
 }
 
 service DiagnosesService {
