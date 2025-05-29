@@ -132,7 +132,7 @@ public class DiagnosisRepository {
     public Diagnosis update(int diagnosisId, Optional<String> treatmentDescription, Optional<Integer> icdId, Optional<SickLeave> leave) throws RuntimeException {
         this.logger.info("Updating diagnosis with id " + diagnosisId);
         if ((diagnosisId < 1) || (icdId.isPresent() && icdId.get() < 1)) {
-            this.logger.severe("Diagnosis id of ICD id is invalid");
+            this.logger.severe("Diagnosis id or ICD id is invalid");
             throw new BadRequestException("invalid_id");
         }
 

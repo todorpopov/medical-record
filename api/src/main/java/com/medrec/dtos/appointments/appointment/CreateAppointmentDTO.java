@@ -1,31 +1,19 @@
-package com.medrec.dtos.appointments;
+package com.medrec.dtos.appointments.appointment;
 
-public class AppointmentDTO {
-    private int id;
+public class CreateAppointmentDTO {
     private String date;
     private String time;
     private int doctorId;
     private int patientId;
-    private String status;
 
-    public AppointmentDTO() {
+    public CreateAppointmentDTO() {
     }
 
-    public AppointmentDTO(int id, String date, String time, int doctorId, int patientId, String status) {
-        this.id = id;
+    public CreateAppointmentDTO(String date, String time, int doctorId, int patientId) {
         this.date = date;
         this.time = time;
         this.doctorId = doctorId;
         this.patientId = patientId;
-        this.status = status;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getDate() {
@@ -58,13 +46,5 @@ public class AppointmentDTO {
 
     public void setPatientId(int patientId) {
         this.patientId = patientId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

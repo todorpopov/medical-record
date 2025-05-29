@@ -1,8 +1,8 @@
 package com.medrec.controllers;
 
-import com.medrec.dtos.appointments.AppointmentDTO;
-import com.medrec.dtos.appointments.CreateAppointmentDTO;
-import com.medrec.dtos.appointments.UpdateAppointmentDTO;
+import com.medrec.dtos.appointments.appointment.AppointmentDTO;
+import com.medrec.dtos.appointments.appointment.CreateAppointmentDTO;
+import com.medrec.dtos.appointments.appointment.UpdateAppointmentDTO;
 import com.medrec.services.AppointmentsService;
 import com.medrec.utils.SuccessHTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;

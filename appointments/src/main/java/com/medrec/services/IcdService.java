@@ -2,6 +2,7 @@ package com.medrec.services;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
+import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.appointments.Appointments;
 import com.medrec.grpc.appointments.IcdServiceGrpc;
 import com.medrec.persistence.icd.Icd;
@@ -39,7 +40,7 @@ public class IcdService extends IcdServiceGrpc.IcdServiceImplBase {
             responseObserver.onNext(Utils.getIcdFromDomainModel(icd));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 
@@ -53,7 +54,7 @@ public class IcdService extends IcdServiceGrpc.IcdServiceImplBase {
             responseObserver.onNext(Utils.getIcdFromDomainModel(icd));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 
@@ -74,7 +75,7 @@ public class IcdService extends IcdServiceGrpc.IcdServiceImplBase {
             responseObserver.onNext(list);
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 
@@ -93,7 +94,7 @@ public class IcdService extends IcdServiceGrpc.IcdServiceImplBase {
             responseObserver.onNext(Utils.getIcdFromDomainModel(icd));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 
@@ -107,7 +108,7 @@ public class IcdService extends IcdServiceGrpc.IcdServiceImplBase {
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 }

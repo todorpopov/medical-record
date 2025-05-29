@@ -30,6 +30,12 @@ public class ExceptionsMapper {
                     return new NotFoundException("Doctor Not Found");
                 } else if (message.contains("patient_not_found")) {
                     return new NotFoundException("Patient Not Found");
+                } else if (message.contains("icd_not_found")) {
+                    return new NotFoundException("ICD Not Found");
+                } else if (message.contains("diagnosis_not_found")) {
+                    return new NotFoundException("Diagnosis Not Found");
+                } else if (message.contains("sick_leave_not_found")) {
+                    return new NotFoundException("Sick Leave Not Found");
                 } else {
                     return new NotFoundException(statusRuntimeException.getStatus().getDescription());
                 }

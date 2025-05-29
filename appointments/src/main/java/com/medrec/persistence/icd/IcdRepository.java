@@ -125,10 +125,6 @@ public class IcdRepository {
             this.logger.severe("ICD id is invalid");
             throw new BadRequestException("invalid_if");
         }
-        if ((code.isPresent() && code.get().isBlank()) || (description.isPresent() && description.get().isBlank())) {
-            this.logger.severe("Code or description is invalid");
-            throw new BadRequestException("invalid_code_or_description");
-        }
 
         Transaction tx = null;
         try {
@@ -140,8 +136,13 @@ public class IcdRepository {
                 throw new NotFoundException("icd_not_found");
             }
 
-            code.ifPresent(icd::setCode);
-            description.ifPresent(icd::setDescription);
+            if (code.isPresent() && !code.get().isBlank()) {
+                icd.setCode(code.get());
+            }
+
+            if (description.isPresent() && !description.get().isBlank()) {
+                icd.setDescription(description.get());
+            }
 
             session.merge(icd);
             tx.commit();

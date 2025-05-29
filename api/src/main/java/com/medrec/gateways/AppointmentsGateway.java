@@ -4,8 +4,7 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import com.medrec.exception_handling.ExceptionsMapper;
-import com.medrec.grpc.users.Appointments;
-import com.medrec.grpc.users.AppointmentsServiceGrpc;
+import com.medrec.grpc.appointments.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -19,6 +18,9 @@ public class AppointmentsGateway {
     private final ManagedChannel channel;
 
     private final AppointmentsServiceGrpc.AppointmentsServiceBlockingStub appointmentsService;
+    private final DiagnosesServiceGrpc.DiagnosesServiceBlockingStub diagnosesService;
+    private final IcdServiceGrpc.IcdServiceBlockingStub icdService;
+    private final SickLeaveServiceGrpc.SickLeaveServiceBlockingStub sickLeaveService;
 
     public AppointmentsGateway() {
         int port = Integer.parseInt(System.getenv("APPOINTMENTS_PORT"));
@@ -33,6 +35,9 @@ public class AppointmentsGateway {
         }
 
         appointmentsService = AppointmentsServiceGrpc.newBlockingStub(channel);
+        diagnosesService = DiagnosesServiceGrpc.newBlockingStub(channel);
+        icdService = IcdServiceGrpc.newBlockingStub(channel);
+        sickLeaveService = SickLeaveServiceGrpc.newBlockingStub(channel);
     }
 
     public Appointments.Appointment createAppointment(Appointments.CreateAppointmentRequest request) throws RuntimeException {
@@ -102,6 +107,126 @@ public class AppointmentsGateway {
     public void cascadeDeleteDoctorAppointments(int doctorId) throws RuntimeException {
         try {
             Empty result = appointmentsService.cascadeDeleteDoctorAppointments(Int32Value.of(doctorId));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.Diagnosis createDiagnosis(Appointments.CreateDiagnosisRequest request) throws RuntimeException {
+        try {
+            return diagnosesService.createDiagnosis(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.Diagnosis getDiagnosisById(int id) throws RuntimeException {
+        try {
+            return diagnosesService.getDiagnosisById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.DiagnosesList getAllDiagnoses() {
+        try {
+            return diagnosesService.getAllDiagnoses(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.Diagnosis updateDiagnosis(Appointments.UpdateDiagnosisRequest request) throws RuntimeException {
+        try {
+            return diagnosesService.updateDiagnosis(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public void deleteDiagnosis(int id) throws RuntimeException {
+        try {
+            Empty result = diagnosesService.deleteDiagnosisById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.Icd createIcd(Appointments.CreateIcdRequest request) throws RuntimeException {
+        try {
+            return icdService.createIcd(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.Icd getIcdById(int id) throws RuntimeException {
+        try {
+            return icdService.getIcdById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.IcdEntitiesList getAllIcdEntities() {
+        try {
+            return icdService.getAllIcdEntities(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.Icd updateIcd(Appointments.UpdateIcdRequest request) throws RuntimeException {
+        try {
+            return icdService.updateIcd(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public void deleteIcd(int id) throws RuntimeException {
+        try {
+            Empty result = icdService.deleteIcdById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.SickLeave createSickLeave(Appointments.CreateSickLeaveRequest request) throws RuntimeException {
+        try {
+            return sickLeaveService.createSickLeave(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.SickLeave getSickLeaveById(int id) throws RuntimeException {
+        try {
+            return sickLeaveService.getSickLeaveById(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.SickLeaveEntitiesList getAllSickLeaveEntities() {
+        try {
+            return sickLeaveService.getAllSickLeaveEntities(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.SickLeave updateSickLeave(Appointments.UpdateSickLeaveRequest request) {
+        try {
+            return sickLeaveService.updateSickLeave(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public void deleteSickLeave(int id) throws RuntimeException {
+        try {
+            Empty result = sickLeaveService.deleteSickLeaveById(Int32Value.of(id));
         } catch (StatusRuntimeException e) {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }

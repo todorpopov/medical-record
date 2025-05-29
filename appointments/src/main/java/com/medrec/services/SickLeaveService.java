@@ -2,6 +2,7 @@ package com.medrec.services;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
+import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.appointments.Appointments;
 import com.medrec.grpc.appointments.SickLeaveServiceGrpc;
 import com.medrec.persistence.leave.SickLeave;
@@ -42,7 +43,7 @@ public class SickLeaveService extends SickLeaveServiceGrpc.SickLeaveServiceImplB
             responseObserver.onNext(Utils.getSickLeaveFromDomainModel(sickLeave));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 
@@ -56,7 +57,7 @@ public class SickLeaveService extends SickLeaveServiceGrpc.SickLeaveServiceImplB
             responseObserver.onNext(Utils.getSickLeaveFromDomainModel(sickLeave));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 
@@ -77,7 +78,7 @@ public class SickLeaveService extends SickLeaveServiceGrpc.SickLeaveServiceImplB
             responseObserver.onNext(list);
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 
@@ -89,13 +90,13 @@ public class SickLeaveService extends SickLeaveServiceGrpc.SickLeaveServiceImplB
         try {
             SickLeave sickLeave = this.sickLeaveRepository.update(
                 id,
-                Optional.of(request.getDate()),
-                Optional.of(request.getDaysOfLeave())
+                request.hasDate() ? Optional.of(request.getDate()) : Optional.empty(),
+                request.hasDaysOfLeave() ? Optional.of(request.getDaysOfLeave()) : Optional.empty()
             );
             responseObserver.onNext(Utils.getSickLeaveFromDomainModel(sickLeave));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 
@@ -109,7 +110,7 @@ public class SickLeaveService extends SickLeaveServiceGrpc.SickLeaveServiceImplB
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
-            responseObserver.onError(e);
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 }

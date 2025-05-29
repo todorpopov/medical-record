@@ -1,12 +1,23 @@
 package com.medrec.services;
 
-import com.medrec.dtos.appointments.AppointmentDTO;
-import com.medrec.dtos.appointments.CreateAppointmentDTO;
-import com.medrec.dtos.appointments.UpdateAppointmentDTO;
+import com.medrec.dtos.appointments.appointment.AppointmentDTO;
+import com.medrec.dtos.appointments.appointment.CreateAppointmentDTO;
+import com.medrec.dtos.appointments.appointment.UpdateAppointmentDTO;
+import com.medrec.dtos.appointments.diagnosis.CreateDiagnosisDTO;
+import com.medrec.dtos.appointments.diagnosis.DiagnosisDTO;
+import com.medrec.dtos.appointments.diagnosis.UpdateDiagnosisDTO;
+import com.medrec.dtos.appointments.icd.CreateIcdDTO;
+import com.medrec.dtos.appointments.icd.IcdDTO;
+import com.medrec.dtos.appointments.icd.UpdateIcdDTO;
+import com.medrec.dtos.appointments.sick_leave.CreateSickLeaveDTO;
+import com.medrec.dtos.appointments.sick_leave.SickLeaveDTO;
+import com.medrec.dtos.appointments.sick_leave.UpdateSickLeaveDTO;
 import com.medrec.gateways.AppointmentsGateway;
-import com.medrec.grpc.users.Appointments;
+import com.medrec.grpc.appointments.Appointments;
+import com.medrec.utils.Utils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -32,7 +43,7 @@ public class AppointmentsService {
 
         try {
             Appointments.Appointment response = this.appointmentsGateway.createAppointment(request);
-            AppointmentDTO appointmentDTO = getAppointmentDTO(response);
+            AppointmentDTO appointmentDTO = Utils.getDTOFromAppointmentsGrpc(response);
 
             this.logger.info("New appointment created with id: " + appointmentDTO.getId());
             return appointmentDTO;
@@ -47,7 +58,7 @@ public class AppointmentsService {
 
         try {
             Appointments.Appointment appointment = this.appointmentsGateway.getAppointmentById(id);
-            AppointmentDTO appointmentDTO = getAppointmentDTO(appointment);
+            AppointmentDTO appointmentDTO = Utils.getDTOFromAppointmentsGrpc(appointment);
 
             this.logger.info("Appointment retrieved with id: " + appointmentDTO.getId());
             return appointmentDTO;
@@ -63,7 +74,7 @@ public class AppointmentsService {
         try {
             Appointments.AppointmentsList appointments = this.appointmentsGateway.getAllAppointments();
             List<AppointmentDTO> appointmentDTOs = appointments.getAppointmentsList().stream()
-                .map(AppointmentsService::getAppointmentDTO)
+                .map(Utils::getDTOFromAppointmentsGrpc)
                 .toList();
 
             this.logger.info(appointmentDTOs.size() + "appointments retrieved");
@@ -80,7 +91,7 @@ public class AppointmentsService {
         try {
             Appointments.AppointmentsList appointments = this.appointmentsGateway.getAllByPatientEmail(email);
             List<AppointmentDTO> appointmentDTOs = appointments.getAppointmentsList().stream()
-                .map(AppointmentsService::getAppointmentDTO)
+                .map(Utils::getDTOFromAppointmentsGrpc)
                 .toList();
 
             this.logger.info(appointmentDTOs.size() + "appointments retrieved for patient with email: " + email);
@@ -97,7 +108,7 @@ public class AppointmentsService {
         try {
             Appointments.AppointmentsList appointments = this.appointmentsGateway.getAllByDoctorEmail(email);
             List<AppointmentDTO> appointmentDTOs = appointments.getAppointmentsList().stream()
-                .map(AppointmentsService::getAppointmentDTO)
+                .map(Utils::getDTOFromAppointmentsGrpc)
                 .toList();
 
             this.logger.info(appointmentDTOs.size() + "appointments retrieved for doctor with email: " + email);
@@ -113,7 +124,7 @@ public class AppointmentsService {
 
         try {
             Appointments.Appointment updatedAppointment = this.appointmentsGateway.updateAppointment(dto.safeConvertToGrpcRequest());
-            AppointmentDTO appointmentDTO = getAppointmentDTO(updatedAppointment);
+            AppointmentDTO appointmentDTO = Utils.getDTOFromAppointmentsGrpc(updatedAppointment);
 
             this.logger.info("Appointment updated with id: " + appointmentDTO.getId());
             return appointmentDTO;
@@ -158,15 +169,241 @@ public class AppointmentsService {
             throw e;
         }
     }
+    public SickLeaveDTO createSickLeave(CreateSickLeaveDTO dto) throws RuntimeException {
+        this.logger.info("Creating new Sick Leave entity");
 
-    private static AppointmentDTO getAppointmentDTO(Appointments.Appointment appointment) {
-        return new AppointmentDTO(
-            appointment.getId(),
-            appointment.getDate(),
-            appointment.getTime(),
-            appointment.getDoctorId(),
-            appointment.getPatientId(),
-            appointment.getStatus()
-        );
+        Appointments.CreateSickLeaveRequest request = Appointments.CreateSickLeaveRequest.newBuilder()
+            .setDate(dto.getDate())
+            .setDaysOfLeave(dto.getNumberOfDays())
+            .build();
+
+        try {
+            Appointments.SickLeave sickLeave = this.appointmentsGateway.createSickLeave(request);
+            SickLeaveDTO sickLeaveDto = Utils.getDtoFromSickLeaveGrpc(sickLeave);
+
+            this.logger.info("Created Sick Leave entity with id: " + sickLeaveDto.getId());
+            return sickLeaveDto;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not create new Sick Leave entity");
+            throw e;
+        }
+    }
+
+    public SickLeaveDTO getSickLeaveById(int id) throws RuntimeException {
+        this.logger.info("Retrieving Sick Leave entity with id: " + id);
+
+        try {
+            Appointments.SickLeave sickLeave = this.appointmentsGateway.getSickLeaveById(id);
+            SickLeaveDTO sickLeaveDTO = Utils.getDtoFromSickLeaveGrpc(sickLeave);
+
+            this.logger.info("Retrieved Sick Leave entity with id: " + id);
+            return sickLeaveDTO;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving Sick Leave entity: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public List<SickLeaveDTO> getAllSickLeaveEntities() throws RuntimeException {
+        this.logger.info("Retrieving all doctors");
+
+        try {
+            Appointments.SickLeaveEntitiesList entities = this.appointmentsGateway.getAllSickLeaveEntities();
+            List<SickLeaveDTO> sickLeaveDtos = new ArrayList<>();
+
+            entities.getSickLeaveEntitiesList().forEach(entity -> {
+                sickLeaveDtos.add(Utils.getDtoFromSickLeaveGrpc(entity));
+            });
+
+            this.logger.info("Retrieved " + sickLeaveDtos.size() + " Sick Leave entities");
+            return sickLeaveDtos;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving Sick Leave entities: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public SickLeaveDTO updateSickLeave(UpdateSickLeaveDTO dto) throws RuntimeException {
+        this.logger.info("Updating sick leave entity with id " + dto.getId());
+
+        try {
+            Appointments.SickLeave sickLeave = this.appointmentsGateway.updateSickLeave(dto.safeConvertToGrpcRequest());
+            SickLeaveDTO sickLeaveDto = Utils.getDtoFromSickLeaveGrpc(sickLeave);
+
+            this.logger.info("Successfully update sick leave with id: " + sickLeaveDto.getId());
+            return sickLeaveDto;
+        } catch (RuntimeException e) {
+            this.logger.info("Error updating Sick Leave: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void deleteSickLeaveById(int id) throws RuntimeException {
+        this.logger.info("Deleting Sick Leave entity with id: " + id);
+
+        try {
+            this.appointmentsGateway.deleteSickLeave(id);
+            this.logger.info("Deleted Sick Leave entity with id: " + id);
+        } catch (RuntimeException e) {
+            this.logger.info("Error deleting sick leave entity: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public IcdDTO createIcd(CreateIcdDTO dto) throws RuntimeException {
+        this.logger.info("Creating new ICD");
+
+        Appointments.CreateIcdRequest request = Appointments.CreateIcdRequest.newBuilder()
+            .setCode(dto.getCode())
+            .setDescription(dto.getDescription())
+            .build();
+
+        try {
+            Appointments.Icd icd = this.appointmentsGateway.createIcd(request);
+            IcdDTO icdDto = Utils.getDtoFromIcdGrpc(icd);
+
+            this.logger.info("Created ICD with id: " + icdDto.getId());
+            return icdDto;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not create new ICD");
+            throw e;
+        }
+    }
+
+    public IcdDTO getIcdById(int id) throws RuntimeException {
+        this.logger.info("Retrieving ICD with id: " + id);
+
+        try {
+            Appointments.Icd icd = this.appointmentsGateway.getIcdById(id);
+            IcdDTO icdDto = Utils.getDtoFromIcdGrpc(icd);
+
+            this.logger.info("Retrieved ICD with id: " + id);
+            return icdDto;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve ICD with id: " + id);
+            throw e;
+        }
+    }
+
+    public List<IcdDTO> getAllIcds() throws RuntimeException {
+        this.logger.info("Retrieving all ICDs");
+
+        try {
+            Appointments.IcdEntitiesList icds = this.appointmentsGateway.getAllIcdEntities();
+            List<IcdDTO> icdDtos = new ArrayList<>();
+
+            icds.getIcdEntitiesList().forEach(icd -> {
+                icdDtos.add(Utils.getDtoFromIcdGrpc(icd));
+            });
+
+            this.logger.info("Retrieved " + icdDtos.size() + " ICDs");
+            return icdDtos;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve all ICDs");
+            throw e;
+        }
+    }
+
+    public IcdDTO updateIcd(UpdateIcdDTO dto) throws RuntimeException {
+        this.logger.info("Updating ICD with id " + dto.getId());
+
+        try {
+            Appointments.Icd icd = this.appointmentsGateway.updateIcd(dto.safeConvertToGrpcRequest());
+            IcdDTO icdDto = Utils.getDtoFromIcdGrpc(icd);
+
+            this.logger.info("Successfully updated ICD with id: " + icdDto.getId());
+            return icdDto;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not update ICD with id: " + dto.getId());
+            throw e;
+        }
+    }
+
+    public void deleteIcdById(int id) throws RuntimeException {
+        this.logger.info("Deleting ICD with id: " + id);
+
+        try {
+            this.appointmentsGateway.deleteIcd(id);
+            this.logger.info("Deleted ICD with id: " + id);
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not delete ICD with id: " + id);
+            throw e;
+        }
+    }
+
+    public DiagnosisDTO createDiagnosis(CreateDiagnosisDTO dto) throws RuntimeException {
+        this.logger.info("Creating new diagnosis");
+
+        try {
+            Appointments.Diagnosis diagnosis = this.appointmentsGateway.createDiagnosis(dto.safeConvertToGrpcRequest());
+            DiagnosisDTO diagnosisDto = Utils.getDtoFromDiagnosisGrpc(diagnosis);
+
+            this.logger.info("Created diagnosis with id: " + diagnosisDto.getId());
+            return diagnosisDto;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not create new diagnosis");
+            throw e;
+        }
+    }
+
+    public DiagnosisDTO getDiagnosisById(int id) throws RuntimeException {
+        this.logger.info("Retrieving diagnosis by id: " + id);
+
+        try {
+            Appointments.Diagnosis diagnosis = this.appointmentsGateway.getDiagnosisById(id);
+            DiagnosisDTO diagnosisDto = Utils.getDtoFromDiagnosisGrpc(diagnosis);
+
+            this.logger.info("Retrieved diagnosis with id: " + diagnosisDto.getId());
+            return diagnosisDto;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve diagnosis with id: " + id);
+            throw e;
+        }
+    }
+
+    public List<DiagnosisDTO> getAllDiagnoses() throws RuntimeException {
+        this.logger.info("Retrieving all diagnoses");
+
+        try {
+            Appointments.DiagnosesList diagnoses = this.appointmentsGateway.getAllDiagnoses();
+            List<DiagnosisDTO> diagnosesDtos = new ArrayList<>();
+
+            diagnoses.getDiagnosesList().forEach(diagnosis -> {
+                diagnosesDtos.add(Utils.getDtoFromDiagnosisGrpc(diagnosis));
+            });
+
+            this.logger.info("Retrieved " + diagnosesDtos.size() + " diagnoses");
+            return diagnosesDtos;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve all diagnoses: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public DiagnosisDTO updateDiagnosis(UpdateDiagnosisDTO dto) throws RuntimeException {
+        this.logger.info("Updating diagnosis with id: " + dto.getId());
+
+        try {
+            Appointments.Diagnosis diagnosis = this.appointmentsGateway.updateDiagnosis(dto.safeConvertToGrpcRequest());
+            DiagnosisDTO diagnosisDto = Utils.getDtoFromDiagnosisGrpc(diagnosis);
+
+            this.logger.info("Successfully updated diagnosis with id: " + diagnosisDto.getId());
+            return diagnosisDto;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not update diagnosis: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void deleteDiagnosisById(int id) throws RuntimeException {
+        this.logger.info("Deleting diagnosis with id: " + id);
+
+        try {
+            this.appointmentsGateway.deleteDiagnosis(id);
+            this.logger.info("Deleted diagnosis with id: " + id);
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not delete diagnosis with id: " + id);
+            throw e;
+        }
     }
 }

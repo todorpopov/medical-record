@@ -139,11 +139,6 @@ public class SickLeaveRepository {
             throw new BadRequestException("invalid_id");
         }
 
-        if ((startDate.isPresent() && startDate.get().isBlank()) || (daysOfLeave.isPresent() && daysOfLeave.get() < 1)) {
-            this.logger.warning("Start date or number of days leave is invalid");
-            throw new BadRequestException("invalid_start_date_or_number_of_days_leave");
-        }
-
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
@@ -155,14 +150,23 @@ public class SickLeaveRepository {
                 throw new NotFoundException("sick_leave_not_found");
             }
 
-            if (startDate.isPresent()) {
+            if (startDate.isPresent() && !startDate.get().isBlank()) {
                 LocalDate newDate = LocalDate.parse(startDate.get(), DateTimeFormatter.ISO_LOCAL_DATE);
                 sickLeave.setStartDate(newDate);
             }
 
-            daysOfLeave.ifPresent(sickLeave::setDaysOfLeave);
+            if (daysOfLeave.isPresent()) {
+                int daysOfLeaveInt = daysOfLeave.get();
+                this.logger.info("Number of days leave is " + daysOfLeaveInt);
+                if (daysOfLeaveInt < 1) {
+                    this.logger.warning("Number of days leave is invalid");
+                    throw new BadRequestException("invalid_number_of_days_leave");
+                }
+                sickLeave.setDaysOfLeave(daysOfLeaveInt);
+            }
 
             session.merge(sickLeave);
+            tx.commit();
 
             this.logger.info("Sick Leave updated successfully");
             return sickLeave;

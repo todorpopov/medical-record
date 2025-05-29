@@ -117,8 +117,8 @@ public class DiagnosesService extends DiagnosesServiceGrpc.DiagnosesServiceImplB
         try {
             Diagnosis diagnosis = this.diagnosisRepository.update(
                 request.getId(),
-                Optional.of(request.getTreatmentDescription()),
-                Optional.of(request.getIcdId()),
+                request.hasTreatmentDescription() ? Optional.of(request.getTreatmentDescription()) : Optional.empty(),
+                request.hasIcdId() ? Optional.of(request.getIcdId()) : Optional.empty() ,
                 Optional.ofNullable(sickLeave)
             );
 
