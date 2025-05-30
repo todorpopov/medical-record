@@ -169,6 +169,13 @@
           [displayField]="'status'"
           formControlName="status"
         ></app-dropdown>
+        <app-text-input
+          label="Diagnosis ID"
+          type="text"
+          placeholder="Enter the ID of the diagnosis ('-1' will set it to null)"
+          formControlName="diagnosisId"
+          [error]="rowActionForm.get('diagnosisId')?.errors && rowActionForm.get('diagnosisId')?.touched ? 'The ID must be a positive integer!' : ''"
+      ></app-text-input>
       </div>
     </ng-template>
   </div>

@@ -13,6 +13,7 @@ import com.medrec.utils.Utils;
 import io.grpc.stub.StreamObserver;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 
@@ -133,12 +134,14 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
     @Override
     public void updateAppointment(Appointments.UpdateAppointmentRequest request, StreamObserver<Appointments.Appointment> responseObserver) {
         int id = request.getId();
-        String status = request.getStatus();
-
-        this.logger.info(String.format("Called RPC Update Appointment for id (%s) update status to (%s)", id, status));
+        this.logger.info("Called RPC Update Appointment for id: " + id);
 
         try {
-            Appointment appointment = this.appointmentsRepository.update(id, status);
+            Appointment appointment = this.appointmentsRepository.update(
+                id,
+                request.hasStatus() ? Optional.of(request.getStatus()) : Optional.empty(),
+                request.hasDiagnosisId() ? Optional.of(request.getDiagnosisId()) : Optional.empty()
+            );
             responseObserver.onNext(Utils.getAppointmentFromDomainModel(appointment));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {

@@ -114,5 +114,23 @@ export const appointmentsColumnDefs: ColDef[] = [
   {
     field: 'status',
     cellDataType: 'text',
+  },
+  {
+    field: 'diagnosisId',
+    headerName: 'Diagnosis Id',
+    cellDataType: 'text',
+    valueFormatter: params => params.value ? params.value : 'NO DIAGNOSIS'
+  }
+]
+
+export const diagnosisColumnDefs: ColDef[] = [
+  {
+    field: 'id',
+    cellDataType: 'text',
+  },
+  {
+    field: 'patientId',
+    headerName: 'Patient Id',
+    cellDataType: 'text',
   }
 ]

@@ -1,3 +1,5 @@
+import {DiagnosisDto} from './diagnosis.dto';
+
 export interface AppointmentsDto {
   id: number,
   date: string,
@@ -5,6 +7,17 @@ export interface AppointmentsDto {
   patientId: number,
   doctorId: number,
   status: string,
+  diagnosis: DiagnosisDto | null,
+}
+
+export interface AppointmentsSummary {
+  id: number,
+  date: string,
+  time: string,
+  patientId: number,
+  doctorId: number,
+  status: string,
+  diagnosisId: number | null,
 }
 
 export interface CreateAppointmentsDto {
@@ -16,7 +29,8 @@ export interface CreateAppointmentsDto {
 
 export interface UpdateAppointmentsDto {
   id: number,
-  status: string,
+  status: string | null,
+  diagnosisId: number | null,
 }
 
 export interface AppointmentStatus {

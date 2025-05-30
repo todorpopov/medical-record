@@ -10,7 +10,7 @@ import {DoctorSummary} from '../../common/dtos/doctor.dto';
 import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {RowActionComponent} from '../../components/row-action/row-action.component';
 import {AppointmentsService} from '../../services/appointments.service';
-import {AppointmentsDto} from '../../common/dtos/appointments.dto';
+import {AppointmentsDto, AppointmentsSummary} from '../../common/dtos/appointments.dto';
 import {Page} from '../../common/util/page';
 import {AuthService} from '../../services/auth.service';
 import {RouterLink} from '@angular/router';
@@ -52,7 +52,7 @@ export class DashboardComponent {
   patientRowData: PatientSummary[] = [];
   doctorRowData: DoctorSummary[] = [];
   specialtyRowData: SpecialtyDto[] = [];
-  appointmentsRowData: AppointmentsDto[] = [];
+  appointmentsRowData: AppointmentsSummary[] = [];
 
   constructor(
     private usersService: UsersService,
@@ -164,7 +164,21 @@ export class DashboardComponent {
 
   private handleAppointmentsFetch(): void {
     this.appointmentsService.getAllAppointments().then(data => {
-      this.appointmentsRowData = [...data];
+      const summaryData: AppointmentsSummary[] = []
+      data.forEach(appointment => {
+        const summaryDto: AppointmentsSummary = {
+          id: appointment.id,
+          date: appointment.date,
+          time: appointment.time,
+          patientId: appointment.patientId,
+          doctorId: appointment.doctorId,
+          status: appointment.status,
+          diagnosisId: appointment.diagnosis?.id ? appointment.diagnosis.id : null,
+        }
+        summaryData.push(summaryDto)
+      })
+
+      this.appointmentsRowData = [...summaryData];
     }).catch(error => {
       this.error = error.error;
     })

@@ -20,19 +20,29 @@ export class AppointmentsService {
   }
 
   public createAppointment(date: string, time: string, patientId: number, doctorId: number): Observable<HttpResponse<ApiResponse>> {
-    return this.httpClient.post<ApiResponse>(`${this.apiUrl}/create`, {
+    let body: any = {
       date: date,
       time: time,
       patientId: patientId,
       doctorId: doctorId
-    }, {observe: 'response'});
+    };
+
+    return this.httpClient.post<ApiResponse>(`${this.apiUrl}/create`, body, {observe: 'response'});
   }
 
-  public updateAppointment(id: number, status: string): Observable<HttpResponse<ApiResponse>> {
-    return this.httpClient.put<ApiResponse>(`${this.apiUrl}/update`, {
-      id: id,
-      status: status
-    }, {observe: 'response'});
+  public updateAppointment(id: number, status: string | null, diagnosisId: number | null): Observable<HttpResponse<ApiResponse>> {
+    let body: any = {};
+    body.id = id;
+
+    if (status) {
+      body.status = status;
+    }
+
+    if (diagnosisId) {
+      body.diagnosisId = diagnosisId;
+    }
+
+    return this.httpClient.put<ApiResponse>(`${this.apiUrl}/update`, body, {observe: 'response'});
   }
 
   public deleteAppointment(id: number): Observable<HttpResponse<ApiResponse>> {

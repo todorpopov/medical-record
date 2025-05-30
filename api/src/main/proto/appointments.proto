@@ -40,7 +40,7 @@ message AppointmentsList {
 
 message UpdateAppointmentRequest {
   int32 id = 1;
-  string status = 2;
+  optional string status = 2;
   optional int32 diagnosisId = 3;
 }
 

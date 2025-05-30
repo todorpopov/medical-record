@@ -6,6 +6,7 @@ import com.medrec.exception_handling.exceptions.DatabaseException;
 import com.medrec.exception_handling.exceptions.NotFoundException;
 import com.medrec.gateway.UsersGateway;
 import com.medrec.persistence.DBUtils;
+import com.medrec.persistence.diagnosis.Diagnosis;
 import com.medrec.utils.CascadeEntityType;
 import io.grpc.StatusRuntimeException;
 import org.hibernate.HibernateException;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class AppointmentsRepository {
@@ -237,17 +239,12 @@ public class AppointmentsRepository {
         }
     }
 
-    public Appointment update(int id, String status) throws RuntimeException {
+    public Appointment update(int id, Optional<String> status, Optional<Integer> diagnosisId) throws RuntimeException {
         logger.info("Updating appointment with id " + id);
 
         if (id < 1) {
             logger.severe("Appointment id is invalid");
             throw new BadRequestException("invalid_id");
-        }
-
-        if (!(status.equals("upcoming") || status.equals("started") || status.equals("finished"))) {
-            logger.severe("Status is invalid");
-            throw new BadRequestException("invalid_status");
         }
 
         Transaction tx = null;
@@ -259,7 +256,31 @@ public class AppointmentsRepository {
                 this.logger.severe("Could not find appointment with id " + id);
                 throw new NotFoundException("appointment_not_found");
             }
-            appointment.setStatus(status);
+
+            if (status.isPresent()) {
+                if (!status.get().equals("upcoming") && !status.get().equals("started") && !status.get().equals("finished")) {
+                    logger.severe("Appointment status is invalid");
+                    throw new BadRequestException("invalid_status");
+                }
+                appointment.setStatus(status.get());
+            }
+
+            if (diagnosisId.isPresent()) {
+                int doctorId = diagnosisId.get();
+
+
+                if (doctorId == -1) {
+                    appointment.setDiagnosis(null);
+                } else {
+                    Diagnosis diagnosis = session.get(Diagnosis.class, doctorId);
+                    if (diagnosis == null) {
+                        this.logger.severe("Could not find diagnosis with id " + doctorId);
+                        throw new NotFoundException("diagnosis_not_found");
+                    }
+                    appointment.setDiagnosis(diagnosis);
+                }
+            }
+
             tx.commit();
 
             logger.info("Appointment status updated successfully");

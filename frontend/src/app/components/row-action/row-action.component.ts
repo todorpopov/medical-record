@@ -9,7 +9,7 @@ import {RegisterPatientDto, UpdatePatientDto} from '../../common/dtos/patient.dt
 import {AuthService} from '../../services/auth.service';
 import {RegisterDoctorDto, UpdateDoctorDto} from '../../common/dtos/doctor.dto';
 import {CreateSpecialtyDto, UpdateSpecialtyDto} from '../../common/dtos/specialty.dto';
-import {allowedValuesValidator, isoDateValidator, timeValidator} from '../../common/validators/validators';
+import {isoDateValidator, timeValidator} from '../../common/validators/validators';
 import {AppointmentStatus, CreateAppointmentsDto, UpdateAppointmentsDto} from '../../common/dtos/appointments.dto';
 import {AppointmentsService} from '../../services/appointments.service';
 
@@ -57,7 +57,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
   private readonly createSpecialtyFields: string[] = ['specialtyName', 'specialtyDescription'];
   private readonly createAppointmentFields: string[] = ['date', 'time', 'doctorId', 'patientId'];
 
-  private readonly updateAppointmentFields: string[] = ['entityId', 'status'];
+  private readonly updateAppointmentFields: string[] = ['entityId'];
 
   private readonly entityIdField: string[] = ['entityId'];
 
@@ -75,7 +75,9 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     'date',
     'time',
     'doctorId',
-    'patientId'
+    'patientId',
+    'status',
+    'diagnosisId'
   ]
 
   constructor(
@@ -108,7 +110,8 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
       time: [null],
       doctorId: [null],
       patientId: [null],
-      status: [null]
+      status: [null],
+      diagnosisId: [null]
     });
 
     this.rowActionForm.get('action')?.valueChanges.subscribe(action => {
@@ -257,6 +260,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
       const doctorId = formValue.doctorId;
       const patientId = formValue.patientId;
       const status = formValue.status;
+      const diagnosisId = formValue.diagnosisId;
 
       switch (this.selectedEntity) {
         case 'Patients': {
@@ -374,7 +378,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
                 date: date,
                 time: time,
                 patientId: patientId,
-                doctorId: doctorId
+                doctorId: doctorId,
               }
 
               this.handleAppointmentCreate(dto);
@@ -384,7 +388,8 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
             case "Update": {
               const dto: UpdateAppointmentsDto = {
                 id: entityId,
-                status: status
+                status: status,
+                diagnosisId: diagnosisId
               }
 
               this.handleAppointmentUpdate(dto);
@@ -550,7 +555,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
       dto.date,
       dto.time,
       dto.patientId,
-      dto.doctorId
+      dto.doctorId,
     ).subscribe({
       next: value => {
         this.rowActionSuccess = 'Appointment created successfully';
@@ -566,7 +571,8 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
   private handleAppointmentUpdate(dto: UpdateAppointmentsDto): void {
     this.appointmentsService.updateAppointment(
       dto.id,
-      dto.status
+      dto.status,
+      dto.diagnosisId,
     ).subscribe({
       next: value => {
         this.rowActionSuccess = 'Appointment updated successfully';
