@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import {NgIf} from '@angular/common';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
-import {Page} from '../../common/util/page';
+import {Util} from '../../common/util/util';
 import {AuthService} from '../../services/auth.service';
 
 @Component({
@@ -15,7 +15,7 @@ import {AuthService} from '../../services/auth.service';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  private readonly page: Page = 'home';
+  private readonly page: Util = 'home';
 
   userFirstName: string = '';
 

@@ -129,8 +129,51 @@ export const diagnosisColumnDefs: ColDef[] = [
     cellDataType: 'text',
   },
   {
-    field: 'patientId',
-    headerName: 'Patient Id',
+    field: 'treatmentDescription',
+    headerName: 'Treatment Description',
     cellDataType: 'text',
+  },
+  {
+    field: 'icdId',
+    headerName: 'ICD Id',
+    cellDataType: 'text',
+  },
+  {
+    field: 'sickLeaveId',
+    headerName: 'Sick Leave Id',
+    cellDataType: 'text',
+    valueFormatter: params => params.value ? params.value : 'NO SICK LEAVE'
   }
+]
+
+export const icdColumnDefs: ColDef[] = [
+  {
+    field: 'id',
+    cellDataType: 'text',
+  },
+  {
+    field: 'code',
+    cellDataType: 'text',
+  },
+  {
+    field: 'description',
+    cellDataType: 'text',
+  },
+]
+
+export const sickLeaveColumnDefs: ColDef[] = [
+  {
+    field: 'id',
+    cellDataType: 'text',
+  },
+  {
+    field: 'date',
+    headerName: 'First Day of Leave',
+    cellDataType: 'text',
+  },
+  {
+    field: 'numberOfDays',
+    headerName: 'Number of Days of Leave',
+    cellDataType: 'text',
+  },
 ]

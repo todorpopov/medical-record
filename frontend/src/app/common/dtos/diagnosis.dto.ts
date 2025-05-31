@@ -7,3 +7,10 @@ export interface DiagnosisDto {
   icd: IcdDto,
   sickLeave: SickLeaveDto | null,
 }
+
+export interface DiagnosisSummary {
+  id: number,
+  treatmentDescription: string,
+  icdId: number,
+  sickLeaveId: number | undefined,
+}

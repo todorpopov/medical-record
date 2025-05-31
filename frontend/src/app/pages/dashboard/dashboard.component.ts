@@ -3,7 +3,13 @@ import { ColDef } from 'ag-grid-community';
 import {GridComponent} from '../../components/grid/grid.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {appointmentsColumnDefs, doctorColumnDefs, patientsColumnDefs, specialtyColumnDefs} from './entity.def';
+import {
+  appointmentsColumnDefs,
+  diagnosisColumnDefs,
+  doctorColumnDefs, icdColumnDefs,
+  patientsColumnDefs, sickLeaveColumnDefs,
+  specialtyColumnDefs
+} from './entity.def';
 import {UsersService} from '../../services/users.service';
 import { PatientSummary} from '../../common/dtos/patient.dto';
 import {DoctorSummary} from '../../common/dtos/doctor.dto';
@@ -11,9 +17,12 @@ import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {RowActionComponent} from '../../components/row-action/row-action.component';
 import {AppointmentsService} from '../../services/appointments.service';
 import {AppointmentsDto, AppointmentsSummary} from '../../common/dtos/appointments.dto';
-import {Page} from '../../common/util/page';
+import {EntityType, Util} from '../../common/util/util';
 import {AuthService} from '../../services/auth.service';
 import {RouterLink} from '@angular/router';
+import {DiagnosisSummary} from '../../common/dtos/diagnosis.dto';
+import {IcdDto} from '../../common/dtos/icd.dto';
+import {SickLeaveDto} from '../../common/dtos/sick-leave.dto';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,17 +39,15 @@ import {RouterLink} from '@angular/router';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
-  private readonly page: Page = 'dashboard';
+  private readonly page: Util = 'dashboard';
 
-  entityOptions: string[] = ['Patients', 'Doctors', 'Specialties', 'Appointments'];
-  selectedEntity: 'Patients' | 'Doctors' | 'Specialties' | 'Appointments' = 'Patients';
+  entityOptions: EntityType[] = ['Patients', 'Doctors', 'Specialties', 'Appointments', 'Diagnosis', 'ICD', 'Sick Leave'];
+  selectedEntity: EntityType = 'Patients';
 
   error: string = '';
 
-  selectEntity(entity: string) {
-    if (entity === 'Patients' || entity === 'Doctors' || entity === 'Specialties' || entity === 'Appointments') {
-      this.selectedEntity = entity;
-    }
+  selectEntity(entity: EntityType) {
+    this.selectedEntity = entity;
     this.error = '';
   }
 
@@ -48,11 +55,18 @@ export class DashboardComponent {
   doctorColumnDefs: ColDef[] = doctorColumnDefs;
   specialtyColumnDefs: ColDef[] = specialtyColumnDefs;
   appointmentsColumnDefs: ColDef[] = appointmentsColumnDefs;
+  diagnosisColumnDefs: ColDef[] = diagnosisColumnDefs;
+  icdColumnDefs: ColDef[] = icdColumnDefs;
+  sickLeaveColumnDefs: ColDef[] = sickLeaveColumnDefs;
+
 
   patientRowData: PatientSummary[] = [];
   doctorRowData: DoctorSummary[] = [];
   specialtyRowData: SpecialtyDto[] = [];
   appointmentsRowData: AppointmentsSummary[] = [];
+  diagnosisRowData: DiagnosisSummary[] = [];
+  icdRowData: IcdDto[] = [];
+  sickLeaveRowData: SickLeaveDto[] = [];
 
   constructor(
     private usersService: UsersService,
@@ -72,6 +86,12 @@ export class DashboardComponent {
         return this.specialtyColumnDefs;
       case 'Appointments':
         return this.appointmentsColumnDefs;
+      case 'Diagnosis':
+        return this.diagnosisColumnDefs;
+      case 'ICD':
+        return this.icdColumnDefs;
+      case "Sick Leave":
+        return this.sickLeaveColumnDefs;
       default:
         return [];
     }
@@ -87,6 +107,12 @@ export class DashboardComponent {
         return this.specialtyRowData;
       case 'Appointments':
         return this.appointmentsRowData;
+      case "Diagnosis":
+        return this.diagnosisRowData;
+      case "ICD":
+        return this.icdRowData;
+      case "Sick Leave":
+        return this.sickLeaveRowData;
       default:
         return [];
     }
@@ -105,6 +131,15 @@ export class DashboardComponent {
         break;
       case "Appointments":
         this.handleAppointmentsFetch();
+        break;
+      case "Diagnosis":
+        this.handleDiagnosisFetch();
+        break
+      case "ICD":
+        this.handleIcdFetch();
+        break;
+      case "Sick Leave":
+        this.handleSickLeaveFetch();
         break;
     }
   }
@@ -179,6 +214,41 @@ export class DashboardComponent {
       })
 
       this.appointmentsRowData = [...summaryData];
+    }).catch(error => {
+      this.error = error.error;
+    })
+  }
+
+  private handleDiagnosisFetch(): void {
+    this.appointmentsService.getAllDiagnoses().then(data => {
+      const summaryData: DiagnosisSummary[] = []
+      data.forEach(diagnosis => {
+        const summaryDto: DiagnosisSummary = {
+          id: diagnosis.id,
+          treatmentDescription: diagnosis.treatmentDescription,
+          icdId: diagnosis.icd.id,
+          sickLeaveId: diagnosis.sickLeave?.id,
+        }
+        summaryData.push(summaryDto)
+      })
+
+      this.diagnosisRowData = [...summaryData];
+    }).catch(error => {
+      this.error = error.error;
+    })
+  }
+
+  private handleIcdFetch(): void {
+    this.appointmentsService.getAllIcdEntries().then(data => {
+      this.icdRowData = [...data];
+    }).catch(error => {
+      this.error = error.error;
+    })
+  }
+
+  private handleSickLeaveFetch(): void {
+    this.appointmentsService.getAllSickLeaveEntities().then(data => {
+      this.sickLeaveRowData = [...data];
     }).catch(error => {
       this.error = error.error;
     })

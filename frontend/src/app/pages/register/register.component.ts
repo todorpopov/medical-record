@@ -12,7 +12,7 @@ import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {Router} from '@angular/router';
-import {Page} from '../../common/util/page';
+import {Util} from '../../common/util/util';
 
 @Component({
   selector: 'app-register',
@@ -28,7 +28,7 @@ import {Page} from '../../common/util/page';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements ReactiveFormsModule{
-  private readonly page: Page = 'register';
+  private readonly page: Util = 'register';
 
   registerForm: FormGroup;
   label: string = 'Register';
