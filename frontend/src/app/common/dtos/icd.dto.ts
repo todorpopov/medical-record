@@ -3,3 +3,14 @@ export interface IcdDto {
   code: string,
   description: string,
 }
+
+export interface CreateIcdDto {
+  code: string,
+  description: string,
+}
+
+export interface UpdateIcdDto {
+  id: number,
+  code: string,
+  description: string,
+}

@@ -1,15 +1,5 @@
 import {AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
 
-export function allowedValuesValidator(allowedValues: string[]): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = control.value;
-    if (value === null || value === undefined || value === '') {
-      return null;
-    }
-    return allowedValues.includes(value) ? null : { allowedValues: { value, allowed: allowedValues } };
-  }
-}
-
 export function isoDateValidator(): ValidatorFn {
   const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -39,4 +29,35 @@ export function timeValidator(): ValidatorFn {
 
     return timeRegex.test(value) ? null : { time: { value } };
   };
+}
+
+export function optionalPairValidator(formGroup: AbstractControl): ValidationErrors | null {
+  const leaveDate = formGroup.get('leaveDate')?.value;
+  const leaveDays = formGroup.get('leaveDays')?.value;
+
+  const leaveDateFilled = leaveDate !== null && leaveDate !== '' && formGroup.get('leaveDate')?.touched;
+  const leaveDaysFilled = leaveDays !== null && leaveDays !== '' && formGroup.get('leaveDays')?.touched;
+
+  const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const integerRegex = /^[1-9]\d*$/;
+
+  if (leaveDateFilled) {
+    if (!isoDateRegex.test(leaveDate)) {
+      return { leaveDate: true, leaveDateMsg: 'Invalid date format!' };
+    }
+    if (!leaveDaysFilled) {
+      return { leaveDays: true, leaveDaysMsg: 'Please fill in the number of days!' };
+    }
+  }
+
+  if (leaveDaysFilled) {
+    if (!integerRegex.test(leaveDays)) {
+      return { leaveDays: true, leaveDaysMsg: 'Please fill in a positive integer!' };
+    }
+    if (!leaveDateFilled) {
+      return { leaveDate: true, leaveDateMsg: 'Please fill in the date!' };
+    }
+  }
+
+  return null;
 }

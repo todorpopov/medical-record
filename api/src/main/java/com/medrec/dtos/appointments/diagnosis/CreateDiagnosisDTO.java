@@ -26,15 +26,20 @@ public class CreateDiagnosisDTO {
             throw new BadRequestException("Treatment description and ICD id are required");
         }
 
-        requestBuilder.setTreatmentDescription(this.getTreatmentDescription());
-        requestBuilder.setIcdId(this.icdId);
-
         if ((this.sickLeaveDate != null && this.sickLeaveDays == null) || (this.sickLeaveDate == null && this.sickLeaveDays != null)) {
             throw new BadRequestException("Sick Leave date and number of days are both required");
         }
 
-        requestBuilder.setSickLeaveDate(this.getSickLeaveDate());
-        requestBuilder.setSickLeaveDays(this.getSickLeaveDays());
+        requestBuilder.setTreatmentDescription(this.getTreatmentDescription());
+        requestBuilder.setIcdId(this.icdId);
+
+        if (this.sickLeaveDate != null) {
+            requestBuilder.setSickLeaveDate(this.getSickLeaveDate());
+        }
+
+        if (this.sickLeaveDays != null) {
+            requestBuilder.setSickLeaveDays(this.getSickLeaveDays());
+        }
 
         return requestBuilder.build();
     }

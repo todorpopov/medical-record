@@ -9,9 +9,12 @@ import {RegisterPatientDto, UpdatePatientDto} from '../../common/dtos/patient.dt
 import {AuthService} from '../../services/auth.service';
 import {RegisterDoctorDto, UpdateDoctorDto} from '../../common/dtos/doctor.dto';
 import {CreateSpecialtyDto, UpdateSpecialtyDto} from '../../common/dtos/specialty.dto';
-import {isoDateValidator, timeValidator} from '../../common/validators/validators';
+import {isoDateValidator, optionalPairValidator, timeValidator} from '../../common/validators/validators';
 import {AppointmentStatus, CreateAppointmentsDto, UpdateAppointmentsDto} from '../../common/dtos/appointments.dto';
 import {AppointmentsService} from '../../services/appointments.service';
+import {CreateDiagnosisDto, UpdateDiagnosisDto} from '../../common/dtos/diagnosis.dto';
+import {CreateIcdDto, UpdateIcdDto} from '../../common/dtos/icd.dto';
+import {CreateSickLeaveDto, UpdateSickLeaveDto} from '../../common/dtos/sick-leave.dto';
 
 interface Action {
   name: 'Create' | 'Update' | 'Delete';
@@ -56,6 +59,9 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
   private readonly createDoctorFields: string[] = ['firstName', 'lastName', 'email', 'password', 'specialtyId'];
   private readonly createSpecialtyFields: string[] = ['specialtyName', 'specialtyDescription'];
   private readonly createAppointmentFields: string[] = ['date', 'time', 'doctorId', 'patientId'];
+  private readonly createIcdFields: string[] = ['icdCode', 'icdDescription'];
+  private readonly createSickLeaveFields: string[] = ['sickLeaveDate', 'numberOfDays'];
+  private readonly createDiagnosisFields: string[] = ['treatmentDescription', 'icdId'];
 
   private readonly updateAppointmentFields: string[] = ['entityId'];
 
@@ -77,7 +83,15 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     'doctorId',
     'patientId',
     'status',
-    'diagnosisId'
+    'diagnosisId',
+    'icdCode',
+    'icdDescription',
+    'sickLeaveDate',
+    'numberOfDays',
+    'treatmentDescription',
+    'icdId',
+    'leaveDate',
+    'leaveDays'
   ]
 
   constructor(
@@ -111,7 +125,20 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
       doctorId: [null],
       patientId: [null],
       status: [null],
-      diagnosisId: [null]
+      diagnosisId: [null],
+
+      icdCode: [null],
+      icdDescription: [null],
+
+      sickLeaveDate: [null],
+      numberOfDays: [null],
+
+      treatmentDescription: [null],
+      icdId: [null],
+      leaveDate: [null],
+      leaveDays: [null]
+    }, {
+      validators: [optionalPairValidator]
     });
 
     this.rowActionForm.get('action')?.valueChanges.subscribe(action => {
@@ -155,6 +182,18 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
         }
         case 'Appointments': {
           this.setFormValidation(this.createAppointmentFields);
+          break;
+        }
+        case 'Diagnosis': {
+          this.setFormValidation(this.createDiagnosisFields);
+          break;
+        }
+        case 'ICD': {
+          this.setFormValidation(this.createIcdFields);
+          break;
+        }
+        case 'Sick Leave': {
+          this.setFormValidation(this.createSickLeaveFields);
           break;
         }
       }
@@ -217,6 +256,16 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
             control.updateValueAndValidity();
             break;
           }
+          case 'sickLeaveDate': {
+            control.setValidators([Validators.required, isoDateValidator()]);
+            control.updateValueAndValidity();
+            break;
+          }
+          case 'numberOfDays': {
+            control.setValidators([Validators.required, Validators.min(1), Validators.pattern("^[0-9]*$")]);
+            control.updateValueAndValidity();
+            break;
+          }
           default: {
             control.setValidators([Validators.required]);
             control.updateValueAndValidity();
@@ -261,6 +310,17 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
       const patientId = formValue.patientId;
       const status = formValue.status;
       const diagnosisId = formValue.diagnosisId;
+
+      const treatmentDescription = formValue.treatmentDescription;
+      const icdId = formValue.icdId;
+      const leaveDate = formValue.leaveDate;
+      const leaveDays = formValue.leaveDays;
+
+      const icdCode = formValue.icdCode;
+      const icdDescription = formValue.icdDescription;
+
+      const sickLeaveDate = formValue.sickLeaveDate;
+      const numberOfDays = formValue.numberOfDays;
 
       switch (this.selectedEntity) {
         case 'Patients': {
@@ -398,6 +458,103 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
 
             case "Delete": {
               this.handleAppointmentDelete(entityId);
+              break;
+            }
+          }
+          break;
+        }
+
+        case 'Diagnosis': {
+          switch (this.selectedAction.name) {
+            case "Create": {
+              const dto: CreateDiagnosisDto = {
+                treatmentDescription: treatmentDescription,
+                icdId: icdId,
+                sickLeaveDate: leaveDate,
+                sickLeaveDays: leaveDays
+              }
+
+              this.handleDiagnosisCreate(dto);
+              break;
+            }
+
+            case "Update": {
+              const dto: UpdateDiagnosisDto = {
+                id: entityId,
+                treatmentDescription: treatmentDescription,
+                icdId: icdId,
+                sickLeaveDate: leaveDate,
+                sickLeaveDays: leaveDays
+              }
+
+              this.handleDiagnosisUpdate(dto);
+              break;
+            }
+
+            case "Delete": {
+              this.handleDiagnosisDelete(entityId);
+              break;
+            }
+          }
+          break;
+        }
+
+        case 'ICD': {
+          switch (this.selectedAction.name) {
+            case "Create": {
+              const dto: CreateIcdDto = {
+                code: icdCode,
+                description: icdDescription
+              }
+
+              this.handleIcdCreate(dto);
+              break;
+            }
+
+            case "Update": {
+              const dto: UpdateIcdDto = {
+                id: entityId,
+                code: icdCode,
+                description: icdDescription
+              }
+
+              this.handleIcdUpdate(dto);
+              break;
+            }
+
+            case "Delete": {
+              this.handleIcdDelete(entityId);
+              break;
+            }
+          }
+          break;
+        }
+
+        case 'Sick Leave': {
+          switch (this.selectedAction.name) {
+            case "Create": {
+              const dto: CreateSickLeaveDto = {
+                date: sickLeaveDate,
+                numberOfDays: numberOfDays
+              }
+
+              this.handleSickLeaveCreate(dto);
+              break;
+            }
+
+            case "Update": {
+              const dto: UpdateSickLeaveDto = {
+                id: entityId,
+                date: sickLeaveDate,
+                numberOfDays: numberOfDays
+              }
+
+              this.handleSickLeaveUpdate(dto);
+              break;
+            }
+
+            case "Delete": {
+              this.handleSickLeaveDelete(entityId);
               break;
             }
           }
@@ -589,6 +746,134 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     this.appointmentsService.deleteAppointment(id).subscribe({
       next: value => {
         this.rowActionSuccess = 'Appointment deleted successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleDiagnosisCreate(dto: CreateDiagnosisDto): void {
+    this.appointmentsService.createDiagnosis(
+      dto.treatmentDescription,
+      dto.icdId,
+      dto.sickLeaveDate,
+      dto.sickLeaveDays
+    ).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Diagnosis created successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleDiagnosisUpdate(dto: UpdateDiagnosisDto): void {
+    this.appointmentsService.updateDiagnosis(
+      dto.id,
+      dto.treatmentDescription,
+      dto.icdId,
+      dto.sickLeaveDate,
+      dto.sickLeaveDays
+    ).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Diagnosis updated successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleDiagnosisDelete(id: number): void {
+    this.appointmentsService.deleteDiagnosis(id).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Diagnosis deleted successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleIcdCreate(dto: CreateIcdDto): void {
+    this.appointmentsService.createIcd(dto.code, dto.description).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'ICD created successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleIcdUpdate(dto: UpdateIcdDto): void {
+    this.appointmentsService.updateIcd(dto.id, dto.code, dto.description).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'ICD updated successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleIcdDelete(id: number): void {
+    this.appointmentsService.deleteIcd(id).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'ICD deleted successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleSickLeaveCreate(dto: CreateSickLeaveDto) {
+    this.appointmentsService.createSickLeave(dto.date, dto.numberOfDays).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Sick Leave created successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleSickLeaveUpdate(dto: UpdateSickLeaveDto) {
+    this.appointmentsService.updateSickLeave(dto.id, dto.date, dto.numberOfDays).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Sick Leave updated successfully';
+        this.rowActionError = '';
+      },
+      error: err => {
+        this.rowActionError = err.error.message;
+        this.rowActionSuccess = '';
+      }
+    })
+  }
+
+  private handleSickLeaveDelete(id: number) {
+    this.appointmentsService.deleteSickLeave(id).subscribe({
+      next: value => {
+        this.rowActionSuccess = 'Sick Leave updated successfully';
         this.rowActionError = '';
       },
       error: err => {

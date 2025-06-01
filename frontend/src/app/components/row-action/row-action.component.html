@@ -180,6 +180,76 @@
     </ng-template>
   </div>
 
+  <!-- ICD specific-->
+  <div *ngIf="selectedEntity === 'ICD' && selectedAction.name !== 'Delete'">
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="ICD Code"
+        type="text"
+        placeholder="Enter the ICD code"
+        formControlName="icdCode"
+      ></app-text-input>
+      <app-text-input
+        label="ICD Description"
+        type="text"
+        placeholder="Enter the ICD description"
+        formControlName="icdDescription"
+      ></app-text-input>
+    </div>
+  </div>
+
+  <!-- Sick Leave specific-->
+  <div *ngIf="selectedEntity === 'Sick Leave' && selectedAction.name !== 'Delete'">
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="Sick Leave start date"
+        type="text"
+        placeholder="Enter the start date for the sick leave"
+        formControlName="sickLeaveDate"
+        [error]="rowActionForm.get('sickLeaveDate')?.errors && rowActionForm.get('sickLeaveDate')?.touched ? 'The date must be in the format yyyy-mm-dd!' : ''"
+      ></app-text-input>
+      <app-text-input
+        label="Sick Leave Number of Days Leave"
+        type="text"
+        placeholder="Enter the number of days leave"
+        formControlName="numberOfDays"
+        [error]="rowActionForm.get('numberOfDays')?.errors && rowActionForm.get('numberOfDays')?.touched ? 'The number of days must be a positive integer!' : ''"
+      ></app-text-input>
+    </div>
+  </div>
+
+  <!-- Diagnosis specific-->
+  <div *ngIf="selectedEntity === 'Diagnosis' && selectedAction.name !== 'Delete'">
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="Treatment Description"
+        type="text"
+        placeholder="Enter the treatment description of the diagnosis"
+        formControlName="treatmentDescription"
+      ></app-text-input>
+      <app-text-input
+        label="ICD ID"
+        type="text"
+        placeholder="Enter the ID of the ICD for the diagnosis"
+        formControlName="icdId"
+      ></app-text-input>
+      <app-text-input
+        label="Sick Leave start date"
+        type="text"
+        placeholder="Enter the start date for a sick leave"
+        formControlName="leaveDate"
+        [error]="rowActionForm.errors?.['leaveDate'] ? rowActionForm.errors?.['leaveDateMsg'] : ''"
+      ></app-text-input>
+      <app-text-input
+        label="Number of Days of Leave"
+        type="text"
+        placeholder="Enter the number of days of sick leave"
+        formControlName="leaveDays"
+        [error]="rowActionForm.errors?.['leaveDays'] ? rowActionForm.errors?.['leaveDaysMsg'] : ''"
+      ></app-text-input>
+    </div>
+  </div>
+
   <button
     class="mx-2 my-3 btn btn-primary"
     type="submit"

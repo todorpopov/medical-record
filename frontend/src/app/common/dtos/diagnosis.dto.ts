@@ -14,3 +14,18 @@ export interface DiagnosisSummary {
   icdId: number,
   sickLeaveId: number | undefined,
 }
+
+export interface CreateDiagnosisDto {
+  treatmentDescription: string,
+  icdId: number,
+  sickLeaveDate: number | null,
+  sickLeaveDays: number | null,
+}
+
+export interface UpdateDiagnosisDto {
+  id: number,
+  treatmentDescription: string,
+  icdId: number,
+  sickLeaveDate: number | null,
+  sickLeaveDays: number | null,
+}
