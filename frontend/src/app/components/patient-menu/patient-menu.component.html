@@ -1,0 +1,47 @@
+<div class="my-3 mx-2">
+  <h4>New Appointment</h4>
+
+  <div>
+    <form [formGroup]="createAppointmentForm" (ngSubmit)="onSubmit()">
+      <app-text-input
+        label="Date"
+        type="text"
+        placeholder="Enter the date of the appointment"
+        formControlName="date"
+        [error]="createAppointmentForm.get('date')?.errors && createAppointmentForm.get('date')?.touched ? 'The date should be in yyyy-mm-dd format!' : ''"
+      ></app-text-input>
+
+      <app-text-input
+        label="Time"
+        type="text"
+        placeholder="Enter the time of the appointment"
+        formControlName="time"
+        [error]="createAppointmentForm.get('time')?.errors && createAppointmentForm.get('time')?.touched ? 'The time should be in hh:mm format!' : ''"
+      ></app-text-input>
+
+      <app-dropdown
+        label="Select the doctor you want to visit"
+        [items]="doctors"
+        [valueField]="'id'"
+        [displayField]="'fullName'"
+        [errorMessage]="doctorsFetchError"
+        formControlName="doctorId"
+      ></app-dropdown>
+
+      <button
+        class="my-2 btn btn-outline-primary"
+        type="submit"
+        [disabled]="createAppointmentForm.invalid"
+      >Submit</button>
+
+      <div class="my-3">
+        <span class="form-text text-danger" *ngIf="appointmentCreateError">{{ appointmentCreateError }}</span>
+        <span class="form-text text-success" *ngIf="appointmentCreateSuccess">{{ appointmentCreateSuccess }}</span>
+      </div>
+    </form>
+  </div>
+
+  <hr/>
+
+  <h4>Previous Appointments</h4>
+</div>

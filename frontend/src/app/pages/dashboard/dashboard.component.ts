@@ -17,7 +17,7 @@ import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {RowActionComponent} from '../../components/row-action/row-action.component';
 import {AppointmentsService} from '../../services/appointments.service';
 import {AppointmentsDto, AppointmentsSummary} from '../../common/dtos/appointments.dto';
-import {EntityType, Util} from '../../common/util/util';
+import {EntityType, Page} from '../../common/util/util';
 import {AuthService} from '../../services/auth.service';
 import {RouterLink} from '@angular/router';
 import {DiagnosisSummary} from '../../common/dtos/diagnosis.dto';
@@ -39,7 +39,7 @@ import {SickLeaveDto} from '../../common/dtos/sick-leave.dto';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
-  private readonly page: Util = 'dashboard';
+  private readonly page: Page = 'dashboard';
 
   entityOptions: EntityType[] = ['Patients', 'Doctors', 'Specialties', 'Appointments', 'Diagnosis', 'ICD', 'Sick Leave'];
   selectedEntity: EntityType = 'Patients';

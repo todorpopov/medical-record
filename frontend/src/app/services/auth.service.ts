@@ -4,7 +4,7 @@ import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {AuthResponse} from '../common/interfaces/auth.response';
 import {LocalStorageService} from './local-storage.service';
-import {Util} from '../common/util/util';
+import {Page} from '../common/util/util';
 import {ApiResponse} from '../common/interfaces/api.response';
 import {Router} from '@angular/router';
 
@@ -85,7 +85,7 @@ export class AuthService {
     this.localStorageService.removeUserAuth();
   }
 
-  public fetchPages(page: Util): void {
+  public fetchPages(page: Page): void {
     const token = this.localStorageService.getUserToken();
     let headers = {}
 
@@ -99,7 +99,6 @@ export class AuthService {
       headers: headers,
     }).subscribe({
       error: err => {
-        this.localStorageService.removeUserAuth();
         this.router.navigate(['/']).catch(err => {console.log(err);});
       }
     })

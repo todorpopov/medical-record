@@ -7,7 +7,7 @@ import {AuthService} from '../../services/auth.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {Router} from '@angular/router';
-import {Util} from '../../common/util/util';
+import {Page} from '../../common/util/util';
 
 @Component({
   selector: 'app-log-in',
@@ -22,7 +22,7 @@ import {Util} from '../../common/util/util';
   styleUrl: './log-in.component.css',
 })
 export class LogInComponent implements ReactiveFormsModule {
-  private readonly page: Util = 'login';
+  private readonly page: Page = 'login';
 
   loginForm: FormGroup;
   label: string = 'Log In';

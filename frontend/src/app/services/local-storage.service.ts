@@ -51,6 +51,10 @@ export class LocalStorageService {
     return localStorage.getItem('firstName')
   }
 
+  public getCurrentUserId(): number {
+    return Number(localStorage.getItem('id'));
+  }
+
   public removeUserAuth(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('role');

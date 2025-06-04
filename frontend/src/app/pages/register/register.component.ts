@@ -12,7 +12,7 @@ import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {Router} from '@angular/router';
-import {Util} from '../../common/util/util';
+import {Page} from '../../common/util/util';
 
 @Component({
   selector: 'app-register',
@@ -28,7 +28,7 @@ import {Util} from '../../common/util/util';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements ReactiveFormsModule{
-  private readonly page: Util = 'register';
+  private readonly page: Page = 'register';
 
   registerForm: FormGroup;
   label: string = 'Register';
@@ -89,7 +89,6 @@ export class RegisterComponent implements ReactiveFormsModule{
         return data;
       })
       .catch(error => {
-        console.log(error)
         this.gpError = 'Error retrieving doctors';
         return [];
       });
@@ -102,7 +101,6 @@ export class RegisterComponent implements ReactiveFormsModule{
         return data;
       })
       .catch(error => {
-        console.log(error)
         this.specialtyError = 'Error retrieving specialties';
         return [];
       });

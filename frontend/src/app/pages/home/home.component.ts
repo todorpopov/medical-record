@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import {NgIf} from '@angular/common';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
-import {Util} from '../../common/util/util';
+import {Page} from '../../common/util/util';
 import {AuthService} from '../../services/auth.service';
 
 @Component({
@@ -15,7 +15,7 @@ import {AuthService} from '../../services/auth.service';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  private readonly page: Util = 'home';
+  private readonly page: Page = 'home';
 
   userFirstName: string = '';
 
@@ -59,7 +59,10 @@ export class HomeComponent {
   }
 
   redirectToMenu() {
-
+    this.router.navigate(['/menu'])
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   logOut() {
