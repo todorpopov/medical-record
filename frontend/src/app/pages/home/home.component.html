@@ -7,7 +7,7 @@
       </a>
       <div class="justify-content-end d-flex">
         <div class="d-flex align-items-center" *ngIf="isUserLogged(); else notLogged">
-          <span class="mx-3">Welcome, {{ userFirstName }}</span>
+          <span class="mx-3">Welcome, {{ currentUser }}</span>
           <div *ngIf="isUserAdmin(); else notAdmin">
             <button class="btn btn-primary me-2" type="button" (click)="redirectToAdminDashboard()">Admin Dashboard</button>
           </div>

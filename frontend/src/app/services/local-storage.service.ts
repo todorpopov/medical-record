@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
 import {AuthResponse} from '../common/interfaces/auth.response';
+import {first} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
+  private currentUser: string | null = null;
 
-  constructor() { }
+  constructor() {}
 
   public setUserAuth(userAuth: AuthResponse): void {
     localStorage.setItem('token', userAuth.token);
@@ -15,6 +17,8 @@ export class LocalStorageService {
     localStorage.setItem('firstName', userAuth.firstName);
     localStorage.setItem('lastName', userAuth.lastName);
     localStorage.setItem('role', userAuth.role);
+
+    this.currentUser = `${userAuth.firstName} ${userAuth.lastName}`;
   }
 
   public getUserAuth(): AuthResponse {
@@ -62,5 +66,11 @@ export class LocalStorageService {
     localStorage.removeItem('email');
     localStorage.removeItem('firstName');
     localStorage.removeItem('lastName');
+
+    this.currentUser = null;
+  }
+
+  public getCurrentUser(): string | null {
+    return this.currentUser;
   }
 }

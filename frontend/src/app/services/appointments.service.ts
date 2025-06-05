@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {environment} from '../../environments/environment';
 import {HttpClient, HttpResponse} from '@angular/common/http';
-import {AppointmentsDto} from '../common/dtos/appointments.dto';
+import {AppointmentDto} from '../common/dtos/appointment.dto';
 import {firstValueFrom, Observable} from 'rxjs';
 import {ApiResponse} from '../common/interfaces/api.response';
 import {DiagnosisDto} from '../common/dtos/diagnosis.dto';
@@ -18,8 +18,8 @@ export class AppointmentsService {
     private httpClient: HttpClient,
   ) { }
 
-  public async getAllAppointments(): Promise<AppointmentsDto[]> {
-    return firstValueFrom(this.httpClient.get<AppointmentsDto[]>(`${this.apiUrl}/appointments/list/all`));
+  public async getAllAppointments(): Promise<AppointmentDto[]> {
+    return firstValueFrom(this.httpClient.get<AppointmentDto[]>(`${this.apiUrl}/appointments/list/all`));
   }
 
   public createAppointment(date: string, time: string, patientId: number, doctorId: number): Observable<HttpResponse<ApiResponse>> {

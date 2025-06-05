@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {UsersService} from '../../services/users.service';
 import {LocalStorageService} from '../../services/local-storage.service';
-import {DoctorName} from '../../common/dtos/doctor.dto';
+import {DoctorDto} from '../../common/dtos/doctor.dto';
 import {TextInputComponent} from '../text-input/text-input.component';
 import {DropdownComponent} from '../dropdown/dropdown.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {isoDateValidator, timeValidator} from '../../common/validators/validators';
 import {AppointmentsService} from '../../services/appointments.service';
-import {AppointmentsDto} from '../../common/dtos/appointments.dto';
+import {AppointmentAllDetailsDto} from '../../common/dtos/appointment.dto';
 
 @Component({
   selector: 'app-patient-menu',
@@ -26,11 +26,14 @@ export class PatientMenuComponent {
   createAppointmentForm: FormGroup;
   private currentPatientId: number;
 
-  protected doctors: DoctorName[] = [];
+  protected doctors: DoctorDto[] = [];
   doctorsFetchError: string = '';
 
   appointmentCreateError: string = '';
   appointmentCreateSuccess: string = '';
+
+  protected appointments: AppointmentAllDetailsDto[] = [];
+  appointmentsFetchError: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -39,7 +42,7 @@ export class PatientMenuComponent {
     private localStorageService: LocalStorageService
   ) {
     this.currentPatientId = this.localStorageService.getCurrentUserId();
-    this.getAllDoctors();
+    this.getData();
 
     this.createAppointmentForm = this.fb.group({
       date: [null, [Validators.required, isoDateValidator()]],
@@ -48,21 +51,45 @@ export class PatientMenuComponent {
     })
   }
 
-  private getAllDoctors(): void {
+  private getData(): void {
     this.usersService.getAllDoctors()
       .then(data => {
         data.forEach(doctorDto => {
-          const doctorName: DoctorName = {
-            id: doctorDto.id,
-            fullName: `${doctorDto.firstName} ${doctorDto.lastName}`
-          }
-
-          this.doctors.push(doctorName);
+          this.doctors.push(doctorDto);
         })
       })
       .catch(error => {
         this.doctorsFetchError = 'Error retrieving doctors';
       })
+
+    this.appointmentsService.getAllAppointments()
+      .then(data => {
+        data.forEach(appointment => {
+          const dto: AppointmentAllDetailsDto = {
+            id: appointment.id,
+            date: appointment.date,
+            time: appointment.time,
+            patient: null,
+            doctor: this.findDoctor(appointment.doctorId),
+            status: appointment.status,
+            diagnosis: appointment.diagnosis
+          }
+
+          this.appointments.push(dto);
+        })
+      })
+      .catch(error => {
+        this.appointmentsFetchError = 'Error fetching doctors';
+      })
+  }
+
+  private findDoctor(id: number): DoctorDto | null {
+    for (const doctor of this.doctors) {
+      if (doctor.id === id) {
+        return doctor;
+      }
+    }
+    return null;
   }
 
   onSubmit() {

@@ -20,11 +20,6 @@ export interface DoctorSummary {
   gp: boolean,
 }
 
-export interface DoctorName {
-  id: number,
-  fullName: string
-}
-
 export interface RegisterDoctorDto {
   firstName: string,
   lastName: string,

@@ -23,7 +23,7 @@
         label="Select the doctor you want to visit"
         [items]="doctors"
         [valueField]="'id'"
-        [displayField]="'fullName'"
+        [displayField]="'firstName'"
         [errorMessage]="doctorsFetchError"
         formControlName="doctorId"
       ></app-dropdown>
@@ -44,4 +44,13 @@
   <hr/>
 
   <h4>Previous Appointments</h4>
+
+  <div *ngFor="let appointment of appointments">
+    <div class="container mx-auto w-80 m-5 border rounded">
+      <h6>{{ appointment.date }}</h6>
+      <h6>{{ appointment.time }}</h6>
+      <h6>{{ appointment.status }}</h6>
+      <h6>{{ appointment.doctor?.firstName }}</h6>
+    </div>
+  </div>
 </div>

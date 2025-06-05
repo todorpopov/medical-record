@@ -10,7 +10,7 @@ import {AuthService} from '../../services/auth.service';
 import {RegisterDoctorDto, UpdateDoctorDto} from '../../common/dtos/doctor.dto';
 import {CreateSpecialtyDto, UpdateSpecialtyDto} from '../../common/dtos/specialty.dto';
 import {isoDateValidator, optionalPairValidator, timeValidator} from '../../common/validators/validators';
-import {AppointmentStatus, CreateAppointmentsDto, UpdateAppointmentsDto} from '../../common/dtos/appointments.dto';
+import {AppointmentStatus, CreateAppointmentDto, UpdateAppointmentDto} from '../../common/dtos/appointment.dto';
 import {AppointmentsService} from '../../services/appointments.service';
 import {CreateDiagnosisDto, UpdateDiagnosisDto} from '../../common/dtos/diagnosis.dto';
 import {CreateIcdDto, UpdateIcdDto} from '../../common/dtos/icd.dto';
@@ -434,7 +434,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
         case 'Appointments': {
           switch (this.selectedAction.name) {
             case "Create": {
-              const dto: CreateAppointmentsDto = {
+              const dto: CreateAppointmentDto = {
                 date: date,
                 time: time,
                 patientId: patientId,
@@ -446,7 +446,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
             }
 
             case "Update": {
-              const dto: UpdateAppointmentsDto = {
+              const dto: UpdateAppointmentDto = {
                 id: entityId,
                 status: status,
                 diagnosisId: diagnosisId
@@ -707,7 +707,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     })
   }
 
-  private handleAppointmentCreate(dto: CreateAppointmentsDto): void {
+  private handleAppointmentCreate(dto: CreateAppointmentDto): void {
     this.appointmentsService.createAppointment(
       dto.date,
       dto.time,
@@ -725,7 +725,7 @@ export class RowActionComponent implements ReactiveFormsModule, OnChanges {
     })
   }
 
-  private handleAppointmentUpdate(dto: UpdateAppointmentsDto): void {
+  private handleAppointmentUpdate(dto: UpdateAppointmentDto): void {
     this.appointmentsService.updateAppointment(
       dto.id,
       dto.status,

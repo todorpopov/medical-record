@@ -17,7 +17,7 @@ import {AuthService} from '../../services/auth.service';
 export class HomeComponent {
   private readonly page: Page = 'home';
 
-  userFirstName: string = '';
+  currentUser: string = '';
 
   constructor(
     private router: Router,
@@ -25,8 +25,8 @@ export class HomeComponent {
     private localStorageService: LocalStorageService,
   ) {
     this.authService.fetchPages(this.page);
-    const name = this.localStorageService.getUserFirstName();
-    this.userFirstName = name ? name : 'User';
+    const name = this.localStorageService.getCurrentUser();
+    this.currentUser = name ? name : 'User';
   }
 
   redirectToLogIn(): void {
