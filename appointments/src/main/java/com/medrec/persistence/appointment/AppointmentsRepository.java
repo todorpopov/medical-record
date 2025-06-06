@@ -184,6 +184,38 @@ public class AppointmentsRepository {
         }
     }
 
+    public List<Appointment> findAllByPatientId(int id) throws RuntimeException {
+        logger.info("Getting appointments for patient with id " + id);
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = session.beginTransaction();
+            String hql = "SELECT a FROM Appointment a WHERE a.patientId=:patientId";
+            List<Appointment> appointments = session.createQuery(hql, Appointment.class)
+                .setParameter("patientId", id)
+                .getResultList();
+            tx.commit();
+            return appointments;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (StatusRuntimeException e) {
+            String message = e.getMessage();
+            logger.severe("Users service returned exception: " + message);
+            if (message.contains("Patient")) {
+                throw new NotFoundException("patient_not_found");
+            } else {
+                throw e;
+            }
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
     public List<Appointment> findAllByDoctorEmail(String email) throws RuntimeException {
         logger.info("Getting appointments for doctor with email " + email);
 
@@ -196,6 +228,38 @@ public class AppointmentsRepository {
             String hql = "SELECT a FROM Appointment a WHERE a.doctorId=:doctorId";
             List<Appointment> appointments = session.createQuery(hql, Appointment.class)
                 .setParameter("doctorId", doctorId)
+                .getResultList();
+            tx.commit();
+            return appointments;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (StatusRuntimeException e) {
+            String message = e.getMessage();
+            logger.severe("Users service returned exception: " + message);
+            if (message.contains("Doctor")) {
+                throw new NotFoundException("doctor_not_found");
+            } else {
+                throw e;
+            }
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public List<Appointment> findAllByDoctorId(int id) throws RuntimeException {
+        logger.info("Getting appointments for doctor with id " + id);
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = session.beginTransaction();
+            String hql = "SELECT a FROM Appointment a WHERE a.doctorId=:doctorId";
+            List<Appointment> appointments = session.createQuery(hql, Appointment.class)
+                .setParameter("doctorId", id)
                 .getResultList();
             tx.commit();
             return appointments;

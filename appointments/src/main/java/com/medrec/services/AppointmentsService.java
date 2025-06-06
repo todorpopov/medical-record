@@ -11,6 +11,7 @@ import com.medrec.persistence.appointment.AppointmentsRepository;
 import com.medrec.utils.CascadeEntityType;
 import com.medrec.utils.Utils;
 import io.grpc.stub.StreamObserver;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -110,12 +111,55 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
     }
 
     @Override
+    public void getAllByPatientId(Int32Value request, StreamObserver<Appointments.AppointmentsList> responseObserver) {
+        int id = request.getValue();
+        this.logger.info("Called RPC Get All Appointments By Patient Id");
+
+        try {
+            List<Appointment> appointments = this.appointmentsRepository.findAllByPatientId(id);
+            List<Appointments.Appointment> grpcAppointments = appointments.stream()
+                .map(Utils::getAppointmentFromDomainModel)
+                .toList();
+
+            Appointments.AppointmentsList list = Appointments.AppointmentsList.newBuilder()
+                .addAllAppointments(grpcAppointments)
+                .build();
+            responseObserver.onNext(list);
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
     public void getAllByDoctorEmail(StringValue request, StreamObserver<Appointments.AppointmentsList> responseObserver) {
         String email = request.getValue();
         this.logger.info("Called RPC Get All Appointments By Doctor Email: " + email);
 
         try {
             List<Appointment> appointments = this.appointmentsRepository.findAllByDoctorEmail(email);
+            List<Appointments.Appointment> grpcAppointments = appointments.stream()
+                .map(Utils::getAppointmentFromDomainModel)
+                .toList();
+
+            Appointments.AppointmentsList list = Appointments.AppointmentsList.newBuilder()
+                .addAllAppointments(grpcAppointments)
+                .build();
+
+            responseObserver.onNext(list);
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
+    public void getAllByDoctorId(Int32Value request, StreamObserver<Appointments.AppointmentsList> responseObserver) {
+        int id = request.getValue();
+        this.logger.info("Called RPC Get All Appointments By Doctor Id: " + id);
+
+        try {
+            List<Appointment> appointments = this.appointmentsRepository.findAllByDoctorId(id);
             List<Appointments.Appointment> grpcAppointments = appointments.stream()
                 .map(Utils::getAppointmentFromDomainModel)
                 .toList();

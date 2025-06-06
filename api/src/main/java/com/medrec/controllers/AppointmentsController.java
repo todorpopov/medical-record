@@ -47,10 +47,22 @@ public class AppointmentsController {
         return ResponseEntity.ok(this.appointmentsService.getAllByPatientEmail(email));
     }
 
+    @GetMapping("list/all/patient-id")
+    public ResponseEntity<List<AppointmentDTO>> listAllByPatientEmail(@RequestParam("id") int id) {
+        this.logger.info(String.format("List all appointments by patient id %s endpoint called", id));
+        return ResponseEntity.ok(this.appointmentsService.getAllByPatientId(id));
+    }
+
     @GetMapping("list/all/doctor-email")
     public ResponseEntity<List<AppointmentDTO>> listAllByDoctorEmail(@RequestParam("email") String email) {
         this.logger.info(String.format("List all appointments by doctor email %s endpoint called", email));
         return ResponseEntity.ok(this.appointmentsService.getAllByDoctorEmail(email));
+    }
+
+    @GetMapping("list/all/doctor-id")
+    public ResponseEntity<List<AppointmentDTO>> listAllByDoctorEmail(@RequestParam("id") int id) {
+        this.logger.info(String.format("List all appointments by doctor id %s endpoint called", id));
+        return ResponseEntity.ok(this.appointmentsService.getAllByDoctorId(id));
     }
 
     @PutMapping("update")

@@ -11,6 +11,8 @@ service AppointmentsService {
   rpc GetAllAppointments (google.protobuf.Empty) returns (AppointmentsList);
   rpc GetAllByPatientEmail (google.protobuf.StringValue) returns (AppointmentsList);
   rpc GetAllByDoctorEmail (google.protobuf.StringValue) returns (AppointmentsList);
+  rpc GetAllByPatientId (google.protobuf.Int32Value) returns (AppointmentsList);
+  rpc GetAllByDoctorId (google.protobuf.Int32Value) returns (AppointmentsList);
   rpc UpdateAppointment (UpdateAppointmentRequest) returns (Appointment);
   rpc DeleteAppointmentById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
   rpc CascadeDeletePatientAppointments (google.protobuf.Int32Value) returns (google.protobuf.Empty);

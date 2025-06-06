@@ -102,6 +102,23 @@ public class AppointmentsService {
         }
     }
 
+    public List<AppointmentDTO> getAllByPatientId(int id) {
+        this.logger.info("Retrieving all appointments for patient with id: " + id);
+
+        try {
+            Appointments.AppointmentsList appointments = this.appointmentsGateway.getAllByPatientId(id);
+            List<AppointmentDTO> appointmentDTOs = appointments.getAppointmentsList().stream()
+                .map(Utils::getDTOFromAppointmentsGrpc)
+                .toList();
+
+            this.logger.info(appointmentDTOs.size() + "appointments retrieved for patient with id: " + id);
+            return appointmentDTOs;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve all appointments for patient with id: " + id);
+            throw e;
+        }
+    }
+
     public List<AppointmentDTO> getAllByDoctorEmail(String email) {
         this.logger.info("Retrieving all appointments for doctor with email: " + email);
 
@@ -115,6 +132,23 @@ public class AppointmentsService {
             return appointmentDTOs;
         } catch (RuntimeException e) {
             this.logger.warning("Could not retrieve all appointments for doctor with email: " + email);
+            throw e;
+        }
+    }
+
+    public List<AppointmentDTO> getAllByDoctorId(int id) {
+        this.logger.info("Retrieving all appointments for doctor with id: " + id);
+
+        try {
+            Appointments.AppointmentsList appointments = this.appointmentsGateway.getAllByDoctorId(id);
+            List<AppointmentDTO> appointmentDTOs = appointments.getAppointmentsList().stream()
+                .map(Utils::getDTOFromAppointmentsGrpc)
+                .toList();
+
+            this.logger.info(appointmentDTOs.size() + "appointments retrieved for doctor with id: " + id);
+            return appointmentDTOs;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve all appointments for doctor with id: " + id);
             throw e;
         }
     }

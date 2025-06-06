@@ -72,9 +72,25 @@ public class AppointmentsGateway {
         }
     }
 
+    public Appointments.AppointmentsList getAllByPatientId(int id) {
+        try {
+            return appointmentsService.getAllByPatientId(Int32Value.of(id));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
     public Appointments.AppointmentsList getAllByDoctorEmail(String email) {
         try {
             return appointmentsService.getAllByDoctorEmail(StringValue.of(email));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Appointments.AppointmentsList getAllByDoctorId(int id) {
+        try {
+            return appointmentsService.getAllByDoctorId(Int32Value.of(id));
         } catch (StatusRuntimeException e) {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
