@@ -32,6 +32,14 @@ public class DBUtils {
         return sessionFactory.getCurrentSession();
     }
 
+    public static Transaction getTransactionForSession(Session session) throws HibernateException {
+        Transaction transaction = session.getTransaction();
+        if (transaction.isActive()) {
+            return transaction;
+        }
+        return getCurrentSession().beginTransaction();
+    }
+
     public static void shutdown() throws HibernateException {
         if (sessionFactory != null) {
             sessionFactory.close();

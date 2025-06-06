@@ -35,7 +35,7 @@ public class SpecialtyRepository implements ICrudRepository<Specialty, CreateSpe
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Specialty specialty = dto.getDomainModel();
             session.persist(specialty);
             tx.commit();
@@ -66,7 +66,7 @@ public class SpecialtyRepository implements ICrudRepository<Specialty, CreateSpe
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Specialty specialty = session.get(Specialty.class, id);
             tx.commit();
 
@@ -96,7 +96,7 @@ public class SpecialtyRepository implements ICrudRepository<Specialty, CreateSpe
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             List<Specialty> specialties = session.createQuery("from Specialty", Specialty.class).getResultList();
             tx.commit();
             return specialties;
@@ -133,7 +133,7 @@ public class SpecialtyRepository implements ICrudRepository<Specialty, CreateSpe
             }
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Specialty updatedSpecialty = session.merge(specialty);
             tx.commit();
 
@@ -159,7 +159,7 @@ public class SpecialtyRepository implements ICrudRepository<Specialty, CreateSpe
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Specialty specialty = session.get(Specialty.class, id);
 
             if (specialty == null) {

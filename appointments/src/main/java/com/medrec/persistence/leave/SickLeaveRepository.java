@@ -44,7 +44,7 @@ public class SickLeaveRepository {
             LocalDate startDateLocal = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
 
             SickLeave sickLeave = new SickLeave(startDateLocal, daysOfLeave);
 
@@ -82,7 +82,7 @@ public class SickLeaveRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
 
             SickLeave sickLeave = session.get(SickLeave.class, id);
             if (sickLeave == null) {
@@ -117,7 +117,7 @@ public class SickLeaveRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             List<SickLeave> sickLeaveEntities = session.createQuery("FROM SickLeave", SickLeave.class).getResultList();
             tx.commit();
             return sickLeaveEntities;
@@ -142,7 +142,7 @@ public class SickLeaveRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
 
             SickLeave sickLeave = session.get(SickLeave.class, id);
             if (sickLeave == null) {
@@ -203,7 +203,7 @@ public class SickLeaveRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             SickLeave sickLeave = session.get(SickLeave.class, id);
             if (sickLeave == null) {
                 this.logger.severe("Could not find Sick Leave with id " + id);

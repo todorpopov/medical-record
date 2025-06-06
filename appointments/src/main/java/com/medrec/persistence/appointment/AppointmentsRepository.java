@@ -75,7 +75,7 @@ public class AppointmentsRepository {
             LocalDateTime localDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
 
             if(!isDoctorFree(doctorId, localDateTime, session, tx)) {
                 this.logger.warning("Doctor is not free at the specified time");
@@ -122,7 +122,7 @@ public class AppointmentsRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Appointment appointment = session.get(Appointment.class, id);
             if (appointment == null) {
                 this.logger.severe("Could not find appointment with id " + id);
@@ -158,7 +158,7 @@ public class AppointmentsRepository {
             int patientId = this.usersGateway.getPatientIdByEmail(email);
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             String hql = "SELECT a FROM Appointment a WHERE a.patientId=:patientId";
             List<Appointment> appointments = session.createQuery(hql, Appointment.class)
                 .setParameter("patientId", patientId)
@@ -190,7 +190,7 @@ public class AppointmentsRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             String hql = "SELECT a FROM Appointment a WHERE a.patientId=:patientId";
             List<Appointment> appointments = session.createQuery(hql, Appointment.class)
                 .setParameter("patientId", id)
@@ -201,14 +201,6 @@ public class AppointmentsRepository {
             DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (StatusRuntimeException e) {
-            String message = e.getMessage();
-            logger.severe("Users service returned exception: " + message);
-            if (message.contains("Patient")) {
-                throw new NotFoundException("patient_not_found");
-            } else {
-                throw e;
-            }
         } catch (HibernateException e) {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
@@ -224,7 +216,7 @@ public class AppointmentsRepository {
             int doctorId = this.usersGateway.getDoctorIdByEmail(email);
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             String hql = "SELECT a FROM Appointment a WHERE a.doctorId=:doctorId";
             List<Appointment> appointments = session.createQuery(hql, Appointment.class)
                 .setParameter("doctorId", doctorId)
@@ -256,7 +248,7 @@ public class AppointmentsRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             String hql = "SELECT a FROM Appointment a WHERE a.doctorId=:doctorId";
             List<Appointment> appointments = session.createQuery(hql, Appointment.class)
                 .setParameter("doctorId", id)
@@ -267,14 +259,6 @@ public class AppointmentsRepository {
             DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
             throw new DatabaseConnectionException("Exception found in database connection initialization!");
-        } catch (StatusRuntimeException e) {
-            String message = e.getMessage();
-            logger.severe("Users service returned exception: " + message);
-            if (message.contains("Doctor")) {
-                throw new NotFoundException("doctor_not_found");
-            } else {
-                throw e;
-            }
         } catch (HibernateException e) {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
@@ -288,7 +272,7 @@ public class AppointmentsRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             List<Appointment> appointments = session.createQuery("FROM Appointment", Appointment.class).getResultList();
             tx.commit();
             return appointments;
@@ -314,7 +298,7 @@ public class AppointmentsRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Appointment appointment = session.get(Appointment.class, id);
             if (appointment == null) {
                 this.logger.severe("Could not find appointment with id " + id);
@@ -378,7 +362,7 @@ public class AppointmentsRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Appointment appointment = session.get(Appointment.class, id);
             if (appointment == null) {
                 this.logger.severe("Could not find appointment with id " + id);
@@ -418,7 +402,7 @@ public class AppointmentsRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
 
             int num = switch (type) {
                 case PATIENT -> {

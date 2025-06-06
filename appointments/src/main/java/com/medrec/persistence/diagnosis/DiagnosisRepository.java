@@ -41,7 +41,7 @@ public class DiagnosisRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
 
             Icd icd = session.get(Icd.class, icdId);
             if (icd == null) {
@@ -79,7 +79,7 @@ public class DiagnosisRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Diagnosis diagnosis = session.get(Diagnosis.class, id);
             if (diagnosis == null) {
                 this.logger.severe("Could not find diagnosis with id " + id);
@@ -113,7 +113,7 @@ public class DiagnosisRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             String hql = "SELECT d FROM Diagnosis d";
             List<Diagnosis> diagnoses = session.createQuery(hql, Diagnosis.class).getResultList();
             tx.commit();
@@ -139,7 +139,7 @@ public class DiagnosisRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Diagnosis diagnosis = session.get(Diagnosis.class, diagnosisId);
             if (diagnosis == null) {
                 this.logger.severe("Could not find diagnosis with id " + diagnosisId);
@@ -192,7 +192,7 @@ public class DiagnosisRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Diagnosis diagnosis = session.get(Diagnosis.class, id);
             if (diagnosis == null) {
                 this.logger.severe("Could not find diagnosis with id " + id);

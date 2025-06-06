@@ -42,7 +42,7 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
             Specialty specialty = specialtyRepository.findById(dto.getSpecialtyId());
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Doctor doctor = dto.createDoctorWithSpecialty(specialty);
             session.persist(doctor);
             tx.commit();
@@ -77,7 +77,7 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Doctor doctor = session.get(Doctor.class, id);
             tx.commit();
 
@@ -106,7 +106,7 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             String hql = "from Doctor where email = :email";
             Query query = session.createQuery("from Doctor where email = :email")
                 .setParameter("email", email);
@@ -139,7 +139,7 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             List<Doctor> doctors = session.createQuery("from Doctor", Doctor.class).getResultList();
             tx.commit();
             return doctors;
@@ -192,7 +192,7 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
             }
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Doctor updatedDoctor = session.merge(doctor);
             tx.commit();
 
@@ -218,7 +218,7 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Doctor doctor = session.get(Doctor.class, id);
 
             if (doctor == null) {
@@ -252,7 +252,7 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             List<Doctor> doctors = session.createQuery("from Doctor where isGp=true", Doctor.class).getResultList();
             tx.commit();
             return doctors;
