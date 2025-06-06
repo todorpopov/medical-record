@@ -1,18 +1,21 @@
 package com.medrec.services;
 
 import com.medrec.dtos.appointments.appointment.AppointmentDTO;
+import com.medrec.dtos.appointments.appointment.AppointmentDetailedDTO;
 import com.medrec.dtos.general.PatientMenuDataDTO;
 import com.medrec.dtos.users.doctor.DoctorDTO;
+import com.medrec.dtos.users.patient.PatientDTO;
 import com.medrec.exception_handling.exceptions.ConcurrentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 public class GeneralWorkService {
@@ -57,22 +60,64 @@ public class GeneralWorkService {
             }
         }, executor);
 
-        CompletableFuture<Void> done = CompletableFuture.allOf(doctorsFuture, appointmentsFuture);
+        CompletableFuture<PatientDTO> patientFuture = CompletableFuture.supplyAsync(() -> {
+            String threadName = Thread.currentThread().getName();
+            this.logger.info(String.format("Getting current patient for patient menu (patient - %d) on thread (%s)", patientId, threadName));
+
+            try {
+                PatientDTO patient = this.usersService.getPatientById(patientId);
+                this.logger.info("Found patient with id " + patientId);
+                return patient;
+            } catch (Exception e) {
+                this.logger.warning(e.getMessage());
+                throw new ConcurrentException("Error getting current patient for patient menu");
+            }
+        }, executor);
+
+        CompletableFuture<Void> done = CompletableFuture.allOf(doctorsFuture, appointmentsFuture, patientFuture);
 
         done.join();
 
         try {
             List<DoctorDTO> doctors = doctorsFuture.get();
             List<AppointmentDTO> appointments = appointmentsFuture.get();
+            PatientDTO patient = patientFuture.get();
             this.logger.info(String.format("Patient Menu Data: (doctors - %d, appointments - %d)", doctors.size(), appointments.size()));
 
             return new PatientMenuDataDTO(
+                patient,
                 doctors,
-                appointments
+                this.mathPatientMenuData(patient, doctors, appointments)
             );
         } catch (ExecutionException | InterruptedException e) {
             this.logger.severe(e.getMessage());
             throw new ConcurrentException("Error getting patient menu");
         }
+    }
+
+    private List<AppointmentDetailedDTO> mathPatientMenuData(PatientDTO patient, List<DoctorDTO> doctors, List<AppointmentDTO> appointments) {
+        Map<Integer, DoctorDTO> doctorMap = doctors.stream().collect(Collectors.toMap(DoctorDTO::getId, doctor -> doctor));
+
+        return appointments.stream()
+            .map(appointment -> {
+                DoctorDTO doctor = doctorMap.get(appointment.getDoctorId());
+                boolean isGp = false;
+
+                if (doctor != null) {
+                    isGp = patient.getGp().getId() == doctor.getId();
+                }
+
+                return new AppointmentDetailedDTO(
+                    appointment.getId(),
+                    appointment.getDate(),
+                    appointment.getTime(),
+                    Optional.ofNullable(doctor),
+                    Optional.empty(),
+                    appointment.getStatus(),
+                    appointment.getDiagnosis(),
+                    isGp
+                );
+            })
+            .collect(Collectors.toList());
     }
 }
