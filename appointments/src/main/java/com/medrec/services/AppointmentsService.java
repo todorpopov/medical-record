@@ -113,7 +113,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
     @Override
     public void getAllByPatientId(Int32Value request, StreamObserver<Appointments.AppointmentsList> responseObserver) {
         int id = request.getValue();
-        this.logger.info("Called RPC Get All Appointments By Patient Id");
+        this.logger.info("Called RPC Get All Appointments By Patient Id " + id);
 
         try {
             List<Appointment> appointments = this.appointmentsRepository.findAllByPatientId(id);

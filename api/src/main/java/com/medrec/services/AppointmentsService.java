@@ -15,13 +15,13 @@ import com.medrec.dtos.appointments.sick_leave.UpdateSickLeaveDTO;
 import com.medrec.gateways.AppointmentsGateway;
 import com.medrec.grpc.appointments.Appointments;
 import com.medrec.utils.Utils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Component
+@Service
 public class AppointmentsService {
     private final Logger logger = Logger.getLogger(AppointmentsService.class.getName());
 
@@ -128,7 +128,7 @@ public class AppointmentsService {
                 .map(Utils::getDTOFromAppointmentsGrpc)
                 .toList();
 
-            this.logger.info(appointmentDTOs.size() + "appointments retrieved for doctor with email: " + email);
+            this.logger.info(appointmentDTOs.size() + " appointments retrieved for doctor with email: " + email);
             return appointmentDTOs;
         } catch (RuntimeException e) {
             this.logger.warning("Could not retrieve all appointments for doctor with email: " + email);

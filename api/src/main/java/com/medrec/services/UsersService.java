@@ -12,13 +12,13 @@ import com.medrec.dtos.users.specialty.SpecialtyDTO;
 import com.medrec.dtos.users.specialty.UpdateSpecialtyDTO;
 import com.medrec.gateways.UsersGateway;
 import com.medrec.grpc.users.Users;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Component
+@Service
 public class UsersService {
     private final Logger logger = Logger.getLogger(UsersService.class.getName());
 

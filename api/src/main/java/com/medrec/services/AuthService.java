@@ -6,12 +6,12 @@ import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
 import com.medrec.dtos.users.patient.RegisterPatientDTO;
 import com.medrec.gateways.AuthGateway;
 import io.grpc.StatusRuntimeException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.logging.Logger;
 
-@Component
+@Service
 public class AuthService {
     private final Logger logger = Logger.getLogger(AuthService.class.getName());
 

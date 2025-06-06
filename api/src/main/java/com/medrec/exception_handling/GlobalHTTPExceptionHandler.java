@@ -91,4 +91,10 @@ public class GlobalHTTPExceptionHandler {
         ErrorHTTPResponse error = new ErrorHTTPResponse("BAD_REQUEST_EXCEPTION", e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorHTTPResponse> handleConcurrentException(ConcurrentException e) {
+        ErrorHTTPResponse error = new ErrorHTTPResponse("CONCURRENT_EXCEPTION", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
