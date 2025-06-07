@@ -1,5 +1,6 @@
 package com.medrec.controllers;
 
+import com.medrec.dtos.general.DoctorMenuDataDTO;
 import com.medrec.dtos.general.PatientMenuDataDTO;
 import com.medrec.services.GeneralWorkService;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +25,11 @@ public class GeneralWorkController {
     public ResponseEntity<PatientMenuDataDTO> getPatientMenuData(@RequestParam("id") int id) {
         this.logger.info("Get data for patient menu endpoint called for id: " + id);
         return  ResponseEntity.ok(generalWorkService.getPatientMenuData(id));
+    }
+
+    @GetMapping("doctor-menu-data")
+    public ResponseEntity<DoctorMenuDataDTO> getDoctorMenuData(@RequestParam("id") int id) {
+        this.logger.info("Get data for doctor menu endpoint called for id: " + id);
+        return  ResponseEntity.ok(generalWorkService.getDoctorMenuData(id));
     }
 }
