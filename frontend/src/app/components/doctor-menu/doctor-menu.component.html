@@ -1,3 +1,54 @@
 <div class="my-3 mx-2">
-  <p>doctor-menu works!</p>
+  <div class="btn-group" role="group">
+    <button
+      *ngFor="let option of entityOptions"
+      class="btn"
+      [class.btn-primary]="selectedEntity === option"
+      [class.btn-outline-primary]="selectedEntity !== option"
+      (click)="selectEntity(option)">
+      {{ option }}
+    </button>
+  </div>
+
+  <app-grid
+    class="my-2"
+    [columnDefs]="currentColumnDefs"
+    [rowData]="currentRowData"
+  ></app-grid>
+
+  <hr/>
+
+  @for (appointment of appointments; track appointment.id) {
+    <div class="card my-2">
+      <div class="card-body">
+        @if (appointment.performedByGp) {
+          <h5 class="card-title"> General Practitioner visit - {{ appointment.patient?.firstName }} {{ appointment.patient?.lastName }}</h5>
+        } @else {
+          <h5 class="card-title" >Regular visit - {{ appointment.patient?.firstName }} {{ appointment.patient?.lastName }}</h5>
+        }
+        @if (appointment.status === 'upcoming') {
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="mb-0 card-subtitle">Upcoming at: {{ appointment.time }} - {{ appointment.date }}</span>
+            <button class="btn btn-outline-primary" [routerLink]="['/add-diagnosis', appointment.id]">Take patient in</button>
+          </div>
+        } @else if (appointment.status === 'started'){
+          <p class="card-subtitle">Appointment has started</p>
+        } @else {
+          <p class="card-subtitle">Conducted on: {{ appointment.time }} - {{ appointment.date }}</p>
+        }
+      </div>
+      @if (appointment.diagnosis !== null) {
+        <div class="card-body">
+          <h5 class="card-title" >Your diagnosis - {{ appointment.diagnosis.icd.description }} (ICD: {{ appointment.diagnosis.icd.code }})</h5>
+          <p class="card-subtitle">Treatment - {{ appointment.diagnosis.treatmentDescription }}</p>
+          @if (appointment.diagnosis.sickLeave !== null) {
+            <p class="card-subtitle">Sick leave: (from: {{ appointment.diagnosis.sickLeave.date }} | number of days: {{ appointment.diagnosis.sickLeave.numberOfDays }})</p>
+          }
+        </div>
+      }
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">{{ appointment.patient?.email }}</li>
+      </ul>
+    </div>
+  }
 </div>

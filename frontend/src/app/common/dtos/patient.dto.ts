@@ -11,6 +11,16 @@ export interface PatientDto {
   insured: boolean
 }
 
+export interface DoctorMenuPatientDto {
+  firstName: string,
+  lastName: string,
+  email: string,
+  gpFirstName: string,
+  gpLastName: string,
+  gpEmail: string,
+  insured: boolean
+}
+
 export interface PatientSummary {
   id: number,
   firstName: string,

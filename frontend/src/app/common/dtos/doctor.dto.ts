@@ -10,6 +10,14 @@ export interface DoctorDto {
   gp: boolean
 }
 
+export interface DoctorMenuDoctorDto {
+  firstName: string,
+  lastName: string,
+  email: string,
+  specialty: string,
+  gp: boolean
+}
+
 export interface DoctorSummary {
   id: number,
   firstName: string,

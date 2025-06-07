@@ -7,3 +7,10 @@ export interface PatientMenuDataDto {
   doctors: DoctorDto[],
   appointments: AppointmentDetailedDto[]
 }
+
+export interface DoctorMenuDataDto {
+  doctor: DoctorDto,
+  doctors: DoctorDto[],
+  patients: PatientDto[],
+  appointments: AppointmentDetailedDto[]
+}
