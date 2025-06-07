@@ -12,7 +12,7 @@ export interface AppointmentDto {
   diagnosis: DiagnosisDto | null,
 }
 
-export interface AppointmentAllDetailsDto {
+export interface AppointmentDetailedDto {
   id: number,
   date: string,
   time: string,
@@ -20,6 +20,7 @@ export interface AppointmentAllDetailsDto {
   doctor: DoctorDto | null,
   status: string,
   diagnosis: DiagnosisDto | null,
+  performedByGp: boolean
 }
 
 export interface AppointmentSummary {

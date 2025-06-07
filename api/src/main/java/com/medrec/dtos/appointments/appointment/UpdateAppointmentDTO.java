@@ -1,6 +1,5 @@
 package com.medrec.dtos.appointments.appointment;
 
-import com.medrec.exception_handling.exceptions.BadRequestException;
 import com.medrec.exception_handling.exceptions.IdNotSetException;
 import com.medrec.grpc.appointments.Appointments;
 

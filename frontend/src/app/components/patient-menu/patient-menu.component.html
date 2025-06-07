@@ -43,14 +43,36 @@
 
   <hr/>
 
-  <h4>Previous Appointments</h4>
+  <h4>Your Appointment History</h4>
 
   <div *ngFor="let appointment of appointments">
-    <div class="container mx-auto w-80 m-5 border rounded">
-      <h6>{{ appointment.date }}</h6>
-      <h6>{{ appointment.time }}</h6>
-      <h6>{{ appointment.status }}</h6>
-      <h6>{{ appointment.doctor?.firstName }}</h6>
+    <div class="card my-2">
+      <div class="card-body">
+        @if (appointment.performedByGp) {
+          <h5 class="card-title" >General Practitioner visit - {{ appointment.doctor?.firstName }} {{ appointment.doctor?.lastName }}</h5>
+        } @else {
+          <h5 class="card-title" >{{ appointment.doctor?.specialty?.name }} visit - {{ appointment.doctor?.firstName }} {{ appointment.doctor?.lastName }}</h5>
+        }
+        @if (appointment.status === 'upcoming') {
+          <p class="card-subtitle">Upcoming at: {{ appointment.time }} - {{ appointment.date }}</p>
+        } @else if (appointment.status === 'started'){
+          <p class="card-subtitle">Sit tight, the doctor is entering the details for the appointment at this moment</p>
+        } @else {
+          <p class="card-subtitle">Conducted on: {{ appointment.time }} - {{ appointment.date }}</p>
+        }
+      </div>
+      @if (appointment.diagnosis !== null) {
+        <div class="card-body">
+          <h5 class="card-title" >Specialist's diagnosis - {{ appointment.diagnosis.icd.description }} (ICD: {{ appointment.diagnosis.icd.code }})</h5>
+          <p class="card-subtitle">Treatment - {{ appointment.diagnosis.treatmentDescription }}</p>
+          @if (appointment.diagnosis.sickLeave !== null) {
+            <p class="card-subtitle">Sick leave: (from: {{ appointment.diagnosis.sickLeave.date }} | number of days: {{ appointment.diagnosis.sickLeave.numberOfDays }})</p>
+          }
+        </div>
+      }
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">{{ appointment.doctor?.email }}</li>
+      </ul>
     </div>
   </div>
 </div>

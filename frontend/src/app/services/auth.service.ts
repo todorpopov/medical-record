@@ -99,6 +99,7 @@ export class AuthService {
       headers: headers,
     }).subscribe({
       error: err => {
+        this.localStorageService.removeUserAuth();
         this.router.navigate(['/']).catch(err => {console.log(err);});
       }
     })
