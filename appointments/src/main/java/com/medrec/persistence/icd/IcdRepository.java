@@ -40,7 +40,7 @@ public class IcdRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             session.persist(icd);
             tx.commit();
             this.logger.info("New ICD saved successfully");
@@ -69,7 +69,7 @@ public class IcdRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Icd icd = session.get(Icd.class, id);
             if (icd == null) {
                 this.logger.severe("Could not find ICD with id " + id);
@@ -103,7 +103,7 @@ public class IcdRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             String hql = "SELECT i FROM Icd i";
             List<Icd> icds = session.createQuery(hql, Icd.class).getResultList();
             tx.commit();
@@ -129,7 +129,7 @@ public class IcdRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Icd icd = session.get(Icd.class, icdId);
             if (icd == null) {
                 this.logger.severe("Could not find ICD with id " + icdId);
@@ -177,7 +177,7 @@ public class IcdRepository {
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Icd icd = session.get(Icd.class, id);
             if (icd == null) {
                 this.logger.severe("Could not find ICD with id " + id);

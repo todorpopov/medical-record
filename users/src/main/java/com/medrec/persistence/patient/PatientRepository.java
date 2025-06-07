@@ -46,7 +46,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
             }
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Patient patient = dto.getDomainModel(gp);
             session.persist(patient);
             tx.commit();
@@ -85,7 +85,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Patient patient = session.get(Patient.class, id);
             tx.commit();
 
@@ -114,7 +114,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Query query = session.createQuery("from Patient where email = :email").setParameter("email", email);
             Patient patient = (Patient) query.uniqueResult();
             tx.commit();
@@ -145,7 +145,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             List<Patient> patients = session.createQuery("from Patient", Patient.class).getResultList();
             tx.commit();
             return patients;
@@ -202,7 +202,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
             }
 
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Patient updatedPatient = session.merge(patient);
             tx.commit();
 
@@ -232,7 +232,7 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
         Transaction tx = null;
         try {
             Session session = DBUtils.getCurrentSession();
-            tx = session.beginTransaction();
+            tx = DBUtils.getTransactionForSession(session);
             Patient patient = session.get(Patient.class, id);
 
             if (patient == null) {
