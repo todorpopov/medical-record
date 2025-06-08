@@ -4,6 +4,7 @@ import {RegisterComponent} from './pages/register/register.component';
 import {HomeComponent} from './pages/home/home.component';
 import {DashboardComponent} from './pages/dashboard/dashboard.component';
 import {MenuComponent} from './pages/menu/menu.component';
+import {UpdateDiagnosisComponent} from './components/update-diagnosis/update-diagnosis.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent},
@@ -11,5 +12,5 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'menu', component: MenuComponent },
-  { path: 'add-diagnosis/:id', component: HomeComponent, }
+  { path: 'add-diagnosis/:id', component: UpdateDiagnosisComponent }
 ];

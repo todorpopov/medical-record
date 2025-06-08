@@ -1,0 +1,63 @@
+<div class="container mx-auto w-50 m-5 border rounded">
+  <form [formGroup]="updateDiagnosis" (ngSubmit)="onSubmit()">
+    <div class="my-3 mx-2">
+      <app-text-input
+        label="Treatment"
+        type="text"
+        placeholder="Enter the prescribed treatment"
+        formControlName="treatmentDescription"
+      ></app-text-input>
+    </div>
+    <div class="my-3 mx-2">
+      <app-dropdown
+        label="Select ICD"
+        [items]="icdEntities"
+        [valueField]="'id'"
+        [displayField]="'code'"
+        [errorMessage]="icdFetchError"
+        formControlName="icd"
+      ></app-dropdown>
+    </div>
+
+    <div class="my-3 mx-2">
+      <app-checkbox
+        label="Include sick leave"
+        formControlName="includeSickLeave"
+      ></app-checkbox>
+    </div>
+
+    @if (includeSickLeave) {
+      <div class="my-3 mx-2">
+        <app-text-input
+          label="Sick leave start date"
+          type="text"
+          placeholder="Enter the date of the first day of sick leave"
+          formControlName="sickLeaveDate"
+          [error]="updateDiagnosis.get('sickLeaveDate')?.errors && updateDiagnosis.get('sickLeaveDate')?.touched ? 'The date must be in the format yyyy-mm-dd!': ''"
+        ></app-text-input>
+      </div>
+      <div class="my-3 mx-2">
+        <app-text-input
+          label="Number of sick leave days"
+          type="text"
+          placeholder="Enter the total number of sick leave days"
+          formControlName="sickLeaveDays"
+          [error]="updateDiagnosis.get('sickLeaveDays')?.errors && updateDiagnosis.get('sickLeaveDays')?.touched ? 'The number of days must be a positive integer!': ''"
+        ></app-text-input>
+      </div>
+    }
+
+    <div class="my-3 mx-2">
+      <button
+        class="btn btn-outline-primary"
+        type="submit"
+        [disabled]="updateDiagnosis.invalid"
+      >Submit</button>
+    </div>
+
+    <div class="my-3 mx-2">
+      <span class="form-text text-danger" *ngIf="errorMsg">{{ errorMsg }}</span>
+      <span class="form-text text-success" *ngIf="successMSg">{{ successMSg }}</span>
+    </div>
+  </form>
+</div>
