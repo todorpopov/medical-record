@@ -1,8 +1,7 @@
 package com.medrec.controllers;
 
-import com.medrec.dtos.appointments.appointment.AppointmentDTO;
-import com.medrec.dtos.appointments.appointment.CreateAppointmentDTO;
-import com.medrec.dtos.appointments.appointment.UpdateAppointmentDTO;
+import com.medrec.dtos.appointments.appointment.*;
+import com.medrec.dtos.appointments.icd.IcdDTO;
 import com.medrec.services.AppointmentsService;
 import com.medrec.utils.SuccessHTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +74,20 @@ public class AppointmentsController {
     public ResponseEntity<SuccessHTTPResponse> deleteDoctorById(@RequestParam("id") int id) {
         this.logger.info("Deleting appointment by id " + id + "endpoint called");
         this.appointmentsService.deleteAppointmentById(id);
+        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Appointment deleted successfully");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("start")
+    public ResponseEntity<List<IcdDTO>> startAppointment(@RequestBody StartAppointmentDTO dto) {
+        this.logger.info("Starting appointment endpoint called");
+        return ResponseEntity.ok(this.appointmentsService.startAppointmentFetchIcds(dto));
+    }
+
+    @PostMapping("finish")
+    public ResponseEntity<SuccessHTTPResponse> finishAppointment(@RequestBody FinishAppointmentDTO dto) {
+        this.logger.info("Finishing appointment endpoint called");
+        this.appointmentsService.finishAppointmentAddDiagnosis(dto);
         SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Appointment deleted successfully");
         return ResponseEntity.ok(response);
     }

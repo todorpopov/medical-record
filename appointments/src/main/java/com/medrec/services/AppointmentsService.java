@@ -4,14 +4,17 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import com.medrec.exception_handling.ExceptionsMapper;
+import com.medrec.exception_handling.exceptions.AbortedException;
+import com.medrec.exception_handling.exceptions.NotFoundException;
 import com.medrec.grpc.appointments.Appointments;
 import com.medrec.grpc.appointments.AppointmentsServiceGrpc;
 import com.medrec.persistence.appointment.Appointment;
 import com.medrec.persistence.appointment.AppointmentsRepository;
+import com.medrec.persistence.icd.Icd;
+import com.medrec.persistence.icd.IcdRepository;
 import com.medrec.utils.CascadeEntityType;
 import com.medrec.utils.Utils;
 import io.grpc.stub.StreamObserver;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +27,7 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
     private final Logger logger = Logger.getLogger(AppointmentsService.class.getName());
 
     private final AppointmentsRepository appointmentsRepository = AppointmentsRepository.getInstance();
+    private final IcdRepository icdRepository = IcdRepository.getInstance();
 
     private AppointmentsService() {}
 
@@ -228,6 +232,54 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
 
         try {
             this.appointmentsRepository.genericCascadeDelete(id, CascadeEntityType.DOCTOR);
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
+    public void startAppointmentFetchIcds(Appointments.StartAppointmentFetchIcdsRequest request, StreamObserver<Appointments.IcdEntitiesList> responseObserver) {
+        int appointmentId = request.getAppointmentId();
+        int doctorId = request.getDoctorId();
+
+        this.logger.info("Called RPC Start Appointment Fetch Icds for appointmentId: " + appointmentId + " doctorId: " + doctorId);
+
+        try {
+            List<Icd> icdEntities = this.appointmentsRepository.startAppointmentFetchIcds(appointmentId, doctorId);
+            List<Appointments.Icd> grpcIcdEntities = icdEntities.stream()
+                .map(Utils::getIcdFromDomainModel)
+                .toList();
+
+            Appointments.IcdEntitiesList list = Appointments.IcdEntitiesList.newBuilder()
+                .addAllIcdEntities(grpcIcdEntities)
+                .build();
+
+            responseObserver.onNext(list);
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
+    public void finishAppointmentAddDiagnosis(
+        Appointments.FinishAppointmentAddDiagnosisRequest request,
+        StreamObserver<Empty> responseObserver
+    ) {
+        this.logger.info("Called RPC Finish Appointment Add Diagnosis");
+
+        try {
+            Appointments.CreateDiagnosisRequest diagnosisRequest = request.getDiagnosis();
+            this.appointmentsRepository.finishAppointmentAddDiagnosis(
+                request.getAppointmentId(),
+                diagnosisRequest.getTreatmentDescription(),
+                diagnosisRequest.getIcdId(),
+                diagnosisRequest.hasSickLeaveDate() ? Optional.of(diagnosisRequest.getSickLeaveDate()) : Optional.empty(),
+                diagnosisRequest.hasSickLeaveDays() ? Optional.of(diagnosisRequest.getSickLeaveDays()) : Optional.empty()
+            );
+
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (RuntimeException e) {

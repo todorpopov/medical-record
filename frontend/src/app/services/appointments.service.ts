@@ -156,4 +156,37 @@ export class AppointmentsService {
   public deleteSickLeave(id: number): Observable<HttpResponse<ApiResponse>> {
     return this.httpClient.delete<ApiResponse>(`${this.apiUrl}/sick-leave/delete?id=${id}`, {observe: 'response'});
   }
+
+  public startAppointment(appointmentId: number, doctorId: number): Observable<HttpResponse<IcdDto[]>> {
+    const body = {
+      appointmentId: appointmentId,
+      doctorId: doctorId
+    }
+
+    return this.httpClient.post<IcdDto[]>(`${this.apiUrl}/appointments/start`, body, {observe: 'response'});
+  }
+
+  public finishAppointment(
+    appointmentId: number,
+    treatmentDescription: string,
+    icdId: number,
+    sickLeaveDate: string | null,
+    sickLeaveDays: number | null
+  ): Observable<HttpResponse<ApiResponse>> {
+    let body: any = {
+      appointmentId: appointmentId,
+      treatmentDescription: treatmentDescription,
+      icdId: icdId
+    }
+
+    if (sickLeaveDate) {
+      body.sickLeaveDate = sickLeaveDate;
+    }
+
+    if (sickLeaveDays) {
+      body.sickLeaveDays = sickLeaveDays;
+    }
+
+    return this.httpClient.post<ApiResponse>(`${this.apiUrl}/appointments/finish`, body, {observe: "response"});
+  }
 }

@@ -1,9 +1,6 @@
 package com.medrec.exception_handling;
 
-import com.medrec.exception_handling.exceptions.BadRequestException;
-import com.medrec.exception_handling.exceptions.DatabaseConnectionException;
-import com.medrec.exception_handling.exceptions.DatabaseException;
-import com.medrec.exception_handling.exceptions.NotFoundException;
+import com.medrec.exception_handling.exceptions.*;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 
@@ -59,6 +56,13 @@ public class ExceptionsMapper {
                 return Status.NOT_FOUND.withDescription("Diagnosis Not Found").asRuntimeException();
             } else {
                 return Status.NOT_FOUND.withDescription("Entity Not Found").asRuntimeException();
+            }
+        } else if (throwable instanceof AbortedException) {
+            logger.info("Aborted exception");
+            if (message.contains("doctor_has_no_access_to_appointment")) {
+                return Status.ABORTED.withDescription("Doctor has no access to Appointment").asRuntimeException();
+            } else {
+                return Status.ABORTED.withDescription("Aborted exception").asRuntimeException();
             }
         }
 

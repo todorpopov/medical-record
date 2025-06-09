@@ -1,18 +1,19 @@
 package com.medrec.persistence.appointment;
 
-import com.medrec.exception_handling.exceptions.BadRequestException;
-import com.medrec.exception_handling.exceptions.DatabaseConnectionException;
-import com.medrec.exception_handling.exceptions.DatabaseException;
-import com.medrec.exception_handling.exceptions.NotFoundException;
+import com.medrec.exception_handling.exceptions.*;
 import com.medrec.gateway.UsersGateway;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.diagnosis.Diagnosis;
+import com.medrec.persistence.icd.Icd;
+import com.medrec.persistence.leave.SickLeave;
 import com.medrec.utils.CascadeEntityType;
+import com.medrec.utils.Utils;
 import io.grpc.StatusRuntimeException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -427,6 +428,130 @@ public class AppointmentsRepository {
         } catch (HibernateException e) {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public List<Icd> startAppointmentFetchIcds(int appointmentId, int doctorId) throws RuntimeException {
+        this.logger.info(String.format("Starting appointment with id %d", appointmentId));
+        if (appointmentId < 1 || doctorId < 1) {
+            logger.severe("Appointment id or Doctor id is invalid");
+            throw new BadRequestException("invalid_id");
+        }
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            Appointment appointment = session.get(Appointment.class, appointmentId);
+
+            if (appointment == null) {
+                this.logger.severe("Could not find appointment with id " + appointmentId);
+                throw new NotFoundException("appointment_not_found");
+            }
+
+            if (appointment.getDoctorId() != doctorId) {
+                this.logger.severe("Appointment doctor id mismatch");
+                throw new AbortedException("doctor_has_no_access_to_appointment");
+            }
+
+            appointment.setStatus("started");
+
+            String hql = "SELECT i FROM Icd i";
+            List<Icd> icds = session.createQuery(hql, Icd.class).getResultList();
+
+            tx.commit();
+
+            logger.info(String.format("Successfully started appointment with id %d", appointmentId));
+            logger.info("Found " + icds.size() + " icds for page");
+            return icds;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (BadRequestException e) {
+            logger.severe("Bad request exception found: " + e.getMessage());
+            throw e;
+        } catch (NotFoundException e) {
+            logger.severe("Not found exception found: " + e.getMessage());
+            throw e;
+        } catch (AbortedException e) {
+            logger.severe("Aborted exception found: " + e.getMessage());
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public void finishAppointmentAddDiagnosis(
+        int appointmentId,
+        String treatmentDescription,
+        int icdId,
+        Optional<String> sickLeaveDate,
+        Optional<Integer> sickLeaveDays
+    ) throws RuntimeException {
+        logger.info(String.format("Finishing appointment with id %d", appointmentId));
+
+        if (appointmentId < 1 || icdId < 1) {
+            logger.severe("Appointment id or icd id is invalid");
+            throw new BadRequestException("invalid_id");
+        }
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            Appointment appointment = session.get(Appointment.class, appointmentId);
+            if (appointment == null) {
+                this.logger.severe("Could not find appointment with id " + appointmentId);
+                throw new NotFoundException("appointment_not_found");
+            }
+
+            Icd icd = session.get(Icd.class, icdId);
+            if (icd == null) {
+                this.logger.severe("Could not find icd with id " + icdId);
+                throw new NotFoundException("icd_not_found");
+            }
+
+            Diagnosis diagnosis;
+            if (sickLeaveDate.isPresent() && sickLeaveDays.isPresent()) {
+                LocalDate date = Utils.parseDate(sickLeaveDate.get());
+                SickLeave sickLeave = new SickLeave(
+                    date,
+                    sickLeaveDays.get()
+                );
+
+                diagnosis = new Diagnosis(treatmentDescription, icd, sickLeave);
+            } else {
+                diagnosis = new Diagnosis(treatmentDescription, icd);
+            }
+
+            session.persist(diagnosis);
+
+            appointment.setDiagnosis(diagnosis);
+            appointment.setStatus("finished");
+
+            tx.commit();
+
+            this.logger.info(String.format("Successfully finished appointment with id %d", appointmentId));
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (BadRequestException e) {
+            logger.severe("Bad request exception found: " + e.getMessage());
+            throw e;
+        } catch (NotFoundException e) {
+            logger.severe("Not found exception found: " + e.getMessage());
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
         }
     }
 }

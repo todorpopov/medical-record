@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AppointmentsService} from '../../services/appointments.service';
 import {IcdDto} from '../../common/dtos/icd.dto';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -8,6 +8,7 @@ import {DropdownComponent} from '../dropdown/dropdown.component';
 import {NgIf} from '@angular/common';
 import {CheckboxComponent} from '../checkbox/checkbox.component';
 import {isoDateValidator} from '../../common/validators/validators';
+import {LocalStorageService} from '../../services/local-storage.service';
 
 @Component({
   selector: 'app-update-diagnosis',
@@ -22,7 +23,7 @@ import {isoDateValidator} from '../../common/validators/validators';
   styleUrl: './update-diagnosis.component.css'
 })
 export class UpdateDiagnosisComponent {
-  private id: number;
+  private appointmentId: number;
   updateDiagnosis: FormGroup;
 
   protected includeSickLeave: boolean = false;
@@ -30,15 +31,17 @@ export class UpdateDiagnosisComponent {
   protected icdEntities: IcdDto[] = [];
   protected icdFetchError: string = '';
 
-  protected successMSg: string = '';
+  protected successMsg: string = '';
   protected errorMsg: string = '';
 
   private sickLeaveFields: string[] = ['sickLeaveDate', 'sickLeaveDays'];
 
   constructor(
     private fb: FormBuilder,
-    private router: ActivatedRoute,
-    private appointmentsService: AppointmentsService
+    private route: ActivatedRoute,
+    private router: Router,
+    private appointmentsService: AppointmentsService,
+    private localStorageService: LocalStorageService
   ) {
     this.updateDiagnosis = this.fb.group({
       treatmentDescription: [null, [Validators.required]],
@@ -55,21 +58,29 @@ export class UpdateDiagnosisComponent {
       sickLeave ? this.addSickLeaveValidators() : this.removeSickLeaveValidators()
     })
 
-    this.fetchIcdEntities()
-
-    const id = this.router.snapshot.paramMap.get('id');
-    if (id !== null) {
-      this.id = Number(id);
+    const appointmentId = this.route.snapshot.paramMap.get('id');
+    if (appointmentId !== null) {
+      this.appointmentId = Number(appointmentId);
     } else {
-      this.id = -1;
+      this.appointmentId = -1;
+      this.errorMsg = 'Invalid appointment id';
     }
 
-    // this.appointmentsService.updateAppointment(this.id, "started", null).subscribe({
-    //   error: err => {
-    //     this.errorMsg = err.error.message;
-    //     this.successMsg = ''
-    //   }
-    // })
+    if (this.appointmentId !== -1) {
+      const doctorId = this.localStorageService.getCurrentUserId();
+      this.appointmentsService.startAppointment(this.appointmentId, doctorId).subscribe({
+        next: data => {
+          const entities = data.body;
+          if (entities) {
+            this.icdEntities = entities;
+          }
+        },
+        error: err => {
+          this.errorMsg = err.error.message;
+          this.successMsg = ''
+        }
+      })
+    }
   }
 
   private addSickLeaveValidators(): void {
@@ -103,15 +114,34 @@ export class UpdateDiagnosisComponent {
     })
   }
 
-  private fetchIcdEntities(): void {
-    this.appointmentsService.getAllIcdEntries().then(data => {
-      this.icdEntities = [...data];
-    }).catch(error => {
-      this.icdFetchError = error.error;
-    })
-  }
-
   onSubmit(): void {
+    if (this.updateDiagnosis.valid) {
+      const formValue = this.updateDiagnosis.value;
 
+      const treatmentDescription = formValue.treatmentDescription;
+      const icdId = formValue.icd;
+      const sickLeaveDate = formValue.sickLeaveDate;
+      const sickLeaveDays = formValue.sickLeaveDays;
+
+      this.appointmentsService.finishAppointment(
+        this.appointmentId,
+        treatmentDescription,
+        icdId,
+        sickLeaveDate,
+        sickLeaveDays
+      ).subscribe({
+        next: data => {
+          this.successMsg = 'Successfully finished appointment! Returning to main menu...';
+          this.errorMsg = '';
+          setTimeout(() => {
+              this.router.navigate(['/menu']).catch(err => {console.log(err);});
+            }, 1000);
+        },
+        error: err => {
+          this.errorMsg = err.error.message;
+          this.successMsg = '';
+        }
+      })
+    }
   }
 }

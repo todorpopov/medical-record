@@ -1,8 +1,6 @@
 package com.medrec.services;
 
-import com.medrec.dtos.appointments.appointment.AppointmentDTO;
-import com.medrec.dtos.appointments.appointment.CreateAppointmentDTO;
-import com.medrec.dtos.appointments.appointment.UpdateAppointmentDTO;
+import com.medrec.dtos.appointments.appointment.*;
 import com.medrec.dtos.appointments.diagnosis.CreateDiagnosisDTO;
 import com.medrec.dtos.appointments.diagnosis.DiagnosisDTO;
 import com.medrec.dtos.appointments.diagnosis.UpdateDiagnosisDTO;
@@ -437,6 +435,56 @@ public class AppointmentsService {
             this.logger.info("Deleted diagnosis with id: " + id);
         } catch (RuntimeException e) {
             this.logger.warning("Could not delete diagnosis with id: " + id);
+            throw e;
+        }
+    }
+
+    public List<IcdDTO> startAppointmentFetchIcds(StartAppointmentDTO dto) throws RuntimeException {
+        int appointmentId = dto.getAppointmentId();
+        int doctorId = dto.getDoctorId();
+
+        this.logger.info("Starting appointment with id: " + appointmentId);
+
+        try {
+            Appointments.StartAppointmentFetchIcdsRequest request = Appointments.StartAppointmentFetchIcdsRequest.newBuilder()
+                .setAppointmentId(appointmentId)
+                .setDoctorId(doctorId)
+                .build();
+
+            Appointments.IcdEntitiesList icdEntitiesList = this.appointmentsGateway.startAppointmentFetchIcds(request);
+
+            List<IcdDTO> icdDtos = new ArrayList<>();
+            icdEntitiesList.getIcdEntitiesList().forEach(icd -> {
+                icdDtos.add(Utils.getDtoFromIcdGrpc(icd));
+            });
+
+            this.logger.info("Retrieved " + icdDtos.size() + " icds");
+            return icdDtos;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not start appointment with id: " + appointmentId);
+            throw e;
+        }
+    }
+
+    public void finishAppointmentAddDiagnosis(FinishAppointmentDTO dto) throws RuntimeException {
+        int appointmentId = dto.getAppointmentId();
+        this.logger.info("Finishing appointment with id: " + appointmentId);
+
+        try {
+            CreateDiagnosisDTO createDiagnosisDto = new CreateDiagnosisDTO(
+                dto.getTreatmentDescription(),
+                dto.getIcdId(),
+                dto.getSickLeaveDate(),
+                dto.getSickLeaveDays()
+            );
+            Appointments.FinishAppointmentAddDiagnosisRequest request = Appointments.FinishAppointmentAddDiagnosisRequest.newBuilder()
+                .setAppointmentId(appointmentId)
+                .setDiagnosis(createDiagnosisDto.safeConvertToGrpcRequest())
+                .build();
+
+            this.appointmentsGateway.finishAppointmentAddDiagnosis(request);
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not finish appointment with id: " + appointmentId);
             throw e;
         }
     }

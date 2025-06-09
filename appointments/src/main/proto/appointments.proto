@@ -17,6 +17,19 @@ service AppointmentsService {
   rpc DeleteAppointmentById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
   rpc CascadeDeletePatientAppointments (google.protobuf.Int32Value) returns (google.protobuf.Empty);
   rpc CascadeDeleteDoctorAppointments (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+
+  rpc StartAppointmentFetchIcds (StartAppointmentFetchIcdsRequest) returns (IcdEntitiesList);
+  rpc FinishAppointmentAddDiagnosis (FinishAppointmentAddDiagnosisRequest) returns (google.protobuf.Empty);
+}
+
+message FinishAppointmentAddDiagnosisRequest {
+  int32 appointmentId = 1;
+  CreateDiagnosisRequest diagnosis = 2;
+}
+
+message StartAppointmentFetchIcdsRequest {
+  int32 appointmentId = 1;
+  int32 doctorId = 2;
 }
 
 message Appointment {

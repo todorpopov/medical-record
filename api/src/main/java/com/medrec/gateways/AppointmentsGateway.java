@@ -247,4 +247,20 @@ public class AppointmentsGateway {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
+
+    public Appointments.IcdEntitiesList startAppointmentFetchIcds(Appointments.StartAppointmentFetchIcdsRequest request) throws RuntimeException {
+        try {
+            return appointmentsService.startAppointmentFetchIcds(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public void finishAppointmentAddDiagnosis(Appointments.FinishAppointmentAddDiagnosisRequest request) throws RuntimeException {
+        try {
+            Empty result = appointmentsService.finishAppointmentAddDiagnosis(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 }
