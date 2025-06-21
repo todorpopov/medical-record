@@ -1,0 +1,25 @@
+<div class="container mx-auto w-80 m-5 border rounded">
+  <div class="d-flex justify-content-between align-items-center my-3 mx-2">
+    <h4 class="mb-0">Admin Query</h4>
+    <button class="btn btn-outline-primary" [routerLink]="['/dashboard']">
+      Admin Dashboard
+    </button>
+  </div>
+
+  <hr>
+
+  <div class="btn-group" role="group">
+    <app-dropdown
+      label="Select the query you want to run"
+      [items]="queryOptions"
+      (selectionChanged)="selectQuery($event)">
+    </app-dropdown>
+  </div>
+
+  <hr>
+
+  @if (selectedQuery === 'Patients By GP Id') {
+    <app-patient-by-id-query></app-patient-by-id-query>
+  }
+
+</div>

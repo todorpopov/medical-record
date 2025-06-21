@@ -1,9 +1,8 @@
 package com.medrec.controllers;
 
 import com.medrec.annotations.AuthGuard;
-import com.medrec.utils.SuccessHTTPResponse;
+import com.medrec.utils.HTTPResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PageAuthController {
 
     @RequestMapping("/login")
-    public ResponseEntity<SuccessHTTPResponse> login() {
-        SuccessHTTPResponse response = new SuccessHTTPResponse(
+    public ResponseEntity<HTTPResponse> login() {
+        HTTPResponse response = new HTTPResponse(
             "SUCCESS",
             "Login page is accessible to user"
         );
@@ -21,8 +20,8 @@ public class PageAuthController {
     }
 
     @RequestMapping("/register")
-    public ResponseEntity<SuccessHTTPResponse> register() {
-        SuccessHTTPResponse response = new SuccessHTTPResponse(
+    public ResponseEntity<HTTPResponse> register() {
+        HTTPResponse response = new HTTPResponse(
             "SUCCESS",
             "Register page is accessible to user"
         );
@@ -31,8 +30,8 @@ public class PageAuthController {
 
     @AuthGuard({"admin"})
     @RequestMapping("/dashboard")
-    public ResponseEntity<SuccessHTTPResponse> adminDashboard() {
-        SuccessHTTPResponse response = new SuccessHTTPResponse(
+    public ResponseEntity<HTTPResponse> adminDashboard() {
+        HTTPResponse response = new HTTPResponse(
             "SUCCESS",
             "Dashboard page is accessible to user"
         );
@@ -41,8 +40,8 @@ public class PageAuthController {
 
     @AuthGuard({"doctor", "patient"})
     @RequestMapping("/menu")
-    public ResponseEntity<SuccessHTTPResponse> doctorDashboard() {
-        SuccessHTTPResponse response = new SuccessHTTPResponse(
+    public ResponseEntity<HTTPResponse> doctorDashboard() {
+        HTTPResponse response = new HTTPResponse(
             "SUCCESS",
             "Menu page is accessible to user"
         );
@@ -51,8 +50,8 @@ public class PageAuthController {
 
     @AuthGuard({})
     @RequestMapping("/home")
-    public ResponseEntity<SuccessHTTPResponse> home() {
-        SuccessHTTPResponse response = new SuccessHTTPResponse(
+    public ResponseEntity<HTTPResponse> home() {
+        HTTPResponse response = new HTTPResponse(
             "SUCCESS",
             "Home page is accessible to user"
         );

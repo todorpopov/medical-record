@@ -343,6 +343,25 @@ public class UsersService {
         }
     }
 
+    public List<PatientDTO> getAllPatientsByGpId(int gpId) throws RuntimeException {
+        this.logger.info("Retrieving all patients by GP id: " + gpId);
+
+        try {
+            Users.PatientList patients = this.usersGateway.getAllPatientsByGpId(gpId);
+            List<PatientDTO> patientDtos = new ArrayList<>();
+
+            patients.getPatientsList().forEach(p -> {
+                patientDtos.add(getPatientDto(p));
+            });
+
+            this.logger.info("Retrieved " + patientDtos.size() + " patients for GP id: " + gpId);
+            return patientDtos;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving all patients by GP id: " + gpId);
+            throw e;
+        }
+    }
+
     private static PatientDTO getPatientDto(Users.Patient patient) {
         Users.Doctor respectiveDoctor = patient.getGp();
         DoctorDTO doctorDto = getDoctorDto(respectiveDoctor);

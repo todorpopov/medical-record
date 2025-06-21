@@ -188,6 +188,14 @@ public class UsersGateway {
         }
     }
 
+    public Users.PatientList getAllPatientsByGpId(int gpId) throws RuntimeException {
+        try {
+            return patientService.getAllPatientsByGpId(Int32Value.of(gpId));
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
     @PreDestroy
     public void shutdown() {
         logger.info("Shutting down channel");

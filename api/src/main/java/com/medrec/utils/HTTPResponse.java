@@ -2,14 +2,14 @@ package com.medrec.utils;
 
 import java.time.LocalDateTime;
 
-public class SuccessHTTPResponse {
+public class HTTPResponse {
     private String code;
 
     private String message;
 
     private String timestamp;
 
-    public SuccessHTTPResponse(String code, String message) {
+    public HTTPResponse(String code, String message) {
         this.code = code;
         this.message = message;
         this.timestamp = LocalDateTime.now().toString();

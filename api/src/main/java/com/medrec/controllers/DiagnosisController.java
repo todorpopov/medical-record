@@ -4,7 +4,7 @@ import com.medrec.dtos.appointments.diagnosis.CreateDiagnosisDTO;
 import com.medrec.dtos.appointments.diagnosis.DiagnosisDTO;
 import com.medrec.dtos.appointments.diagnosis.UpdateDiagnosisDTO;
 import com.medrec.services.AppointmentsService;
-import com.medrec.utils.SuccessHTTPResponse;
+import com.medrec.utils.HTTPResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,10 +46,10 @@ public class DiagnosisController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<SuccessHTTPResponse> deleteDiagnosisById(@RequestParam("id") int id) {
+    public ResponseEntity<HTTPResponse> deleteDiagnosisById(@RequestParam("id") int id) {
         this.logger.info("Deleting diagnosis by id " + id + "endpoint called");
         this.appointmentsService.deleteDiagnosisById(id);
-        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Diagnosis deleted successfully");
+        HTTPResponse response = new HTTPResponse("SUCCESS", "Diagnosis deleted successfully");
         return ResponseEntity.ok(response);
     }
 }

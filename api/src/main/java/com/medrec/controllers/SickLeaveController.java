@@ -4,7 +4,7 @@ import com.medrec.dtos.appointments.sick_leave.CreateSickLeaveDTO;
 import com.medrec.dtos.appointments.sick_leave.SickLeaveDTO;
 import com.medrec.dtos.appointments.sick_leave.UpdateSickLeaveDTO;
 import com.medrec.services.AppointmentsService;
-import com.medrec.utils.SuccessHTTPResponse;
+import com.medrec.utils.HTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,10 +48,10 @@ public class SickLeaveController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<SuccessHTTPResponse> deleteSickLeaveById(@RequestParam("id") int id) {
+    public ResponseEntity<HTTPResponse> deleteSickLeaveById(@RequestParam("id") int id) {
         this.logger.info("Deleting sick leave by id " + id + "endpoint called");
         this.appointmentsService.deleteSickLeaveById(id);
-        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Sick Leave deleted successfully");
+        HTTPResponse response = new HTTPResponse("SUCCESS", "Sick Leave deleted successfully");
         return ResponseEntity.ok(response);
     }
 }

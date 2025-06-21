@@ -4,7 +4,7 @@ import com.medrec.dtos.appointments.icd.CreateIcdDTO;
 import com.medrec.dtos.appointments.icd.IcdDTO;
 import com.medrec.dtos.appointments.icd.UpdateIcdDTO;
 import com.medrec.services.AppointmentsService;
-import com.medrec.utils.SuccessHTTPResponse;
+import com.medrec.utils.HTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,10 +48,10 @@ public class IcdController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<SuccessHTTPResponse> deleteIcdById(@RequestParam("id") int id) {
+    public ResponseEntity<HTTPResponse> deleteIcdById(@RequestParam("id") int id) {
         this.logger.info("Deleting icd by id " + id + "endpoint called");
         this.appointmentsService.deleteIcdById(id);
-        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "ICD deleted successfully");
+        HTTPResponse response = new HTTPResponse("SUCCESS", "ICD deleted successfully");
         return ResponseEntity.ok(response);
     }
 }

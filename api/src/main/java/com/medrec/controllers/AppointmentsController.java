@@ -3,7 +3,7 @@ package com.medrec.controllers;
 import com.medrec.dtos.appointments.appointment.*;
 import com.medrec.dtos.appointments.icd.IcdDTO;
 import com.medrec.services.AppointmentsService;
-import com.medrec.utils.SuccessHTTPResponse;
+import com.medrec.utils.HTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,10 +71,10 @@ public class AppointmentsController {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<SuccessHTTPResponse> deleteDoctorById(@RequestParam("id") int id) {
+    public ResponseEntity<HTTPResponse> deleteDoctorById(@RequestParam("id") int id) {
         this.logger.info("Deleting appointment by id " + id + "endpoint called");
         this.appointmentsService.deleteAppointmentById(id);
-        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Appointment deleted successfully");
+        HTTPResponse response = new HTTPResponse("SUCCESS", "Appointment deleted successfully");
         return ResponseEntity.ok(response);
     }
 
@@ -85,10 +85,10 @@ public class AppointmentsController {
     }
 
     @PostMapping("finish")
-    public ResponseEntity<SuccessHTTPResponse> finishAppointment(@RequestBody FinishAppointmentDTO dto) {
+    public ResponseEntity<HTTPResponse> finishAppointment(@RequestBody FinishAppointmentDTO dto) {
         this.logger.info("Finishing appointment endpoint called");
         this.appointmentsService.finishAppointmentAddDiagnosis(dto);
-        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Appointment deleted successfully");
+        HTTPResponse response = new HTTPResponse("SUCCESS", "Appointment deleted successfully");
         return ResponseEntity.ok(response);
     }
 }

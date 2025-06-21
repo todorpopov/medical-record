@@ -1,0 +1,21 @@
+<div>
+  <app-dropdown
+    label="Select a general practitioner to run the query against"
+    [items]="gpDoctors"
+    [valueField]="'id'"
+    [displayField]="'fullName'"
+    (selectionChanged)="onDoctorSelected($event)"
+    [errorMessage]="gpError"
+  ></app-dropdown>
+
+  <button class="btn btn-outline-primary my-2" (click)="runQuery()">
+    Run Query
+  </button>
+
+  <div class="mx-2">
+    <span class="form-text text-danger" *ngIf="error">{{ error }}</span>
+    <span class="form-text text-success" *ngIf="success">{{ success }}</span>
+  </div>
+
+  <pre *ngIf="patients">{{ patients | json}}</pre>
+</div>

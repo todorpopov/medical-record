@@ -55,6 +55,8 @@ service PatientService {
   rpc GetAllPatients (google.protobuf.Empty) returns (PatientList);
   rpc UpdatePatient (UpdatePatientRequest) returns (Patient);
   rpc DeletePatientById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+
+  rpc GetAllPatientsByGpId(google.protobuf.Int32Value) returns (PatientList);
 }
 
 message Patient {

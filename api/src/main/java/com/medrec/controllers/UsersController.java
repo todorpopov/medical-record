@@ -11,7 +11,7 @@ import com.medrec.dtos.users.specialty.RegisterSpecialtyDTO;
 import com.medrec.dtos.users.specialty.SpecialtyDTO;
 import com.medrec.dtos.users.specialty.UpdateSpecialtyDTO;
 import com.medrec.services.UsersService;
-import com.medrec.utils.SuccessHTTPResponse;
+import com.medrec.utils.HTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,10 +67,10 @@ public class UsersController {
     }
 
     @DeleteMapping("doctors/delete")
-    public ResponseEntity<SuccessHTTPResponse> deleteDoctorById(@RequestParam("id") int id) {
+    public ResponseEntity<HTTPResponse> deleteDoctorById(@RequestParam("id") int id) {
         this.logger.info(String.format("Deleting doctor by id %s endpoint called", id));
         this.usersService.deleteDoctorById(id);
-        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Doctor deleted successfully");
+        HTTPResponse response = new HTTPResponse("SUCCESS", "Doctor deleted successfully");
         return ResponseEntity.ok(response);
     }
 
@@ -105,10 +105,10 @@ public class UsersController {
     }
 
     @DeleteMapping("patients/delete")
-    public ResponseEntity<SuccessHTTPResponse> deletePatientById(@RequestParam("id") int id) {
+    public ResponseEntity<HTTPResponse> deletePatientById(@RequestParam("id") int id) {
         this.logger.info(String.format("Deleting patient by id %s endpoint called", id));
         this.usersService.deletePatientById(id);
-        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Patient deleted successfully");
+        HTTPResponse response = new HTTPResponse("SUCCESS", "Patient deleted successfully");
         return ResponseEntity.ok(response);
     }
 
@@ -137,10 +137,10 @@ public class UsersController {
     }
 
     @DeleteMapping("specialty/delete")
-    public ResponseEntity<SuccessHTTPResponse> deleteSpecialtyById(@RequestParam("id") int id) {
+    public ResponseEntity<HTTPResponse> deleteSpecialtyById(@RequestParam("id") int id) {
         logger.info(String.format("Deleting specialty by id %s endpoint called", id));
         this.usersService.deleteSpecialtyById(id);
-        SuccessHTTPResponse response = new SuccessHTTPResponse("SUCCESS", "Specialty deleted successfully");
+        HTTPResponse response = new HTTPResponse("SUCCESS", "Specialty deleted successfully");
         return ResponseEntity.ok(response);
     }
 }

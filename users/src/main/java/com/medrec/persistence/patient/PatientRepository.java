@@ -261,4 +261,35 @@ public class PatientRepository implements ICrudRepository<Patient, CreatePatient
             throw new DatabaseException("Database exception found");
         }
     }
+
+    public List<Patient> getAllPatientsByGpId(int gpId) throws RuntimeException {
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+            Doctor doctor = session.get(Doctor.class, gpId);
+            if (doctor == null) {
+                throw new NotFoundException("doctor_not_found");
+            }
+            List<Patient> patients = session.createQuery("from Patient where doctor = :doctor")
+                .setParameter("doctor", doctor)
+                .getResultList();
+            tx.commit();
+
+            this.logger.info(String.format("Query run - found %s patients by GP id %s", patients.size(), gpId));
+            return patients;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (NotFoundException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe(String.format("GP Doctor with id + %s not found", gpId));
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
 }
