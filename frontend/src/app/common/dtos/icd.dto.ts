@@ -14,3 +14,9 @@ export interface UpdateIcdDto {
   code: string,
   description: string,
 }
+
+export interface IcdOccurrenceDto {
+  icdId: number,
+  icdCode: string,
+  occurrence: number
+}

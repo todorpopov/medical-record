@@ -4,6 +4,7 @@ import {HttpClient, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {PatientDto} from '../common/dtos/patient.dto';
 import {PatientCount} from '../common/dtos/queries.dto';
+import {IcdOccurrenceDto} from '../common/dtos/icd.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,9 @@ export class QueryRunnerService {
 
   public getPatientsByIcd(icdId: number): Observable<HttpResponse<PatientDto[]>> {
     return this.httpClient.get<PatientDto[]>(`${this.apiUrl}/get-patients-by-icd/${icdId}`, {observe: 'response'})
+  }
+
+  public getIcdOccurrences(limit: number): Observable<HttpResponse<IcdOccurrenceDto[]>> {
+    return this.httpClient.get<IcdOccurrenceDto[]>(`${this.apiUrl}/get-most-frequent-icds/${limit}`, {observe: 'response'})
   }
 }

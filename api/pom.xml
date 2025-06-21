@@ -59,6 +59,12 @@
       <groupId>io.grpc</groupId>
       <artifactId>grpc-services</artifactId>
     </dependency>
+      <dependency>
+          <groupId>com.medrec</groupId>
+          <artifactId>appointments</artifactId>
+          <version>1.0.0</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 
   <build>

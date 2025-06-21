@@ -3,6 +3,7 @@ package com.medrec.utils;
 import com.medrec.dtos.appointments.appointment.AppointmentDTO;
 import com.medrec.dtos.appointments.diagnosis.DiagnosisDTO;
 import com.medrec.dtos.appointments.icd.IcdDTO;
+import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
 import com.medrec.dtos.appointments.sick_leave.SickLeaveDTO;
 import com.medrec.grpc.appointments.Appointments;
 
@@ -55,6 +56,14 @@ public class Utils {
             sickLeave.getId(),
             sickLeave.getDate(),
             sickLeave.getDaysOfLeave()
+        );
+    }
+
+    public static IcdOccurrenceDTO getOccurrenceDtoFromIcdGrpc(Appointments.IcdOccurrence icdOccurrence) {
+        return new IcdOccurrenceDTO(
+            icdOccurrence.getIcdId(),
+            icdOccurrence.getIcdCode(),
+            icdOccurrence.getOccurrence()
         );
     }
 }

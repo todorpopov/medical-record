@@ -2,6 +2,7 @@ package com.medrec.services;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
+import com.medrec.dtos.icd.IcdOccurrenceDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.appointments.Appointments;
 import com.medrec.grpc.appointments.IcdServiceGrpc;
@@ -106,6 +107,28 @@ public class IcdService extends IcdServiceGrpc.IcdServiceImplBase {
         try {
             this.icdRepository.delete(id);
             responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
+    public void mostFrequentIcds(Int32Value request, StreamObserver<Appointments.IcdOccurrenceList> responseObserver) {
+        int id = request.getValue();
+        this.logger.info("Called RPC Most Frequent ICD Occurrences for Id: " + id);
+
+        try {
+            List<IcdOccurrenceDTO> dtos = this.icdRepository.mostFrequentIcds(id);
+            List<Appointments.IcdOccurrence> grpcIcdOccurrences = dtos.stream()
+                .map(Utils::getIcdOccurrenceFromDto)
+                .toList();
+
+            Appointments.IcdOccurrenceList list = Appointments.IcdOccurrenceList.newBuilder()
+                .addAllIcdOccurrence(grpcIcdOccurrences)
+                .build();
+
+            responseObserver.onNext(list);
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));

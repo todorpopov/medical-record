@@ -271,4 +271,12 @@ public class AppointmentsGateway {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
+
+    public Appointments.IcdOccurrenceList mostFrequentIcds(Int32Value limit) throws RuntimeException {
+        try {
+            return icdService.mostFrequentIcds(limit);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 }

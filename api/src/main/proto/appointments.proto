@@ -134,6 +134,18 @@ service IcdService {
   rpc GetAllIcdEntities (google.protobuf.Empty) returns (IcdEntitiesList);
   rpc UpdateIcd (UpdateIcdRequest) returns (Icd);
   rpc DeleteIcdById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
+
+  rpc MostFrequentIcds (google.protobuf.Int32Value) returns (IcdOccurrenceList);
+}
+
+message IcdOccurrenceList {
+  repeated IcdOccurrence icdOccurrence = 1;
+}
+
+message IcdOccurrence{
+  int32 icdId = 1;
+  string icdCode = 2;
+  int32 occurrence = 3;
 }
 
 message Icd {

@@ -10,6 +10,7 @@ import {
 import {
   PatientsByIcdQueryComponent
 } from '../../query-components/patients-by-icd-query/patients-by-icd-query.component';
+import {IcdOccurrenceQueryComponent} from '../../query-components/icd-occurrence-query/icd-occurrence-query.component';
 
 @Component({
   selector: 'app-admin-query',
@@ -19,7 +20,8 @@ import {
     ReactiveFormsModule,
     PatientByIdQueryComponent,
     CountPatientsGpDoctorsQueryComponent,
-    PatientsByIcdQueryComponent
+    PatientsByIcdQueryComponent,
+    IcdOccurrenceQueryComponent
   ],
   templateUrl: './admin-query.component.html',
   styleUrl: './admin-query.component.css'
@@ -27,7 +29,7 @@ import {
 export class AdminQueryComponent {
   queryOptions: QueryType[] = [
     'Patients By GP Id',
-    'Patients By ICD',
+    'Occurrence Of ICD Diagnoses',
     'Patients By ICD Diagnosis',
     'Patients Count For All GP Doctors',
     'Doctor Visits Count',

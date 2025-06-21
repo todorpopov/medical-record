@@ -7,6 +7,7 @@ import com.medrec.dtos.appointments.diagnosis.DiagnosisDTO;
 import com.medrec.dtos.appointments.diagnosis.UpdateDiagnosisDTO;
 import com.medrec.dtos.appointments.icd.CreateIcdDTO;
 import com.medrec.dtos.appointments.icd.IcdDTO;
+import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
 import com.medrec.dtos.appointments.icd.UpdateIcdDTO;
 import com.medrec.dtos.appointments.sick_leave.CreateSickLeaveDTO;
 import com.medrec.dtos.appointments.sick_leave.SickLeaveDTO;
@@ -500,6 +501,25 @@ public class AppointmentsService {
             return patientIds;
         } catch (RuntimeException e) {
             this.logger.warning("Could not retrieve all patient ids for icd: " + icdId);
+            throw e;
+        }
+    }
+
+    public List<IcdOccurrenceDTO> mostFrequentIcds(int limit) throws RuntimeException {
+        this.logger.info("Retrieving most frequent ICDs with limit: " + limit);
+
+        try {
+            Appointments.IcdOccurrenceList list = this.appointmentsGateway.mostFrequentIcds(Int32Value.of(limit));
+            List<IcdOccurrenceDTO> icdOccurrenceDTOs = new ArrayList<>();
+
+            list.getIcdOccurrenceList().forEach(icdOccurrence -> {
+                icdOccurrenceDTOs.add(Utils.getOccurrenceDtoFromIcdGrpc(icdOccurrence));
+            });
+
+            this.logger.info("Retrieved " + icdOccurrenceDTOs.size() + " icds");
+            return icdOccurrenceDTOs;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve most frequent ICDs");
             throw e;
         }
     }

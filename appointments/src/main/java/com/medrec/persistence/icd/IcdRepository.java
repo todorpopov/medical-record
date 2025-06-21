@@ -1,16 +1,21 @@
 package com.medrec.persistence.icd;
 
+import com.medrec.dtos.icd.IcdOccurrenceDTO;
 import com.medrec.exception_handling.exceptions.BadRequestException;
 import com.medrec.exception_handling.exceptions.DatabaseConnectionException;
 import com.medrec.exception_handling.exceptions.DatabaseException;
 import com.medrec.exception_handling.exceptions.NotFoundException;
+import com.medrec.grpc.appointments.Appointments;
 import com.medrec.persistence.DBUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.logging.Logger;
 
 public class IcdRepository {
@@ -197,6 +202,48 @@ public class IcdRepository {
             DBUtils.rollback(tx);
             logger.severe("Not found exception found: " + e.getMessage());
             throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public List<IcdOccurrenceDTO> mostFrequentIcds(int limit) throws RuntimeException {
+        this.logger.info("Most Frequent ICDs for limit " + limit);
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            Query query = session.createNativeQuery(
+                "SELECT i.id, i.code, COUNT(d) AS count " +
+                "FROM diagnosis d " +
+                "LEFT JOIN icd i ON d.icd_id = i.id " +
+                "GROUP BY i.id " +
+                "ORDER BY COUNT(d) DESC " +
+                "LIMIT :limit"
+            ).setParameter("limit", limit);
+
+            List<Object[]> list = query.getResultList();
+            List<IcdOccurrenceDTO> dtos = new ArrayList<>();
+            for (Object[] row : list) {
+                IcdOccurrenceDTO dto = new IcdOccurrenceDTO();
+                dto.setIcdId((Integer) row[0]);
+                dto.setIcdCode((String) row[1]);
+                dto.setOccurrence(Math.toIntExact((Long) row[2]));
+                dtos.add(dto);
+            }
+
+            tx.commit();
+
+            this.logger.info("Found most Frequent ICDs for limit " + limit);
+            return dtos;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (HibernateException e) {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());

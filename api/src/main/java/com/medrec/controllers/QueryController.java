@@ -1,7 +1,9 @@
 package com.medrec.controllers;
 
+import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
 import com.medrec.dtos.queries.PatientCountDTO;
 import com.medrec.dtos.users.patient.PatientDTO;
+import com.medrec.services.AppointmentsService;
 import com.medrec.services.GeneralWorkService;
 import com.medrec.services.UsersService;
 import org.springframework.http.HttpStatus;
@@ -20,10 +22,12 @@ public class QueryController {
     private final Logger logger = Logger.getLogger(QueryController.class.getName());
     private final UsersService usersService;
     private final GeneralWorkService generalWorkService;
+    private final AppointmentsService appointmentsService;
 
-    public QueryController(UsersService usersService, GeneralWorkService generalWorkService) {
+    public QueryController(UsersService usersService, GeneralWorkService generalWorkService, AppointmentsService appointmentsService) {
         this.usersService = usersService;
         this.generalWorkService = generalWorkService;
+        this.appointmentsService = appointmentsService;
     }
 
     @GetMapping("get-all-patients-for-gp/{id}")
@@ -48,5 +52,14 @@ public class QueryController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(this.generalWorkService.pipelinePatientsFromIcdId(id));
+    }
+
+    @GetMapping("get-most-frequent-icds/{limit}")
+    public ResponseEntity<List<IcdOccurrenceDTO>> getMostFrequentIcds(@PathVariable("limit") Integer limit) {
+        this.logger.info("Called endpoint Get Most Frequent Icd Occurrences With Limit");
+        if (limit == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(this.appointmentsService.mostFrequentIcds(limit));
     }
 }

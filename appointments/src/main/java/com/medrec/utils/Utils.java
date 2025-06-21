@@ -1,5 +1,6 @@
 package com.medrec.utils;
 
+import com.medrec.dtos.icd.IcdOccurrenceDTO;
 import com.medrec.exception_handling.exceptions.BadRequestException;
 import com.medrec.grpc.appointments.Appointments;
 import com.medrec.persistence.appointment.Appointment;
@@ -75,5 +76,13 @@ public class Utils {
         }
 
         return builder.build();
+    }
+
+    public static Appointments.IcdOccurrence getIcdOccurrenceFromDto(IcdOccurrenceDTO dto) {
+        return Appointments.IcdOccurrence.newBuilder()
+            .setIcdId(dto.getIcdId())
+            .setIcdCode(dto.getIcdCode())
+            .setOccurrence(dto.getOccurrence())
+            .build();
     }
 }

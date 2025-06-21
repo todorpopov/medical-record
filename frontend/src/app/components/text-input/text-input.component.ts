@@ -1,5 +1,5 @@
 import {NgIf} from '@angular/common';
-import {Component, forwardRef, Input} from '@angular/core';
+import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
@@ -21,11 +21,15 @@ export class TextInputComponent implements ControlValueAccessor {
   @Input() placeholder: string = '';
   @Input() error: string = '';
 
+  @Output() valueEntered = new EventEmitter<any>;
+
   value: string = '';
   disabled: boolean = false;
 
-  onChange: any = () => {};
-  onTouch: any = () => {};
+  onChange: any = () => {
+  };
+  onTouch: any = () => {
+  };
 
   writeValue(value: string): void {
     this.value = value;
