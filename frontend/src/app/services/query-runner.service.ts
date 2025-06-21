@@ -22,4 +22,8 @@ export class QueryRunnerService {
   public countOfPatientsForDoctors(): Observable<HttpResponse<PatientCount[]>> {
     return this.httpClient.get<PatientCount[]>(`${this.apiUrl}/get-patients-count-for-gp-doctors`, {observe: 'response'})
   }
+
+  public getPatientsByIcd(icdId: number): Observable<HttpResponse<PatientDto[]>> {
+    return this.httpClient.get<PatientDto[]>(`${this.apiUrl}/get-patients-by-icd/${icdId}`, {observe: 'response'})
+  }
 }

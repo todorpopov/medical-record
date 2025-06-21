@@ -5,7 +5,7 @@ export type EntityType = 'Patients' | 'Doctors' | 'Specialties' | 'Appointments'
 export type QueryType =
   'Patients By GP Id' |
   'Patients By ICD' |
-  'Most Diagnosed ICD' |
+  'Patients By ICD Diagnosis' |
   'Patients Count For All GP Doctors' |
   'Doctor Visits Count' |
   'Appointments For All Patients' |

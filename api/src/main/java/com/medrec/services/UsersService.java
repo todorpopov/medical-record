@@ -382,6 +382,24 @@ public class UsersService {
         }
     }
 
+    public List<PatientDTO> getPatientsByListOfIds(List<Integer> ids) throws RuntimeException {
+        this.logger.info(String.format("Retrieving all patients by IDs for %d: IDs", ids.size()));
+
+        try {
+            Users.PatientList patients = this.usersGateway.getPatientsByListOfIds(ids);
+            List<PatientDTO> patientDtos = new ArrayList<>();
+            patients.getPatientsList().forEach(p -> {
+                patientDtos.add(getPatientDto(p));
+            });
+
+            this.logger.info("Retrieved list size of all patients: " + patientDtos.size());
+            return patientDtos;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving all patients: " + e.getMessage());
+            throw e;
+        }
+    }
+
     private static PatientDTO getPatientDto(Users.Patient patient) {
         Users.Doctor respectiveDoctor = patient.getGp();
         DoctorDTO doctorDto = getDoctorDto(respectiveDoctor);

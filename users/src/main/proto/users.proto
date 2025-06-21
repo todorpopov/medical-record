@@ -69,7 +69,8 @@ service PatientService {
   rpc UpdatePatient (UpdatePatientRequest) returns (Patient);
   rpc DeletePatientById (google.protobuf.Int32Value) returns (google.protobuf.Empty);
 
-  rpc GetAllPatientsByGpId(google.protobuf.Int32Value) returns (PatientList);
+  rpc GetAllPatientsByGpId (google.protobuf.Int32Value) returns (PatientList);
+  rpc GetPatientsByListOfIds (ListIdsRequest) returns (PatientList);
 }
 
 message Patient {
@@ -81,6 +82,10 @@ message Patient {
   string pin = 6;
   Doctor gp = 7;
   bool isHealthInsured = 8;
+}
+
+message ListIdsRequest {
+  repeated int32 id = 1;
 }
 
 message PatientList {

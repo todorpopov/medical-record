@@ -35,7 +35,7 @@ export class PatientByIdQueryComponent {
     this.getGpDoctors();
   }
 
-  async runQuery() {
+  runQuery() {
     if (this.selectedDoctor === null) {
       this.setError('No doctor selected')
       return

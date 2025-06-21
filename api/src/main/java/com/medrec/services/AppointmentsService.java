@@ -1,5 +1,6 @@
 package com.medrec.services;
 
+import com.google.protobuf.Int32Value;
 import com.medrec.dtos.appointments.appointment.*;
 import com.medrec.dtos.appointments.diagnosis.CreateDiagnosisDTO;
 import com.medrec.dtos.appointments.diagnosis.DiagnosisDTO;
@@ -485,6 +486,20 @@ public class AppointmentsService {
             this.appointmentsGateway.finishAppointmentAddDiagnosis(request);
         } catch (RuntimeException e) {
             this.logger.warning("Could not finish appointment with id: " + appointmentId);
+            throw e;
+        }
+    }
+
+    public List<Integer> getAllPatientIdsForIcd(int icdId) throws RuntimeException {
+        this.logger.info("Retrieving all patient ids for icd: " + icdId);
+
+        try {
+            Appointments.IdsList idsList = this.appointmentsGateway.getAllPatientIdsForIcd(Int32Value.of(icdId));
+            List<Integer> patientIds = new ArrayList<>(idsList.getIdList());
+            this.logger.info("Retrieved " + patientIds.size() + " patient IDs");
+            return patientIds;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve all patient ids for icd: " + icdId);
             throw e;
         }
     }

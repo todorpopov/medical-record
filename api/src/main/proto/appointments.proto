@@ -20,6 +20,12 @@ service AppointmentsService {
 
   rpc StartAppointmentFetchIcds (StartAppointmentFetchIcdsRequest) returns (IcdEntitiesList);
   rpc FinishAppointmentAddDiagnosis (FinishAppointmentAddDiagnosisRequest) returns (google.protobuf.Empty);
+
+  rpc GetAllPatientIdsForIcd (google.protobuf.Int32Value) returns (IdsList);
+}
+
+message IdsList {
+  repeated int32 id = 1;
 }
 
 message FinishAppointmentAddDiagnosisRequest {

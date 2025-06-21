@@ -153,6 +153,27 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
         }
     }
 
+    @Override
+    public void getPatientsByListOfIds(Users.ListIdsRequest request, StreamObserver<Users.PatientList> responseObserver) {
+        List<Integer> ids= request.getIdList();
+        this.logger.info(String.format("Called RPC Get Patients By List of IDs for %d IDs", ids.size()));
+
+        try {
+            List<Patient> patients = patientRepository.getPatientsByListOfIds(ids);
+            List<Users.Patient> grpcPatientsList = patients.stream()
+                .map(PatientService::grpcFromDomainModel)
+                .toList();
+            Users.PatientList patientList = Users.PatientList.newBuilder()
+                .addAllPatients(grpcPatientsList)
+                .build();
+
+            responseObserver.onNext(patientList);
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
     private static Users.Patient grpcFromDomainModel(Patient patient) {
         Users.Doctor gp = DoctorService.grpcDoctorFromDomainModel(patient.getDoctor());
 

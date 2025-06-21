@@ -14,6 +14,7 @@ import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -201,6 +202,18 @@ public class UsersGateway {
             return doctorService.countOfPatientsForDoctors(Empty.getDefaultInstance());
         } catch (StatusRuntimeException e) {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
+    public Users.PatientList getPatientsByListOfIds(List<Integer> ids) throws StatusRuntimeException {
+        try {
+            Users.ListIdsRequest idRequest = Users.ListIdsRequest.newBuilder()
+                .addAllId(ids)
+                .build();
+            return this.patientService.getPatientsByListOfIds(idRequest);
+        } catch (StatusRuntimeException e) {
+            this.logger.info("Could not find patients with ids " + ids);
+            throw e;
         }
     }
 

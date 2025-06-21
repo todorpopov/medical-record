@@ -7,6 +7,9 @@ import {PatientByIdQueryComponent} from '../../query-components/patient-by-id-qu
 import {
   CountPatientsGpDoctorsQueryComponent
 } from '../../query-components/count-patients-gp-doctors-query/count-patients-gp-doctors-query.component';
+import {
+  PatientsByIcdQueryComponent
+} from '../../query-components/patients-by-icd-query/patients-by-icd-query.component';
 
 @Component({
   selector: 'app-admin-query',
@@ -15,7 +18,8 @@ import {
     DropdownComponent,
     ReactiveFormsModule,
     PatientByIdQueryComponent,
-    CountPatientsGpDoctorsQueryComponent
+    CountPatientsGpDoctorsQueryComponent,
+    PatientsByIcdQueryComponent
   ],
   templateUrl: './admin-query.component.html',
   styleUrl: './admin-query.component.css'
@@ -24,7 +28,7 @@ export class AdminQueryComponent {
   queryOptions: QueryType[] = [
     'Patients By GP Id',
     'Patients By ICD',
-    'Most Diagnosed ICD',
+    'Patients By ICD Diagnosis',
     'Patients Count For All GP Doctors',
     'Doctor Visits Count',
     'Appointments For All Patients',

@@ -263,4 +263,12 @@ public class AppointmentsGateway {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
+
+    public Appointments.IdsList getAllPatientIdsForIcd(Int32Value icdId) throws RuntimeException {
+        try {
+            return appointmentsService.getAllPatientIdsForIcd(icdId);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 }

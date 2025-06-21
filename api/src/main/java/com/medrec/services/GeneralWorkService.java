@@ -224,4 +224,19 @@ public class GeneralWorkService {
             })
             .collect(Collectors.toList());
     }
+
+    public List<PatientDTO> pipelinePatientsFromIcdId(int icdId) {
+        this.logger.info("Pipelining Patients from ICD ID: " + icdId);
+
+        try {
+            List<Integer> ids = this.appointmentsService.getAllPatientIdsForIcd(icdId);
+            List<PatientDTO> patients = this.usersService.getPatientsByListOfIds(ids);
+
+            this.logger.info("Found " + patients.size() + " patients for ICD ID: " + icdId);
+            return patients;
+        } catch (RuntimeException e) {
+            this.logger.warning("Error getting patient list for ICD: " + e.getMessage());
+            throw e;
+        }
+    }
 }

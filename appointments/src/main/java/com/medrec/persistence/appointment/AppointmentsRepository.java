@@ -12,11 +12,13 @@ import io.grpc.StatusRuntimeException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -545,6 +547,43 @@ public class AppointmentsRepository {
         } catch (BadRequestException e) {
             logger.severe("Bad request exception found: " + e.getMessage());
             throw e;
+        } catch (NotFoundException e) {
+            logger.severe("Not found exception found: " + e.getMessage());
+            throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public List<Integer> getAllPatientIdsForIcd(int icdId) throws RuntimeException {
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            Icd icd = session.get(Icd.class, icdId);
+            if (icd == null) {
+                this.logger.severe("Could not find icd with id " + icdId);
+                throw new NotFoundException("icd_not_found");
+            }
+
+            Query query = session.createNativeQuery(
+                "SELECT DISTINCT a.patient_id " +
+                "FROM appointment a " +
+                "LEFT JOIN diagnosis d ON d.id=a.diagnosis_id " +
+                "WHERE d.icd_id=:icdId")
+                .setParameter("icdId", icdId);
+            List<Integer> patientIds = query.getResultList();
+
+            tx.commit();
+            this.logger.info(String.format("Successfully retrieved %d patient IDs for ICD %d", patientIds.size(), icdId));
+            return patientIds;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (NotFoundException e) {
             logger.severe("Not found exception found: " + e.getMessage());
             throw e;

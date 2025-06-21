@@ -264,6 +264,23 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
     }
 
     @Override
+    public void getAllPatientIdsForIcd(Int32Value request, StreamObserver<Appointments.IdsList> responseObserver) {
+        int appointmentId = request.getValue();
+
+        try {
+            List<Integer> patientIds = this.appointmentsRepository.getAllPatientIdsForIcd(appointmentId);
+            Appointments.IdsList idsList  = Appointments.IdsList.newBuilder()
+                .addAllId(patientIds)
+                .build();
+
+            responseObserver.onNext(idsList);
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
     public void finishAppointmentAddDiagnosis(
         Appointments.FinishAppointmentAddDiagnosisRequest request,
         StreamObserver<Empty> responseObserver

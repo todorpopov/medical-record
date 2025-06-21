@@ -1,0 +1,21 @@
+<div>
+  <app-dropdown
+    label="Select a general practitioner to run the query against"
+    [items]="icdEntities"
+    [valueField]="'id'"
+    [displayField]="'code'"
+    (selectionChanged)="onIcdSelected($event)"
+    [errorMessage]="icdError"
+  ></app-dropdown>
+
+  <button class="btn btn-outline-primary my-1" (click)="runQuery()">
+    Run Query
+  </button>
+
+  <div class="my-1">
+    <span class="form-text text-danger" *ngIf="error">{{ error }}</span>
+    <span class="form-text text-success" *ngIf="success">{{ success }}</span>
+  </div>
+
+  <pre *ngIf="patients">{{ patients | json}}</pre>
+</div>
