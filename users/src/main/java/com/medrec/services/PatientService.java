@@ -154,7 +154,7 @@ public class PatientService extends PatientServiceGrpc.PatientServiceImplBase {
     }
 
     private static Users.Patient grpcFromDomainModel(Patient patient) {
-        Users.Doctor gp = DoctorService.grpcFromDomainModel(patient.getDoctor());
+        Users.Doctor gp = DoctorService.grpcDoctorFromDomainModel(patient.getDoctor());
 
         return Users.Patient.newBuilder()
             .setId(patient.getId())

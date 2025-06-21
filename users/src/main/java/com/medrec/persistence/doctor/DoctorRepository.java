@@ -1,6 +1,7 @@
 package com.medrec.persistence.doctor;
 
 import com.medrec.dtos.CreateDoctorDTO;
+import com.medrec.dtos.PatientCountDTO;
 import com.medrec.exception_handling.exceptions.*;
 import com.medrec.grpc.users.Users;
 import com.medrec.persistence.DBUtils;
@@ -14,6 +15,7 @@ import org.hibernate.Transaction;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -256,6 +258,40 @@ public class DoctorRepository implements ICrudRepository<Doctor, CreateDoctorDTO
             List<Doctor> doctors = session.createQuery("from Doctor where isGp=true", Doctor.class).getResultList();
             tx.commit();
             return doctors;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public List<PatientCountDTO> countOfPatientsForDoctors() throws RuntimeException {
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            Query query = session.createNativeQuery("SELECT d.id AS doctor_id, d.first_name, d.last_name, COUNT(p.id) AS patient_count FROM doctor d LEFT JOIN patient p ON d.id=p.doctor_id WHERE d.is_gp = TRUE GROUP BY d.id ORDER BY patient_count");
+            List<Object[]> list = query.getResultList();
+            List<PatientCountDTO> patientCountDTOList = new ArrayList<>();
+            for (Object[] row : list) {
+                PatientCountDTO patientCountDTO = new PatientCountDTO();
+                patientCountDTO.setDoctorId((Integer) row[0]);
+                patientCountDTO.setDoctorFirstName((String) row[1]);
+                patientCountDTO.setDoctorLastName((String) row[2]);
+                patientCountDTO.setPatientCount(Math.toIntExact((Long) row[3]));
+                patientCountDTOList.add(patientCountDTO);
+            }
+            tx.commit();
+
+            patientCountDTOList.forEach(System.out::println);
+
+            this.logger.info(String.format("Query list size: %d", patientCountDTOList.size()));
+            return patientCountDTOList;
         } catch (ExceptionInInitializerError e) {
             DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());

@@ -1,5 +1,6 @@
 package com.medrec.services;
 
+import com.medrec.dtos.queries.PatientCountDTO;
 import com.medrec.dtos.users.doctor.DoctorDTO;
 import com.medrec.dtos.users.doctor.DoctorSummaryDTO;
 import com.medrec.dtos.users.doctor.RegisterDoctorDTO;
@@ -362,6 +363,25 @@ public class UsersService {
         }
     }
 
+    public List<PatientCountDTO> countOfPatientsForDoctors() throws RuntimeException {
+        this.logger.info("Retrieving the count for all patients for every GP doctor");
+
+        try {
+            Users.CountOfPatientsForDoctorsResponse response = this.usersGateway.countOfPatientsForDoctors();
+            List<PatientCountDTO> patientCountDtos = new ArrayList<>();
+
+            response.getPatientCountListList().forEach(p -> {
+                patientCountDtos.add(getPatientCountDto(p));
+            });
+
+            this.logger.info("Retrieved list size of all patients for every GP doctor: " + patientCountDtos.size());
+            return patientCountDtos;
+        } catch (RuntimeException e) {
+            this.logger.info("Error retrieving all patients for every GP doctor: " + e.getMessage());
+            throw e;
+        }
+    }
+
     private static PatientDTO getPatientDto(Users.Patient patient) {
         Users.Doctor respectiveDoctor = patient.getGp();
         DoctorDTO doctorDto = getDoctorDto(respectiveDoctor);
@@ -397,6 +417,15 @@ public class UsersService {
             specialty.getId(),
             specialty.getSpecialtyName(),
             specialty.getSpecialtyDescription()
+        );
+    }
+
+    private static PatientCountDTO getPatientCountDto(Users.PatientCount patientCount) {
+        return new PatientCountDTO(
+            patientCount.getDoctorId(),
+            patientCount.getDoctorFirstName(),
+            patientCount.getDoctorLastName(),
+            patientCount.getPatientCount()
         );
     }
 }

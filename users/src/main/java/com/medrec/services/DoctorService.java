@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import com.medrec.dtos.CreateDoctorDTO;
+import com.medrec.dtos.PatientCountDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.grpc.users.DoctorServiceGrpc;
 import com.medrec.grpc.users.Users;
@@ -45,7 +46,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
 
         try {
             Doctor savedDoctor = doctorRepository.save(dto);
-            responseObserver.onNext(grpcFromDomainModel(savedDoctor));
+            responseObserver.onNext(grpcDoctorFromDomainModel(savedDoctor));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
@@ -59,7 +60,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
 
         try {
             Doctor doctor = doctorRepository.findById(id);
-            responseObserver.onNext(grpcFromDomainModel(doctor));
+            responseObserver.onNext(grpcDoctorFromDomainModel(doctor));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
@@ -73,7 +74,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
 
         try {
             Doctor doctor = doctorRepository.findByEmail(email);
-            responseObserver.onNext(grpcFromDomainModel(doctor));
+            responseObserver.onNext(grpcDoctorFromDomainModel(doctor));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
@@ -87,7 +88,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         try {
             List<Doctor> doctors = doctorRepository.findAllGpDoctors();
             List<Users.Doctor> grpcDoctors = doctors.stream()
-                .map(DoctorService::grpcFromDomainModel)
+                .map(DoctorService::grpcDoctorFromDomainModel)
                 .toList();
             Users.DoctorList list = Users.DoctorList.newBuilder()
                 .addAllDoctors(grpcDoctors)
@@ -107,7 +108,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         try {
             List<Doctor> doctors = doctorRepository.findAll();
             List<Users.Doctor> grpcDoctorsList = doctors.stream()
-                .map(DoctorService::grpcFromDomainModel)
+                .map(DoctorService::grpcDoctorFromDomainModel)
                 .toList();
             Users.DoctorList doctorList = Users.DoctorList.newBuilder()
                 .addAllDoctors(grpcDoctorsList)
@@ -126,7 +127,7 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
 
         try {
             Doctor updatedDoctor = doctorRepository.update(request);
-            responseObserver.onNext(grpcFromDomainModel(updatedDoctor));
+            responseObserver.onNext(grpcDoctorFromDomainModel(updatedDoctor));
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
@@ -147,7 +148,28 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
         }
     }
 
-    static Users.Doctor grpcFromDomainModel(Doctor doctor) {
+    @Override
+    public void countOfPatientsForDoctors(Empty request, StreamObserver<Users.CountOfPatientsForDoctorsResponse> responseObserver) {
+        this.logger.info("Called RPC Count of Patients For All GP Doctors");
+
+        try {
+            List<PatientCountDTO> patientCountDTOList = doctorRepository.countOfPatientsForDoctors();
+            List<Users.PatientCount> patientCountList = patientCountDTOList.stream()
+                .map(DoctorService::grpcPatientCountFromDomainModel)
+                .toList();
+
+            Users.CountOfPatientsForDoctorsResponse list = Users.CountOfPatientsForDoctorsResponse.newBuilder()
+                .addAllPatientCountList(patientCountList)
+                .build();
+
+            responseObserver.onNext(list);
+            responseObserver.onCompleted();
+        } catch (RuntimeException e) {
+            responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    static Users.Doctor grpcDoctorFromDomainModel(Doctor doctor) {
         Users.Specialty grpcSpecialty = Users.Specialty.newBuilder()
             .setId(doctor.getSpecialty().getId())
             .setSpecialtyName(doctor.getSpecialty().getSpecialtyName())
@@ -162,6 +184,15 @@ public class DoctorService extends DoctorServiceGrpc.DoctorServiceImplBase {
             .setPassword(doctor.getPassword())
             .setSpecialty(grpcSpecialty)
             .setIsGp(doctor.isGp())
+            .build();
+    }
+
+    static Users.PatientCount grpcPatientCountFromDomainModel(PatientCountDTO patientCountDTO) {
+        return Users.PatientCount.newBuilder()
+            .setDoctorId(patientCountDTO.getDoctorId())
+            .setDoctorFirstName(patientCountDTO.getDoctorFirstName())
+            .setDoctorLastName(patientCountDTO.getDoctorLastName())
+            .setPatientCount(Math.toIntExact(patientCountDTO.getPatientCount()))
             .build();
     }
 }

@@ -196,6 +196,14 @@ public class UsersGateway {
         }
     }
 
+    public Users.CountOfPatientsForDoctorsResponse countOfPatientsForDoctors() throws RuntimeException {
+        try {
+            return doctorService.countOfPatientsForDoctors(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
+
     @PreDestroy
     public void shutdown() {
         logger.info("Shutting down channel");

@@ -16,7 +16,7 @@ import {JsonPipe, NgIf} from '@angular/common';
     JsonPipe
   ],
   templateUrl: './patient-by-id-query.component.html',
-  styleUrl: './patient-by-id-query.component.css'
+  styleUrl: '../pretty-json.css'
 })
 export class PatientByIdQueryComponent {
   gpDoctors: DoctorSummary[] = [];

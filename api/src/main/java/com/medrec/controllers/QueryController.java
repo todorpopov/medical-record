@@ -1,5 +1,6 @@
 package com.medrec.controllers;
 
+import com.medrec.dtos.queries.PatientCountDTO;
 import com.medrec.dtos.users.patient.PatientDTO;
 import com.medrec.services.UsersService;
 import org.springframework.http.HttpStatus;
@@ -29,5 +30,11 @@ public class QueryController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(this.usersService.getAllPatientsByGpId(id));
+    }
+
+    @GetMapping("get-patients-count-for-gp-doctors")
+    public ResponseEntity<List<PatientCountDTO>> countOfPatientsForDoctors() {
+        this.logger.info("Called endpoint Get Patients Count For All GP Doctors");
+        return ResponseEntity.ok(this.usersService.countOfPatientsForDoctors());
     }
 }
