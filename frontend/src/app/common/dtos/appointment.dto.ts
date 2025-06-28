@@ -49,3 +49,8 @@ export interface UpdateAppointmentDto {
 export interface AppointmentStatus {
   status: 'upcoming' | 'started' | 'finished'
 }
+
+export interface DoctorAppointmentsCount {
+  doctorId: number,
+  appointmentCount: number
+}

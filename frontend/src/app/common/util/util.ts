@@ -7,7 +7,7 @@ export type QueryType =
   'Occurrence Of ICD Diagnoses' |
   'Patients By ICD Diagnosis' |
   'Patients Count For All GP Doctors' |
-  'Doctor Visits Count' |
+  'Doctor Appointments Count' |
   'Appointments For All Patients' |
   'Appointments For Period - All Doctors' |
   'Appointments For Period - Single Doctor' |

@@ -11,6 +11,9 @@ import {
   PatientsByIcdQueryComponent
 } from '../../query-components/patients-by-icd-query/patients-by-icd-query.component';
 import {IcdOccurrenceQueryComponent} from '../../query-components/icd-occurrence-query/icd-occurrence-query.component';
+import {
+  DoctorAppointmentsCountQueryComponent
+} from '../../query-components/doctor-appointments-count-query/doctor-appointments-count-query.component';
 
 @Component({
   selector: 'app-admin-query',
@@ -21,7 +24,8 @@ import {IcdOccurrenceQueryComponent} from '../../query-components/icd-occurrence
     PatientByIdQueryComponent,
     CountPatientsGpDoctorsQueryComponent,
     PatientsByIcdQueryComponent,
-    IcdOccurrenceQueryComponent
+    IcdOccurrenceQueryComponent,
+    DoctorAppointmentsCountQueryComponent
   ],
   templateUrl: './admin-query.component.html',
   styleUrl: './admin-query.component.css'
@@ -32,7 +36,7 @@ export class AdminQueryComponent {
     'Occurrence Of ICD Diagnoses',
     'Patients By ICD Diagnosis',
     'Patients Count For All GP Doctors',
-    'Doctor Visits Count',
+    'Doctor Appointments Count',
     'Appointments For All Patients',
     'Appointments For Period - All Doctors',
     'Appointments For Period - Single Doctor',

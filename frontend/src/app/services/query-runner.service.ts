@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import {PatientDto} from '../common/dtos/patient.dto';
 import {PatientCount} from '../common/dtos/queries.dto';
 import {IcdOccurrenceDto} from '../common/dtos/icd.dto';
+import {DoctorAppointmentsCount} from '../common/dtos/appointment.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -30,5 +31,9 @@ export class QueryRunnerService {
 
   public getIcdOccurrences(limit: number): Observable<HttpResponse<IcdOccurrenceDto[]>> {
     return this.httpClient.get<IcdOccurrenceDto[]>(`${this.apiUrl}/get-most-frequent-icds/${limit}`, {observe: 'response'})
+  }
+
+  public getDoctorAppointmentsCount(): Observable<HttpResponse<DoctorAppointmentsCount[]>> {
+    return this.httpClient.get<DoctorAppointmentsCount[]>(`${this.apiUrl}/get-doctor-appointments-count`, {observe: 'response'})
   }
 }
