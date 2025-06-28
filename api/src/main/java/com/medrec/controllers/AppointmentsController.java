@@ -91,10 +91,4 @@ public class AppointmentsController {
         HTTPResponse response = new HTTPResponse("SUCCESS", "Appointment deleted successfully");
         return ResponseEntity.ok(response);
     }
-
-    @GetMapping("get-doctor-appointments-count")
-    public ResponseEntity<List<DoctorAppointmentsCountDTO>> getDoctorAppointmentsCount() {
-        this.logger.info("Getting doctor appointments count endpoint called");
-        return ResponseEntity.ok(this.appointmentsService.getDoctorAppointmentsCount());
-    }
 }

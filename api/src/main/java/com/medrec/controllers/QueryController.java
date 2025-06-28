@@ -1,5 +1,6 @@
 package com.medrec.controllers;
 
+import com.medrec.dtos.appointments.appointment.DoctorAppointmentsCountDTO;
 import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
 import com.medrec.dtos.queries.PatientCountDTO;
 import com.medrec.dtos.users.patient.PatientDTO;
@@ -61,5 +62,11 @@ public class QueryController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(this.appointmentsService.mostFrequentIcds(limit));
+    }
+
+    @GetMapping("get-doctor-appointments-count")
+    public ResponseEntity<List<DoctorAppointmentsCountDTO>> getDoctorAppointmentsCount() {
+        this.logger.info("Getting doctor appointments count endpoint called");
+        return ResponseEntity.ok(this.appointmentsService.getDoctorAppointmentsCount());
     }
 }
