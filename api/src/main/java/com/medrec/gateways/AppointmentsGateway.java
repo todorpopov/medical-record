@@ -279,4 +279,12 @@ public class AppointmentsGateway {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
+
+    public Appointments.DoctorAppointmentsCountList getDoctorAppointmentsCount() throws RuntimeException {
+        try {
+            return appointmentsService.getAppointmentsCountForDoctors(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 }

@@ -614,7 +614,7 @@ public class AppointmentsRepository {
             for (Object[] row : list) {
                 DoctorAppointmentsCountDTO appointmentsCountDTO = new DoctorAppointmentsCountDTO();
                 appointmentsCountDTO.setDoctorId((Integer) row[0]);
-                appointmentsCountDTO.setAppointmentsCount((Integer) row[1]);
+                appointmentsCountDTO.setAppointmentsCount(Math.toIntExact((Long) row[1]));
                 doctorAppointmentsCountDTOS.add(appointmentsCountDTO);
             }
 

@@ -1,6 +1,6 @@
 package com.medrec.utils;
 
-import com.medrec.dtos.appointments.appointment.AppointmentDTO;
+import com.medrec.dtos.appointments.appointment.*;
 import com.medrec.dtos.appointments.diagnosis.DiagnosisDTO;
 import com.medrec.dtos.appointments.icd.IcdDTO;
 import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
@@ -64,6 +64,15 @@ public class Utils {
             icdOccurrence.getIcdId(),
             icdOccurrence.getIcdCode(),
             icdOccurrence.getOccurrence()
+        );
+    }
+
+    public static DoctorAppointmentsCountDTO getDoctorAppointmentsCountFromGrpc(
+        Appointments.DoctorAppointmentsCount doctorAppointmentsCount
+    ) {
+        return new DoctorAppointmentsCountDTO(
+            doctorAppointmentsCount.getDoctorId(),
+            doctorAppointmentsCount.getAppointmentsCount()
         );
     }
 }

@@ -523,4 +523,23 @@ public class AppointmentsService {
             throw e;
         }
     }
+
+    public List<DoctorAppointmentsCountDTO> getDoctorAppointmentsCount() throws RuntimeException {
+        this.logger.info("Retrieving doctor appointments count");
+
+        try {
+            Appointments.DoctorAppointmentsCountList list = this.appointmentsGateway.getDoctorAppointmentsCount();
+            List<DoctorAppointmentsCountDTO> doctorAppointmentsCountDTOs = new ArrayList<>();
+
+            list.getCountList().forEach(grpcModel -> {
+                doctorAppointmentsCountDTOs.add(Utils.getDoctorAppointmentsCountFromGrpc(grpcModel));
+            });
+
+            this.logger.info("Retrieved doctor appointments count: " + doctorAppointmentsCountDTOs.size());
+            return doctorAppointmentsCountDTOs;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve doctor appointments count");
+            throw e;
+        }
+    }
 }
