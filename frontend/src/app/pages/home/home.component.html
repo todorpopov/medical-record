@@ -7,11 +7,12 @@
       </a>
       <div class="justify-content-end d-flex">
         <div class="d-flex align-items-center" *ngIf="isUserLogged(); else notLogged">
-          <span class="mx-3">Welcome, {{ currentUser }}</span>
           <div *ngIf="isUserAdmin(); else notAdmin">
+            <span class="mx-3">Welcome, Admin</span>
             <button class="btn btn-primary me-2" type="button" (click)="redirectToAdminDashboard()">Admin Dashboard</button>
           </div>
           <ng-template #notAdmin>
+            <span class="mx-3">Welcome, {{ currentUser }}</span>
             <button class="btn btn-primary me-2" type="button" (click)="redirectToMenu()">Main Menu</button>
           </ng-template>
           <button class="btn btn-primary me-2" type="button" (click)="logOut()">Log Out</button>

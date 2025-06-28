@@ -32,7 +32,7 @@ import {
 })
 export class AdminQueryComponent {
   queryOptions: QueryType[] = [
-    'Patients By GP Id',
+    'Patients By GP',
     'Occurrence Of ICD Diagnoses',
     'Patients By ICD Diagnosis',
     'Patients Count For All GP Doctors',

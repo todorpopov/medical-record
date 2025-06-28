@@ -1,10 +1,7 @@
 import { Component } from '@angular/core';
-import {PatientCount} from '../../common/dtos/queries.dto';
 import {QueryRunnerService} from '../../services/query-runner.service';
 import {IcdOccurrenceDto} from '../../common/dtos/icd.dto';
 import {JsonPipe, NgIf} from '@angular/common';
-import {TextInputComponent} from '../../components/text-input/text-input.component';
-import {FormBuilder, Validators} from '@angular/forms';
 import {DropdownComponent} from '../../components/dropdown/dropdown.component';
 import {FrequencyLimitType} from '../../common/util/util';
 
@@ -13,7 +10,6 @@ import {FrequencyLimitType} from '../../common/util/util';
   imports: [
     JsonPipe,
     NgIf,
-    TextInputComponent,
     DropdownComponent
   ],
   templateUrl: './icd-occurrence-query.component.html',

@@ -1,6 +1,6 @@
 <div class="container mx-auto w-80 m-5 border rounded">
   <div class="d-flex justify-content-between align-items-center my-3 mx-2">
-    <h4 class="mb-0">Admin Query</h4>
+    <h4 class="mb-0">Query Runner</h4>
     <button class="btn btn-outline-primary" [routerLink]="['/dashboard']">
       Admin Dashboard
     </button>
@@ -18,7 +18,7 @@
 
   <hr>
 
-  @if (selectedQuery === 'Patients By GP Id') {
+  @if (selectedQuery === 'Patients By GP') {
     <app-patient-by-id-query></app-patient-by-id-query>
   } @else if (selectedQuery === 'Patients Count For All GP Doctors') {
     <app-count-patients-gp-doctors-query></app-count-patients-gp-doctors-query>

@@ -3,7 +3,7 @@ export type Page = 'dashboard' | 'login' | 'register' | 'menu' | 'home';
 export type EntityType = 'Patients' | 'Doctors' | 'Specialties' | 'Appointments' | 'Diagnosis' |'ICD' | 'Sick Leave'
 
 export type QueryType =
-  'Patients By GP Id' |
+  'Patients By GP' |
   'Occurrence Of ICD Diagnoses' |
   'Patients By ICD Diagnosis' |
   'Patients Count For All GP Doctors' |
