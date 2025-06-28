@@ -1,5 +1,6 @@
 package com.medrec.utils;
 
+import com.medrec.dtos.appointment.DoctorAppointmentsCountDTO;
 import com.medrec.dtos.icd.IcdOccurrenceDTO;
 import com.medrec.exception_handling.exceptions.BadRequestException;
 import com.medrec.grpc.appointments.Appointments;
@@ -83,6 +84,13 @@ public class Utils {
             .setIcdId(dto.getIcdId())
             .setIcdCode(dto.getIcdCode())
             .setOccurrence(dto.getOccurrence())
+            .build();
+    }
+
+    public static Appointments.DoctorAppointmentsCount getDoctorAppointmentsCountFromDto(DoctorAppointmentsCountDTO dto) {
+        return Appointments.DoctorAppointmentsCount.newBuilder()
+            .setDoctorId(dto.getDoctorId())
+            .setAppointmentsCount(dto.getAppointmentsCount())
             .build();
     }
 }

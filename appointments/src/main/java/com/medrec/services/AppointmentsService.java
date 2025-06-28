@@ -3,6 +3,7 @@ package com.medrec.services;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
+import com.medrec.dtos.appointment.DoctorAppointmentsCountDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.exception_handling.exceptions.AbortedException;
 import com.medrec.exception_handling.exceptions.NotFoundException;
@@ -301,6 +302,30 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
             responseObserver.onCompleted();
         } catch (RuntimeException e) {
             responseObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
+    public void getAppointmentsCountForDoctors(
+        Empty request,
+        StreamObserver<Appointments.DoctorAppointmentsCountList> streamObserver
+    ) {
+        this.logger.info("Called RPC Get Appointments Count For Doctors");
+
+        try {
+            List<DoctorAppointmentsCountDTO> dtos = this.appointmentsRepository.getDoctorAppointmentsCount();
+            List<Appointments.DoctorAppointmentsCount> grpcAppointmentsCount = dtos.stream()
+                .map(Utils::getDoctorAppointmentsCountFromDto)
+                .toList();
+
+            Appointments.DoctorAppointmentsCountList list = Appointments.DoctorAppointmentsCountList.newBuilder()
+                .addAllCount(grpcAppointmentsCount)
+                .build();
+
+            streamObserver.onNext(list);
+            streamObserver.onCompleted();
+        } catch (RuntimeException e) {
+            streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
 }

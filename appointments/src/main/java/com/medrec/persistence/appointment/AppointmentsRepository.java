@@ -1,5 +1,6 @@
 package com.medrec.persistence.appointment;
 
+import com.medrec.dtos.appointment.DoctorAppointmentsCountDTO;
 import com.medrec.exception_handling.exceptions.*;
 import com.medrec.gateway.UsersGateway;
 import com.medrec.persistence.DBUtils;
@@ -587,6 +588,44 @@ public class AppointmentsRepository {
         } catch (NotFoundException e) {
             logger.severe("Not found exception found: " + e.getMessage());
             throw e;
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public List<DoctorAppointmentsCountDTO> getDoctorAppointmentsCount() throws RuntimeException {
+        this.logger.info("Retrieving count for appointments for all doctors");
+
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            Query query = session.createNativeQuery(
+                "SELECT doctor_id, COUNT(*) AS appointments_count \n" +
+                "FROM appointment\n" +
+                "GROUP BY doctor_id"
+            );
+
+            List<Object[]> list = query.getResultList();
+            List<DoctorAppointmentsCountDTO> doctorAppointmentsCountDTOS = new ArrayList<>();
+            for (Object[] row : list) {
+                DoctorAppointmentsCountDTO appointmentsCountDTO = new DoctorAppointmentsCountDTO();
+                appointmentsCountDTO.setDoctorId((Integer) row[0]);
+                appointmentsCountDTO.setAppointmentsCount((Integer) row[1]);
+                doctorAppointmentsCountDTOS.add(appointmentsCountDTO);
+            }
+
+            tx.commit();
+
+            this.logger.info("Successfully retrieved count for all appointments for all doctors");
+            return doctorAppointmentsCountDTOS;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (HibernateException e) {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());
