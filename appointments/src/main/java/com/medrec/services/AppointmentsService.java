@@ -347,4 +347,33 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
             streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
         }
     }
+
+    @Override
+    public void listAppointmentsForTimePeriod(
+        Appointments.ListAppointmentsForTimePeriodRequest request,
+        StreamObserver<Appointments.AppointmentsList> streamObserver
+    ) {
+       this.logger.info("Called RPC List Appointments For Time Period");
+
+       try {
+           List<Appointment> appointments = this.appointmentsRepository.getAppointmentsForTimePeriod(
+               request.getStartDate(),
+               request.getEndDate(),
+               request.hasDoctorId() ? Optional.of(request.getDoctorId()) : Optional.empty()
+           );
+
+           List<Appointments.Appointment> list = appointments.stream()
+               .map(Utils::getAppointmentFromDomainModel)
+               .toList();
+
+           Appointments.AppointmentsList response = Appointments.AppointmentsList.newBuilder()
+               .addAllAppointments(list)
+               .build();
+
+           streamObserver.onNext(response);
+           streamObserver.onCompleted();
+       } catch (RuntimeException e) {
+           streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+       }
+    }
 }

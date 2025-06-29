@@ -632,4 +632,59 @@ public class AppointmentsRepository {
             throw new DatabaseException("Database exception found");
         }
     }
+
+    public List<Appointment> getAppointmentsForTimePeriod(
+        String startDate,
+        String endDate,
+        Optional<Integer> doctorId
+    ) throws RuntimeException {
+        Transaction tx = null;
+        try {
+            LocalDateTime startDateTime = LocalDateTime.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            LocalDateTime endDateTime = LocalDateTime.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            List<Appointment> appointments = null;
+            if (doctorId.isPresent()) {
+                String hql = "SELECT a " +
+                    "FROM Appointment a " +
+                    "WHERE a.doctorId=:doctorId " +
+                    "AND dateTime>=:startDateTime " +
+                    "AND dateTime<=:endDateTime";
+                appointments = session.createQuery(hql, Appointment.class)
+                    .setParameter("startDateTime", startDateTime)
+                    .setParameter("endDateTime", endDateTime)
+                    .setParameter("doctorId", doctorId.get())
+                    .getResultList();;
+            } else {
+                String hql = "SELECT a " +
+                    "FROM Appointment a " +
+                    "WHERE dateTime>=:startDateTime " +
+                    "AND dateTime<=:endDateTime";
+                appointments = session.createQuery(hql, Appointment.class)
+                    .setParameter("startDateTime", startDateTime)
+                    .setParameter("endDateTime", endDateTime)
+                    .getResultList();
+            }
+
+            tx.commit();
+
+            this.logger.info("Successfully retrieved appointments for time period: " + startDate + " - " + endDate);
+            return appointments;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (DateTimeParseException e) {
+            DBUtils.rollback(tx);
+            logger.severe("Could not parse date and time: " + e.getMessage());
+            throw new BadRequestException("date_time_not_parsed");
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
 }

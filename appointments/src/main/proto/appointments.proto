@@ -24,6 +24,13 @@ service AppointmentsService {
   rpc GetAllPatientIdsForIcd (google.protobuf.Int32Value) returns (IdsList);
   rpc GetAppointmentsCountForDoctors (google.protobuf.Empty) returns (DoctorAppointmentsCountList);
   rpc ListAppointmentsByPatients (google.protobuf.Empty) returns (AppointmentsByPatientList);
+  rpc ListAppointmentsForTimePeriod (ListAppointmentsForTimePeriodRequest) returns (AppointmentsList);
+}
+
+message ListAppointmentsForTimePeriodRequest {
+  string startDate = 1;
+  string endDate = 2;
+  optional int32 doctorId = 3;
 }
 
 message AppointmentsByPatientList {
