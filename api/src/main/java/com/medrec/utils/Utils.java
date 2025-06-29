@@ -7,6 +7,7 @@ import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
 import com.medrec.dtos.appointments.sick_leave.SickLeaveDTO;
 import com.medrec.grpc.appointments.Appointments;
 
+import java.util.List;
 import java.util.Optional;
 
 public class Utils {
@@ -74,5 +75,16 @@ public class Utils {
             doctorAppointmentsCount.getDoctorId(),
             doctorAppointmentsCount.getAppointmentsCount()
         );
+    }
+
+    public static AppointmentsByPatientDTO getAppointmentsByPatientFromGrpc(Appointments.AppointmentsByPatient appointmentsByPatient) {
+        Appointments.AppointmentsList appointmentsList = appointmentsByPatient.getAppointments();
+        Integer patientId = appointmentsByPatient.getPatientId();
+
+        List<AppointmentDTO> appointmentDTOs = appointmentsList.getAppointmentsList().stream()
+            .map(Utils::getDTOFromAppointmentsGrpc)
+            .toList();
+
+        return new AppointmentsByPatientDTO(patientId, appointmentDTOs);
     }
 }

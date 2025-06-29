@@ -1,5 +1,6 @@
 package com.medrec.controllers;
 
+import com.medrec.dtos.appointments.appointment.AppointmentsByPatientDTO;
 import com.medrec.dtos.appointments.appointment.DoctorAppointmentsCountDTO;
 import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
 import com.medrec.dtos.queries.PatientCountDTO;
@@ -68,5 +69,11 @@ public class QueryController {
     public ResponseEntity<List<DoctorAppointmentsCountDTO>> getDoctorAppointmentsCount() {
         this.logger.info("Getting doctor appointments count endpoint called");
         return ResponseEntity.ok(this.appointmentsService.getDoctorAppointmentsCount());
+    }
+
+    @GetMapping("list-appointments-by-patient")
+    public ResponseEntity<List<AppointmentsByPatientDTO>> listAppointmentsByPatient() {
+        this.logger.info("Called endpoint Get Appointments By Patient");
+        return ResponseEntity.ok(this.appointmentsService.getAppointmentsByPatient());
     }
 }

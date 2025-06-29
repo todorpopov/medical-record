@@ -13,6 +13,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Utils {
     static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -92,5 +97,53 @@ public class Utils {
             .setDoctorId(dto.getDoctorId())
             .setAppointmentsCount(dto.getAppointmentsCount())
             .build();
+    }
+
+    public static Map<Integer, List<Appointment>> mapAppointmentsByPatient(List<Appointment> appointments) {
+        Map<Integer, List<Appointment>> appointmentsByPatientId = new HashMap<>();
+
+        for (Appointment appointment : appointments) {
+            appointmentsByPatientId.put(
+                appointment.getPatientId(),
+                getAppointmentsForPatientId(appointment.getPatientId(), appointments)
+            );
+        }
+
+        return appointmentsByPatientId;
+    }
+
+    private static List<Appointment> getAppointmentsForPatientId(int patientId, List<Appointment> appointments) {
+        List<Appointment> appointmentsForPatientId = new ArrayList<>();
+
+        for (Appointment appointment : appointments) {
+            if (appointment.getPatientId() == patientId) {
+                appointmentsForPatientId.add(appointment);
+            }
+        }
+
+        return appointmentsForPatientId;
+    }
+
+    public static List<Appointments.AppointmentsByPatient> getGrpcAppointmentsByPatientList(Map<Integer, List<Appointment>> appointmentsMap) {
+        List<Appointments.AppointmentsByPatient> list = new ArrayList<>();
+
+        for (Integer patientId : appointmentsMap.keySet()) {
+            List<Appointments.Appointment> grpcAppointments = appointmentsMap.get(patientId).stream()
+                .map(Utils::getAppointmentFromDomainModel)
+                .toList();
+
+            Appointments.AppointmentsList grpcAppointmentsList = Appointments.AppointmentsList.newBuilder()
+                .addAllAppointments(grpcAppointments)
+                .build();
+
+            Appointments.AppointmentsByPatient grpcAppointmentsByPatient = Appointments.AppointmentsByPatient.newBuilder()
+                .setPatientId(patientId)
+                .setAppointments(grpcAppointmentsList)
+                .build();
+
+            list.add(grpcAppointmentsByPatient);
+        }
+
+        return list;
     }
 }

@@ -287,4 +287,12 @@ public class AppointmentsGateway {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
+
+    public Appointments.AppointmentsByPatientList getAppointmentsByPatientList() throws RuntimeException {
+        try {
+            return appointmentsService.listAppointmentsByPatients(Empty.getDefaultInstance());
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 }

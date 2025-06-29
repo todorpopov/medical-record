@@ -542,4 +542,23 @@ public class AppointmentsService {
             throw e;
         }
     }
+
+    public List<AppointmentsByPatientDTO> getAppointmentsByPatient() throws RuntimeException {
+        this.logger.info("Retrieving appointment by patient");
+
+        try {
+            Appointments.AppointmentsByPatientList list = this.appointmentsGateway.getAppointmentsByPatientList();
+            List<AppointmentsByPatientDTO> appointmentsByPatientDTOs = new ArrayList<>();
+
+            list.getListList().forEach(grpcModel -> {
+                appointmentsByPatientDTOs.add(Utils.getAppointmentsByPatientFromGrpc(grpcModel));
+            });
+
+            this.logger.info("Retrieved appointments by patient: " + appointmentsByPatientDTOs.size());
+            return appointmentsByPatientDTOs;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve appointments by patient");
+            throw e;
+        }
+    }
 }

@@ -17,8 +17,7 @@ import com.medrec.utils.CascadeEntityType;
 import com.medrec.utils.Utils;
 import io.grpc.stub.StreamObserver;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 
 
@@ -320,6 +319,26 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
 
             Appointments.DoctorAppointmentsCountList list = Appointments.DoctorAppointmentsCountList.newBuilder()
                 .addAllCount(grpcAppointmentsCount)
+                .build();
+
+            streamObserver.onNext(list);
+            streamObserver.onCompleted();
+        } catch (RuntimeException e) {
+            streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
+    public void listAppointmentsByPatients(Empty request, StreamObserver<Appointments.AppointmentsByPatientList> streamObserver) {
+        this.logger.info("Called RPC List Appointments By Patients");
+
+        try {
+            List<Appointment> appointments = this.appointmentsRepository.findAll();
+            Map<Integer, List<Appointment>> appointmentsByPatientMap = Utils.mapAppointmentsByPatient(appointments);
+            List<Appointments.AppointmentsByPatient> appointmentsByPatientsList = Utils.getGrpcAppointmentsByPatientList(appointmentsByPatientMap);
+
+            Appointments.AppointmentsByPatientList list = Appointments.AppointmentsByPatientList.newBuilder()
+                .addAllList(appointmentsByPatientsList)
                 .build();
 
             streamObserver.onNext(list);
