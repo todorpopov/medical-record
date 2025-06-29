@@ -1,5 +1,6 @@
 package com.medrec.controllers;
 
+import com.medrec.dtos.appointments.appointment.AppointmentDTO;
 import com.medrec.dtos.appointments.appointment.AppointmentsByPatientDTO;
 import com.medrec.dtos.appointments.appointment.DoctorAppointmentsCountDTO;
 import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
@@ -10,12 +11,10 @@ import com.medrec.services.GeneralWorkService;
 import com.medrec.services.UsersService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @RestController
@@ -75,5 +74,24 @@ public class QueryController {
     public ResponseEntity<List<AppointmentsByPatientDTO>> listAppointmentsByPatient() {
         this.logger.info("Called endpoint Get Appointments By Patient");
         return ResponseEntity.ok(this.appointmentsService.getAppointmentsByPatient());
+    }
+
+    @GetMapping("list-appointments-for-time-period/{startDate}/{endDate}")
+    public ResponseEntity<List<AppointmentDTO>> listAppointmentsForTimePeriod(
+        @PathVariable("startDate") String startDate,
+        @PathVariable("endDate") String endDate,
+        @RequestParam(name = "doctorId", required = false) Integer doctorId
+    ) {
+        this.logger.info("Called endpoint Get Appointments For Time Period: " + startDate + " " + endDate);
+
+        if (startDate == null || endDate == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(this.appointmentsService.getAppointmentsForTimePeriod(
+            startDate,
+            endDate,
+            Optional.ofNullable(doctorId)
+        ));
     }
 }

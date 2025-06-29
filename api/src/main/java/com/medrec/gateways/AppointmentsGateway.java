@@ -295,4 +295,12 @@ public class AppointmentsGateway {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
+
+    public Appointments.AppointmentsList getAppointmentsForTimePeriod(Appointments.ListAppointmentsForTimePeriodRequest request) throws RuntimeException {
+        try {
+            return appointmentsService.listAppointmentsForTimePeriod(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 }

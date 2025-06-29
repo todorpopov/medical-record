@@ -640,13 +640,13 @@ public class AppointmentsRepository {
     ) throws RuntimeException {
         Transaction tx = null;
         try {
-            LocalDateTime startDateTime = LocalDateTime.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            LocalDateTime endDateTime = LocalDateTime.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            LocalDateTime startDateTime = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+            LocalDateTime endDateTime = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
 
             Session session = DBUtils.getCurrentSession();
             tx = DBUtils.getTransactionForSession(session);
 
-            List<Appointment> appointments = null;
+            List<Appointment> appointments;
             if (doctorId.isPresent()) {
                 String hql = "SELECT a " +
                     "FROM Appointment a " +

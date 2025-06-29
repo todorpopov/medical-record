@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -558,6 +559,34 @@ public class AppointmentsService {
             return appointmentsByPatientDTOs;
         } catch (RuntimeException e) {
             this.logger.warning("Could not retrieve appointments by patient");
+            throw e;
+        }
+    }
+
+    public List<AppointmentDTO> getAppointmentsForTimePeriod(
+        String startDate,
+        String endDate,
+        Optional<Integer> doctorId
+    ) throws RuntimeException {
+        this.logger.info("Retrieving appointment by doctor " + doctorId + "for time period: " + startDate + " - " + endDate);
+
+        try {
+            Appointments.ListAppointmentsForTimePeriodRequest.Builder builder = Appointments.ListAppointmentsForTimePeriodRequest.newBuilder();
+            builder.setStartDate(startDate);
+            builder.setEndDate(endDate);
+            doctorId.ifPresent(builder::setDoctorId);
+
+            Appointments.AppointmentsList list = this.appointmentsGateway.getAppointmentsForTimePeriod(builder.build());
+
+            List<AppointmentDTO> appointmentDTOs = new ArrayList<>();
+            list.getAppointmentsList().forEach(grpcModel -> {
+                appointmentDTOs.add(Utils.getDTOFromAppointmentsGrpc(grpcModel));
+            });
+
+            this.logger.info(String.format("Retrieved %d appointments for period: %s - %s ", appointmentDTOs.size(), startDate, endDate));
+            return appointmentDTOs;
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve appointments for time period: " + startDate + " - " + endDate);
             throw e;
         }
     }
