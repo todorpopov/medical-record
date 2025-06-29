@@ -8,7 +8,7 @@ export type QueryType =
   'Patients By ICD Diagnosis' |
   'Patients Count For All GP Doctors' |
   'Doctor Appointments Count' |
-  'Appointments For All Patients' |
+  'List Appointments By Patients' |
   'Appointments For Period - All Doctors' |
   'Appointments For Period - Single Doctor' |
   'Most Sick Leaves - Month' |

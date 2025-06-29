@@ -54,3 +54,8 @@ export interface DoctorAppointmentsCount {
   doctorId: number,
   appointmentCount: number
 }
+
+export interface AppointmentsByPatientDto {
+  patientId: number,
+  appointments: AppointmentDto[]
+}
