@@ -9,8 +9,8 @@ export type QueryType =
   'Patients Count For All GP Doctors' |
   'Doctor Appointments Count' |
   'List Appointments By Patients' |
-  'Appointments For Period - All Doctors' |
-  'Appointments For Period - Single Doctor' |
+  'List Appointments By Time Period' |
+  'List Appointments By Time Period And Doctor' |
   'Most Sick Leaves - Month' |
   'Most Sick Leaves - Doctor'
 

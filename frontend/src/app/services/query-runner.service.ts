@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {PatientDto} from '../common/dtos/patient.dto';
 import {PatientCount} from '../common/dtos/queries.dto';
 import {IcdOccurrenceDto} from '../common/dtos/icd.dto';
-import {AppointmentsByPatientDto, DoctorAppointmentsCount} from '../common/dtos/appointment.dto';
+import {AppointmentDto, AppointmentsByPatientDto, DoctorAppointmentsCount} from '../common/dtos/appointment.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -39,5 +39,19 @@ export class QueryRunnerService {
 
   public getAppointmentsByPatients(): Observable<HttpResponse<AppointmentsByPatientDto[]>> {
     return this.httpClient.get<AppointmentsByPatientDto[]>(`${this.apiUrl}/list-appointments-by-patient`, {observe: 'response'})
+  }
+
+  public getAppointmentsForTimePeriod(startDate: string, endDate: string): Observable<HttpResponse<AppointmentDto[]>> {
+    return this.httpClient.get<AppointmentDto[]>(
+      `${this.apiUrl}/list-appointments-for-time-period/${startDate}/${endDate}`,
+      {observe: 'response'}
+    )
+  }
+
+  public getAppointmentsForTimePeriodByDoctor(startDate: string, endDate: string, doctorId: number): Observable<HttpResponse<AppointmentDto[]>> {
+  return this.httpClient.get<AppointmentDto[]>(
+      `${this.apiUrl}/list-appointments-for-time-period/${startDate}/${endDate}?doctorId=${doctorId}`,
+      {observe: 'response'}
+    )
   }
 }

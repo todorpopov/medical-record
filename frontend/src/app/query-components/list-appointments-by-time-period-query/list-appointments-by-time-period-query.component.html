@@ -1,0 +1,30 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <app-text-input
+    label="Start date"
+    type="text"
+    placeholder="Enter the start date of the period"
+    formControlName="startDate"
+    [error]="form.get('startDate')?.errors && form.get('startDate')?.touched ? 'The date must be in the format yyyy-mm-dd!': ''"
+  ></app-text-input>
+
+  <app-text-input
+    label="End date"
+    type="text"
+    placeholder="Enter the end date of the period"
+    formControlName="endDate"
+    [error]="form.get('endDate')?.errors && form.get('endDate')?.touched ? 'The date must be in the format yyyy-mm-dd!': ''"
+  ></app-text-input>
+
+  <button
+    class="btn btn-outline-primary my-2"
+    type="submit"
+    [disabled]="form.invalid"
+  >Run Query</button>
+
+  <div class="my-1">
+    <span class="form-text text-danger" *ngIf="error">{{ error }}</span>
+    <span class="form-text text-success" *ngIf="success">{{ success }}</span>
+  </div>
+
+  <pre *ngIf="appointments">{{ appointments | json}}</pre>
+</form>

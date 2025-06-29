@@ -17,6 +17,12 @@ import {
 import {
   ListAppointmentsByPatientsQueryComponent
 } from '../../query-components/list-appointments-by-patients-query/list-appointments-by-patients-query.component';
+import {
+  ListAppointmentsByTimePeriodQueryComponent
+} from '../../query-components/list-appointments-by-time-period-query/list-appointments-by-time-period-query.component';
+import {
+  ListAppointmentsByTimePeriodAndDoctorQueryComponent
+} from '../../query-components/list-appointments-by-time-period-and-doctor-query/list-appointments-by-time-period-and-doctor-query.component';
 
 @Component({
   selector: 'app-admin-query',
@@ -29,7 +35,9 @@ import {
     PatientsByIcdQueryComponent,
     IcdOccurrenceQueryComponent,
     DoctorAppointmentsCountQueryComponent,
-    ListAppointmentsByPatientsQueryComponent
+    ListAppointmentsByPatientsQueryComponent,
+    ListAppointmentsByTimePeriodQueryComponent,
+    ListAppointmentsByTimePeriodAndDoctorQueryComponent
   ],
   templateUrl: './admin-query.component.html',
   styleUrl: './admin-query.component.css'
@@ -42,8 +50,8 @@ export class AdminQueryComponent {
     'Patients Count For All GP Doctors',
     'Doctor Appointments Count',
     'List Appointments By Patients',
-    'Appointments For Period - All Doctors',
-    'Appointments For Period - Single Doctor',
+    'List Appointments By Time Period',
+    'List Appointments By Time Period And Doctor',
     'Most Sick Leaves - Month',
     'Most Sick Leaves - Doctor'
   ];
