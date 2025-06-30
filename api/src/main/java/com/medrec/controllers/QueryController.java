@@ -3,6 +3,7 @@ package com.medrec.controllers;
 import com.medrec.dtos.appointments.appointment.AppointmentDTO;
 import com.medrec.dtos.appointments.appointment.AppointmentsByPatientDTO;
 import com.medrec.dtos.appointments.appointment.DoctorAppointmentsCountDTO;
+import com.medrec.dtos.appointments.appointment.MonthWithMostSickLeavesDTO;
 import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
 import com.medrec.dtos.queries.PatientCountDTO;
 import com.medrec.dtos.users.patient.PatientDTO;
@@ -93,5 +94,16 @@ public class QueryController {
             endDate,
             Optional.ofNullable(doctorId)
         ));
+    }
+
+    @GetMapping("get-month-with-most-sick-leaves/{year}")
+    public ResponseEntity<MonthWithMostSickLeavesDTO> getMonthWithMostSickLeaves(@PathVariable("year") String year) {
+        this.logger.info("Called endpoint Get Month With Most Sick Leaves");
+
+        if (year == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(this.appointmentsService.getMonthWithMostSickLeaves(year));
     }
 }

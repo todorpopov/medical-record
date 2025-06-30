@@ -590,4 +590,19 @@ public class AppointmentsService {
             throw e;
         }
     }
+
+    public MonthWithMostSickLeavesDTO getMonthWithMostSickLeaves(String year) throws RuntimeException {
+        this.logger.info("Retrieving month with most sick leaves for year: " + year);
+
+        try {
+            Appointments.MostSickLeavesRequest request = Appointments.MostSickLeavesRequest.newBuilder().setYear(year).build();
+            Appointments.MonthWithMostSickLeaves grpcModel = this.appointmentsGateway.getMonthWithMostSickLeaves(request);
+
+            this.logger.info("Successfully retrieved the month with most sick leaves for year: " + year);
+            return Utils.getMonthWithMostSickLeavesFromGrpc(grpcModel);
+        } catch (RuntimeException e) {
+            this.logger.warning("Could not retrieve month with most sick leaves for year: " + year);
+            throw e;
+        }
+    }
 }

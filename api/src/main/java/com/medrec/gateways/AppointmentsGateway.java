@@ -303,4 +303,12 @@ public class AppointmentsGateway {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
+
+    public Appointments.MonthWithMostSickLeaves getMonthWithMostSickLeaves(Appointments.MostSickLeavesRequest request) throws RuntimeException {
+        try {
+            return appointmentsService.getMonthWithMostSickLeaves(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 }

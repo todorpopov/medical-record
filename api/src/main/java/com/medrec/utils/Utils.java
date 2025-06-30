@@ -87,4 +87,11 @@ public class Utils {
 
         return new AppointmentsByPatientDTO(patientId, appointmentDTOs);
     }
+
+    public static MonthWithMostSickLeavesDTO getMonthWithMostSickLeavesFromGrpc(Appointments.MonthWithMostSickLeaves monthWithMostSickLeaves) {
+        return new MonthWithMostSickLeavesDTO(
+            monthWithMostSickLeaves.getDate(),
+            monthWithMostSickLeaves.getCount()
+        );
+    }
 }
