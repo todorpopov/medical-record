@@ -44,3 +44,8 @@ export interface UpdateDoctorDto {
   specialtyId: number,
   generalPractitioner: boolean
 }
+
+export interface DropdownDoctorDto {
+  id: number,
+  fullName: string
+}
