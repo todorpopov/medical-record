@@ -4,10 +4,9 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import com.medrec.dtos.appointment.DoctorAppointmentsCountDTO;
+import com.medrec.dtos.appointment.DoctorSickLeaveCountDTO;
 import com.medrec.dtos.appointment.MonthWithMostSickLeavesDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
-import com.medrec.exception_handling.exceptions.AbortedException;
-import com.medrec.exception_handling.exceptions.NotFoundException;
 import com.medrec.grpc.appointments.Appointments;
 import com.medrec.grpc.appointments.AppointmentsServiceGrpc;
 import com.medrec.persistence.appointment.Appointment;
@@ -392,7 +391,34 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
             streamObserver.onNext(Utils.getGrpcMonthWithMostSickLeaves(dto));
             streamObserver.onCompleted();
         } catch (RuntimeException e) {
-           streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
-       }
+            streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
+    }
+
+    @Override
+    public void getDoctorsBySickLeaveCount(
+        Appointments.DoctorsBySickLeaveCountRequest request,
+        StreamObserver<Appointments.DoctorsWithMostSickLeavesList> streamObserver
+    ) {
+        this.logger.info("Called RPC Get Doctors By Sick Leave Count");
+
+        try {
+            int limit = request.getLimit();
+
+            List<DoctorSickLeaveCountDTO> dtos = this.appointmentsRepository.getDoctorsBySickLeaveCount(limit);
+
+            List<Appointments.DoctorSickLeaveCount> grpcList = dtos.stream()
+                .map(Utils::getGrpcDoctorSickLeaveCount)
+                .toList();
+
+            Appointments.DoctorsWithMostSickLeavesList response = Appointments.DoctorsWithMostSickLeavesList.newBuilder()
+                .addAllDoctorWithMostSickLeaves(grpcList)
+                .build();
+
+            streamObserver.onNext(response);
+            streamObserver.onCompleted();
+        } catch (RuntimeException e) {
+            streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+        }
     }
 }

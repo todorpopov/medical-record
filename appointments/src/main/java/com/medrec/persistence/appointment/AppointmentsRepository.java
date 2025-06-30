@@ -1,10 +1,10 @@
 package com.medrec.persistence.appointment;
 
 import com.medrec.dtos.appointment.DoctorAppointmentsCountDTO;
+import com.medrec.dtos.appointment.DoctorSickLeaveCountDTO;
 import com.medrec.dtos.appointment.MonthWithMostSickLeavesDTO;
 import com.medrec.exception_handling.exceptions.*;
 import com.medrec.gateway.UsersGateway;
-import com.medrec.grpc.appointments.Appointments;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.diagnosis.Diagnosis;
 import com.medrec.persistence.icd.Icd;
@@ -725,6 +725,51 @@ public class AppointmentsRepository {
 
             this.logger.info("Successfully retrieved month with most sick leaves for year: " + yearStr);
             return dto;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public List<DoctorSickLeaveCountDTO> getDoctorsBySickLeaveCount(int limit) throws RuntimeException {
+        Transaction tx = null;
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            Query query = session.createNativeQuery(
+                "SELECT a.doctor_id, COUNT(*) count " +
+                "FROM appointment a " +
+                "JOIN diagnosis d ON d.id = a.diagnosis_id " +
+                "WHERE d.sick_leave_id IS NOT NULL " +
+                "GROUP BY a.doctor_id " +
+                "ORDER BY count DESC " +
+                "LIMIT :limit"
+            ).setParameter("limit", limit);
+
+            List<Object[]> list = query.getResultList();
+
+            if (list.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            List<DoctorSickLeaveCountDTO> dtos = new ArrayList<>();
+            for (Object[] row : list) {
+                dtos.add(new DoctorSickLeaveCountDTO(
+                    ((Number) row[0]).intValue(),
+                    ((Number) row[1]).intValue()
+                ));
+            }
+
+            tx.commit();
+
+            this.logger.info("Successfully retrieved most sick leaves by doctors with limit: " + limit);
+            return dtos;
         } catch (ExceptionInInitializerError e) {
             DBUtils.rollback(tx);
             this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
