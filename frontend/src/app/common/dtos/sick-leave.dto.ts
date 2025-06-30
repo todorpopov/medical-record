@@ -14,3 +14,13 @@ export interface UpdateSickLeaveDto {
   date: string,
   numberOfDays: number,
 }
+
+export interface MostSickLeavesByMonthDto {
+  date: string,
+  count: number
+}
+
+export interface MostSickLeavesByDoctorDto {
+  doctorId: number,
+  count: number
+}

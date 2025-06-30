@@ -6,6 +6,7 @@ import {PatientDto} from '../common/dtos/patient.dto';
 import {PatientCount} from '../common/dtos/queries.dto';
 import {IcdOccurrenceDto} from '../common/dtos/icd.dto';
 import {AppointmentDto, AppointmentsByPatientDto, DoctorAppointmentsCount} from '../common/dtos/appointment.dto';
+import {MostSickLeavesByDoctorDto, MostSickLeavesByMonthDto} from '../common/dtos/sick-leave.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,20 @@ export class QueryRunnerService {
   public getAppointmentsForTimePeriodByDoctor(startDate: string, endDate: string, doctorId: number): Observable<HttpResponse<AppointmentDto[]>> {
   return this.httpClient.get<AppointmentDto[]>(
       `${this.apiUrl}/list-appointments-for-time-period/${startDate}/${endDate}?doctorId=${doctorId}`,
+      {observe: 'response'}
+    )
+  }
+
+  public getMonthWithMostSickLeaves(year: string): Observable<HttpResponse<MostSickLeavesByMonthDto>> {
+    return this.httpClient.get<MostSickLeavesByMonthDto>(
+      `${this.apiUrl}/get-month-with-most-sick-leaves/${year}`,
+      {observe: 'response'}
+    )
+  }
+
+  public getDoctorsBySickLeaveCount(limit: number): Observable<HttpResponse<MostSickLeavesByDoctorDto[]>> {
+    return this.httpClient.get<MostSickLeavesByDoctorDto[]>(
+      `${this.apiUrl}/get-doctors-by-sick-leave-count/${limit}`,
       {observe: 'response'}
     )
   }

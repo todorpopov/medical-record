@@ -23,6 +23,9 @@ import {
 import {
   ListAppointmentsByTimePeriodAndDoctorQueryComponent
 } from '../../query-components/list-appointments-by-time-period-and-doctor-query/list-appointments-by-time-period-and-doctor-query.component';
+import {
+  MostSickLeavesMonthQueryComponent
+} from '../../query-components/most-sick-leaves-month-query/most-sick-leaves-month-query.component';
 
 @Component({
   selector: 'app-admin-query',
@@ -37,7 +40,8 @@ import {
     DoctorAppointmentsCountQueryComponent,
     ListAppointmentsByPatientsQueryComponent,
     ListAppointmentsByTimePeriodQueryComponent,
-    ListAppointmentsByTimePeriodAndDoctorQueryComponent
+    ListAppointmentsByTimePeriodAndDoctorQueryComponent,
+    MostSickLeavesMonthQueryComponent
   ],
   templateUrl: './admin-query.component.html',
   styleUrl: './admin-query.component.css'

@@ -19,6 +19,22 @@ export function isoDateValidator(): ValidatorFn {
   };
 }
 
+export function yearValidator(control: AbstractControl): ValidationErrors | null {
+  const year = control.value;
+  const yearRegex = /^\d{4}$/;
+
+  if (!yearRegex.test(year)) {
+    return { invalidYear: true };
+  }
+
+  const numericYear = parseInt(year, 10);
+  if (numericYear < 1000 || numericYear > 9999) {
+    return { invalidYear: true };
+  }
+
+  return null;
+}
+
 export function timeValidator(): ValidatorFn {
   const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
