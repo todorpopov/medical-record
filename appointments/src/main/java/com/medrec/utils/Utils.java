@@ -1,6 +1,7 @@
 package com.medrec.utils;
 
 import com.medrec.dtos.appointment.DoctorAppointmentsCountDTO;
+import com.medrec.dtos.appointment.MonthWithMostSickLeavesDTO;
 import com.medrec.dtos.icd.IcdOccurrenceDTO;
 import com.medrec.exception_handling.exceptions.BadRequestException;
 import com.medrec.grpc.appointments.Appointments;
@@ -145,5 +146,12 @@ public class Utils {
         }
 
         return list;
+    }
+
+    public static Appointments.MonthWithMostSickLeaves getGrpcMonthWithMostSickLeaves(MonthWithMostSickLeavesDTO dto) {
+        return Appointments.MonthWithMostSickLeaves.newBuilder()
+            .setDate(dto.getDate())
+            .setCount(dto.getCount())
+            .build();
     }
 }

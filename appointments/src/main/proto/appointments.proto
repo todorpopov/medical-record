@@ -25,6 +25,16 @@ service AppointmentsService {
   rpc GetAppointmentsCountForDoctors (google.protobuf.Empty) returns (DoctorAppointmentsCountList);
   rpc ListAppointmentsByPatients (google.protobuf.Empty) returns (AppointmentsByPatientList);
   rpc ListAppointmentsForTimePeriod (ListAppointmentsForTimePeriodRequest) returns (AppointmentsList);
+  rpc GetMonthWithMostSickLeaves (MostSickLeavesRequest) returns (MonthWithMostSickLeaves);
+}
+
+message MonthWithMostSickLeaves {
+  string date = 1;
+  int32 count = 2;
+}
+
+message MostSickLeavesRequest {
+  string year = 1;
 }
 
 message ListAppointmentsForTimePeriodRequest {

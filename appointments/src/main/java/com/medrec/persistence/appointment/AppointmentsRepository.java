@@ -1,8 +1,10 @@
 package com.medrec.persistence.appointment;
 
 import com.medrec.dtos.appointment.DoctorAppointmentsCountDTO;
+import com.medrec.dtos.appointment.MonthWithMostSickLeavesDTO;
 import com.medrec.exception_handling.exceptions.*;
 import com.medrec.gateway.UsersGateway;
+import com.medrec.grpc.appointments.Appointments;
 import com.medrec.persistence.DBUtils;
 import com.medrec.persistence.diagnosis.Diagnosis;
 import com.medrec.persistence.icd.Icd;
@@ -681,6 +683,52 @@ public class AppointmentsRepository {
             DBUtils.rollback(tx);
             logger.severe("Could not parse date and time: " + e.getMessage());
             throw new BadRequestException("date_time_not_parsed");
+        } catch (HibernateException e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Database exception found: " + e.getMessage());
+            throw new DatabaseException("Database exception found");
+        }
+    }
+
+    public MonthWithMostSickLeavesDTO getMonthWithMostSickLeaves(String yearStr) throws RuntimeException {
+        Transaction tx = null;
+
+        try {
+            Session session = DBUtils.getCurrentSession();
+            tx = DBUtils.getTransactionForSession(session);
+
+            Query query = session.createNativeQuery(
+                "SELECT " +
+                "TO_CHAR(DATE_TRUNC('month', a.datetime), 'YYYY-MM') AS date, " +
+                "COUNT(*) AS appointments_count " +
+                "FROM appointment a " +
+                "JOIN diagnosis d ON a.diagnosis_id=d.id " +
+                "WHERE d.sick_leave_id IS NOT NULL " +
+                "AND EXTRACT(YEAR FROM a.datetime)=:year " +
+                "GROUP BY date, a.diagnosis_id " +
+                "ORDER BY appointments_count DESC " +
+                "LIMIT 1"
+            ).setParameter("year", Integer.parseInt(yearStr));
+
+            List<Object[]> list = query.getResultList();
+            if (list.isEmpty()) {
+                return new MonthWithMostSickLeavesDTO(yearStr, 0);
+            }
+
+            MonthWithMostSickLeavesDTO dto = new MonthWithMostSickLeavesDTO();
+            for (Object[] row : list) {
+                dto.setDate((String) row[0]);
+                dto.setCount(Math.toIntExact((Long) row[1]));
+            }
+
+            tx.commit();
+
+            this.logger.info("Successfully retrieved month with most sick leaves for year: " + yearStr);
+            return dto;
+        } catch (ExceptionInInitializerError e) {
+            DBUtils.rollback(tx);
+            this.logger.severe("Exception found in database connection initialization: " + e.getMessage());
+            throw new DatabaseConnectionException("Exception found in database connection initialization!");
         } catch (HibernateException e) {
             DBUtils.rollback(tx);
             this.logger.severe("Database exception found: " + e.getMessage());

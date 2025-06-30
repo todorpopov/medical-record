@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import com.medrec.dtos.appointment.DoctorAppointmentsCountDTO;
+import com.medrec.dtos.appointment.MonthWithMostSickLeavesDTO;
 import com.medrec.exception_handling.ExceptionsMapper;
 import com.medrec.exception_handling.exceptions.AbortedException;
 import com.medrec.exception_handling.exceptions.NotFoundException;
@@ -373,6 +374,24 @@ public class AppointmentsService extends AppointmentsServiceGrpc.AppointmentsSer
            streamObserver.onNext(response);
            streamObserver.onCompleted();
        } catch (RuntimeException e) {
+           streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
+       }
+    }
+
+    @Override
+    public void getMonthWithMostSickLeaves(
+        Appointments.MostSickLeavesRequest request,
+        StreamObserver<Appointments.MonthWithMostSickLeaves> streamObserver
+    ) {
+        this.logger.info("Called RPC Get Month With Most Sick Leaves");
+
+        try {
+            String year = request.getYear();
+            MonthWithMostSickLeavesDTO dto = this.appointmentsRepository.getMonthWithMostSickLeaves(year);
+
+            streamObserver.onNext(Utils.getGrpcMonthWithMostSickLeaves(dto));
+            streamObserver.onCompleted();
+        } catch (RuntimeException e) {
            streamObserver.onError(ExceptionsMapper.toStatusRuntimeException(e));
        }
     }
