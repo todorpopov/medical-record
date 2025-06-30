@@ -1,9 +1,6 @@
 package com.medrec.controllers;
 
-import com.medrec.dtos.appointments.appointment.AppointmentDTO;
-import com.medrec.dtos.appointments.appointment.AppointmentsByPatientDTO;
-import com.medrec.dtos.appointments.appointment.DoctorAppointmentsCountDTO;
-import com.medrec.dtos.appointments.appointment.MonthWithMostSickLeavesDTO;
+import com.medrec.dtos.appointments.appointment.*;
 import com.medrec.dtos.appointments.icd.IcdOccurrenceDTO;
 import com.medrec.dtos.queries.PatientCountDTO;
 import com.medrec.dtos.users.patient.PatientDTO;
@@ -105,5 +102,16 @@ public class QueryController {
         }
 
         return ResponseEntity.ok(this.appointmentsService.getMonthWithMostSickLeaves(year));
+    }
+
+    @GetMapping("get-doctors-by-sick-leave-count/{limit}")
+    public ResponseEntity<List<DoctorSickLeaveCountDTO>> getDoctorsBySickLeaveCount(@PathVariable("limit") Integer limit) {
+        this.logger.info("Called endpoint Get Doctors By Sick Leave Count");
+
+        if (limit == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(this.appointmentsService.getDoctorsBySickLeaveCount(limit));
     }
 }

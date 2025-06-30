@@ -94,4 +94,11 @@ public class Utils {
             monthWithMostSickLeaves.getCount()
         );
     }
+
+    public static DoctorSickLeaveCountDTO getDoctorsBySickLeaveCount(Appointments.DoctorSickLeaveCount doctorSickLeaveCount) {
+        return new DoctorSickLeaveCountDTO(
+            doctorSickLeaveCount.getDoctorId(),
+            doctorSickLeaveCount.getCount()
+        );
+    }
 }

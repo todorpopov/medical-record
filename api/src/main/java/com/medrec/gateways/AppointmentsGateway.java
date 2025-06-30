@@ -311,4 +311,12 @@ public class AppointmentsGateway {
             throw ExceptionsMapper.translateStatusRuntimeException(e);
         }
     }
+
+    public Appointments.DoctorsWithMostSickLeavesList getDoctorsBySickLeaveCount(Appointments.DoctorsBySickLeaveCountRequest request) throws RuntimeException {
+        try {
+            return this.appointmentsService.getDoctorsBySickLeaveCount(request);
+        } catch (StatusRuntimeException e) {
+            throw ExceptionsMapper.translateStatusRuntimeException(e);
+        }
+    }
 }

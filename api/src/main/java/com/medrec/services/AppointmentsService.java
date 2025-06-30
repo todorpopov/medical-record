@@ -605,4 +605,27 @@ public class AppointmentsService {
             throw e;
         }
     }
+
+    public List<DoctorSickLeaveCountDTO> getDoctorsBySickLeaveCount(int limit) throws RuntimeException {
+        this.logger.info("Retrieving doctors with most sick leaves with limit: " + limit);
+
+        try {
+            Appointments.DoctorsBySickLeaveCountRequest request = Appointments.DoctorsBySickLeaveCountRequest.newBuilder()
+                .setLimit(limit)
+                .build();
+
+            Appointments.DoctorsWithMostSickLeavesList grpcList = this.appointmentsGateway.getDoctorsBySickLeaveCount(request);
+
+            List<DoctorSickLeaveCountDTO> dtos = new ArrayList<>();
+            grpcList.getDoctorWithMostSickLeavesList().forEach(grpcModel -> {
+                dtos.add(Utils.getDoctorsBySickLeaveCount(grpcModel));
+            });
+
+            this.logger.info("Successfully retrieved most sick leaves by doctors with limit: " + limit);
+            return dtos;
+        } catch (RuntimeException e) {
+            this.logger.info("Could not retrieve sick leaves by doctors with limit: " + limit);
+            throw e;
+        }
+    }
 }
