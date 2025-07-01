@@ -66,11 +66,6 @@ export class HomeComponent {
   }
 
   logOut() {
-    this.localStorageService.removeUserAuth();
-
-    this.router.navigate(['/'])
-      .catch(err => {
-        console.log(err);
-      })
+    this.authService.logOut();
   }
 }

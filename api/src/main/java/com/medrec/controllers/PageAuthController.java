@@ -48,12 +48,21 @@ public class PageAuthController {
         return ResponseEntity.ok(response);
     }
 
-    @AuthGuard({})
     @RequestMapping("/home")
     public ResponseEntity<HTTPResponse> home() {
         HTTPResponse response = new HTTPResponse(
             "SUCCESS",
             "Home page is accessible to user"
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @AuthGuard({"admin"})
+    @RequestMapping("/admin-query")
+    public ResponseEntity<HTTPResponse> adminQuery() {
+        HTTPResponse response = new HTTPResponse(
+            "SUCCESS",
+            "Admin Query page is accessible to user"
         );
         return ResponseEntity.ok(response);
     }

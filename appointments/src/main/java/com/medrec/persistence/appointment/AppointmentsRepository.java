@@ -197,7 +197,7 @@ public class AppointmentsRepository {
         try {
             Session session = DBUtils.getCurrentSession();
             tx = DBUtils.getTransactionForSession(session);
-            String hql = "SELECT a FROM Appointment a WHERE a.patientId=:patientId";
+            String hql = "SELECT a FROM Appointment a WHERE a.patientId=:patientId ORDER BY dateTime DESC";
             List<Appointment> appointments = session.createQuery(hql, Appointment.class)
                 .setParameter("patientId", id)
                 .getResultList();
@@ -223,7 +223,7 @@ public class AppointmentsRepository {
 
             Session session = DBUtils.getCurrentSession();
             tx = DBUtils.getTransactionForSession(session);
-            String hql = "SELECT a FROM Appointment a WHERE a.doctorId=:doctorId";
+            String hql = "SELECT a FROM Appointment a WHERE a.doctorId=:doctorId ORDER BY dateTime DESC";
             List<Appointment> appointments = session.createQuery(hql, Appointment.class)
                 .setParameter("doctorId", doctorId)
                 .getResultList();
