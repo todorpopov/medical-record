@@ -7,7 +7,6 @@ import {AuthService} from '../../services/auth.service';
 import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {Router} from '@angular/router';
-import {Page} from '../../common/util/util';
 
 @Component({
   selector: 'app-log-in',
@@ -22,8 +21,6 @@ import {Page} from '../../common/util/util';
   styleUrl: './log-in.component.css',
 })
 export class LogInComponent implements ReactiveFormsModule {
-  private readonly page: Page = 'login';
-
   loginForm: FormGroup;
   label: string = 'Log In';
 
@@ -36,8 +33,6 @@ export class LogInComponent implements ReactiveFormsModule {
     private localStorageService: LocalStorageService,
     private router: Router,
   ) {
-    this.authService.fetchPages(this.page);
-
     this.loginForm = this.fb.group({
       email: [''],
       password: [''],

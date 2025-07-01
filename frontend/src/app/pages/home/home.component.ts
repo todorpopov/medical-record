@@ -2,8 +2,6 @@ import {Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {NgIf} from '@angular/common';
 import {LocalStorageService} from '../../services/local-storage.service';
-import {AuthResponse} from '../../common/interfaces/auth.response';
-import {Page} from '../../common/util/util';
 import {AuthService} from '../../services/auth.service';
 
 @Component({
@@ -15,8 +13,6 @@ import {AuthService} from '../../services/auth.service';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  private readonly page: Page = 'home';
-
   currentUser: string = '';
 
   constructor(
@@ -24,7 +20,6 @@ export class HomeComponent {
     private authService: AuthService,
     private localStorageService: LocalStorageService,
   ) {
-    this.authService.fetchPages(this.page);
     const name = this.localStorageService.getCurrentUser();
     this.currentUser = name ? name : 'User';
   }

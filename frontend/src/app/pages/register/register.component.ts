@@ -12,7 +12,6 @@ import {AuthResponse} from '../../common/interfaces/auth.response';
 import {LocalStorageService} from '../../services/local-storage.service';
 import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {Router} from '@angular/router';
-import {Page} from '../../common/util/util';
 
 @Component({
   selector: 'app-register',
@@ -28,8 +27,6 @@ import {Page} from '../../common/util/util';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent implements ReactiveFormsModule{
-  private readonly page: Page = 'register';
-
   registerForm: FormGroup;
   label: string = 'Register';
   selectedUserType: 'patient' | 'doctor' = 'patient';
@@ -53,8 +50,6 @@ export class RegisterComponent implements ReactiveFormsModule{
     private localStorageService: LocalStorageService,
     private router: Router,
   ) {
-    this.authService.fetchPages(this.page);
-
     this.getGpDoctors();
     this.getSpecialties();
 

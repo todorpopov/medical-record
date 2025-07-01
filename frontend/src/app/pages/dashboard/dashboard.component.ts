@@ -16,9 +16,8 @@ import {DoctorSummary} from '../../common/dtos/doctor.dto';
 import {SpecialtyDto} from '../../common/dtos/specialty.dto';
 import {RowActionComponent} from '../../components/row-action/row-action.component';
 import {AppointmentsService} from '../../services/appointments.service';
-import {AppointmentDto, AppointmentSummary} from '../../common/dtos/appointment.dto';
-import {EntityType, Page} from '../../common/util/util';
-import {AuthService} from '../../services/auth.service';
+import {AppointmentSummary} from '../../common/dtos/appointment.dto';
+import {EntityType} from '../../common/util/util';
 import {RouterLink} from '@angular/router';
 import {DiagnosisSummary} from '../../common/dtos/diagnosis.dto';
 import {IcdDto} from '../../common/dtos/icd.dto';
@@ -39,8 +38,6 @@ import {SickLeaveDto} from '../../common/dtos/sick-leave.dto';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
-  private readonly page: Page = 'dashboard';
-
   entityOptions: EntityType[] = ['Patients', 'Doctors', 'Specialties', 'Appointments', 'Diagnosis', 'ICD', 'Sick Leave'];
   selectedEntity: EntityType = 'Patients';
 
@@ -71,10 +68,7 @@ export class DashboardComponent {
   constructor(
     private usersService: UsersService,
     private appointmentsService: AppointmentsService,
-    private authService: AuthService,
-  ) {
-    this.authService.fetchPages(this.page);
-  }
+  ) {}
 
   get currentColumnDefs(): ColDef[] {
     switch (this.selectedEntity) {

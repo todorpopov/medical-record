@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {Page, QueryType} from '../../common/util/util';
+import {QueryType} from '../../common/util/util';
 import {DropdownComponent} from '../../components/dropdown/dropdown.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {PatientByIdQueryComponent} from '../../query-components/patient-by-id-query/patient-by-id-query.component';
@@ -52,8 +52,6 @@ import {AuthService} from '../../services/auth.service';
   styleUrl: './admin-query.component.css'
 })
 export class AdminQueryComponent {
-  private page: Page = 'admin-query';
-
   queryOptions: QueryType[] = [
     'Patients By GP',
     'Occurrence Of ICD Diagnoses',
@@ -72,9 +70,5 @@ export class AdminQueryComponent {
     this.selectedQuery = value;
   }
 
-  constructor(
-    private readonly authService: AuthService
-  ) {
-    this.authService.fetchPages(this.page);
-  }
+  constructor() {}
 }

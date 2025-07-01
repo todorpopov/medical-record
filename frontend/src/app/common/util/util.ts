@@ -1,5 +1,3 @@
-export type Page = 'dashboard' | 'login' | 'register' | 'menu' | 'home' | 'admin-query';
-
 export type EntityType = 'Patients' | 'Doctors' | 'Specialties' | 'Appointments' | 'Diagnosis' |'ICD' | 'Sick Leave'
 
 export type QueryType =
