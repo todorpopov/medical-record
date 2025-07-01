@@ -1,5 +1,6 @@
 package com.medrec.controllers;
 
+import com.medrec.annotations.AuthGuard;
 import com.medrec.dtos.appointments.icd.CreateIcdDTO;
 import com.medrec.dtos.appointments.icd.IcdDTO;
 import com.medrec.dtos.appointments.icd.UpdateIcdDTO;
@@ -23,12 +24,14 @@ public class IcdController {
         this.appointmentsService = appointmentsService;
     }
 
+    @AuthGuard({"admin"})
     @PostMapping("create")
     public ResponseEntity<IcdDTO> createIcd(@RequestBody CreateIcdDTO dto) {
         this.logger.info("Creating new icd endpoint called");
         return ResponseEntity.ok(this.appointmentsService.createIcd(dto));
     }
 
+    @AuthGuard({"admin"})
     @GetMapping("get/id")
     public ResponseEntity<IcdDTO> getIcdById(@RequestParam("id") int id) {
         this.logger.info(String.format("Searching for icd by id %s endpoint called", id));
@@ -41,12 +44,14 @@ public class IcdController {
         return ResponseEntity.ok(this.appointmentsService.getAllIcds());
     }
 
+    @AuthGuard({"admin"})
     @PutMapping("update")
     public ResponseEntity<IcdDTO> updateIcd(@RequestBody UpdateIcdDTO dto) {
         this.logger.info("Updating icd endpoint called");
         return ResponseEntity.ok(this.appointmentsService.updateIcd(dto));
     }
 
+    @AuthGuard({"admin"})
     @DeleteMapping("delete")
     public ResponseEntity<HTTPResponse> deleteIcdById(@RequestParam("id") int id) {
         this.logger.info("Deleting icd by id " + id + "endpoint called");

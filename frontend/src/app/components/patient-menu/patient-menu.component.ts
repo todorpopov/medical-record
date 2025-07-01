@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {LocalStorageService} from '../../services/local-storage.service';
-import {DoctorDto} from '../../common/dtos/doctor.dto';
+import {DoctorDto, DropdownDoctorDto} from '../../common/dtos/doctor.dto';
 import {TextInputComponent} from '../text-input/text-input.component';
 import {DropdownComponent} from '../dropdown/dropdown.component';
 import {NgForOf, NgIf} from '@angular/common';
@@ -9,6 +9,7 @@ import {isoDateValidator, timeValidator} from '../../common/validators/validator
 import {AppointmentsService} from '../../services/appointments.service';
 import {AppointmentDetailedDto} from '../../common/dtos/appointment.dto';
 import {GeneralWorkService} from '../../services/general-work.service';
+import {getDoctorDropdownNames} from '../../common/util/util';
 
 @Component({
   selector: 'app-patient-menu',
@@ -26,7 +27,7 @@ export class PatientMenuComponent {
   createAppointmentForm: FormGroup;
   private currentPatientId: number;
 
-  protected doctors: DoctorDto[] = [];
+  protected doctors: DropdownDoctorDto[] = [];
   doctorsFetchError: string = '';
 
   appointmentCreateError: string = '';
@@ -52,7 +53,11 @@ export class PatientMenuComponent {
   private getData(): void {
     this.generalWorkService.getPatientMenuData(this.currentPatientId).subscribe({
       next: data => {
-        this.doctors = data.body?.doctors ? data.body.doctors : [];
+        if (data.body?.doctors) {
+          this.doctors = getDoctorDropdownNames(data.body.doctors);
+        } else {
+          this.doctors = [];
+        }
         this.appointments = data.body?.appointments ? data.body.appointments : [];
       },
       error: err => {

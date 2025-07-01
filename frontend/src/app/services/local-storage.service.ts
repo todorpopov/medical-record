@@ -6,8 +6,6 @@ import {first} from 'rxjs';
   providedIn: 'root'
 })
 export class LocalStorageService {
-  private currentUser: string | null = null;
-
   constructor() {}
 
   public setUserAuth(userAuth: AuthResponse): void {
@@ -17,8 +15,6 @@ export class LocalStorageService {
     localStorage.setItem('firstName', userAuth.firstName);
     localStorage.setItem('lastName', userAuth.lastName);
     localStorage.setItem('role', userAuth.role);
-
-    this.currentUser = `${userAuth.firstName} ${userAuth.lastName}`;
   }
 
   public getUserAuth(): AuthResponse {
@@ -51,10 +47,6 @@ export class LocalStorageService {
     return localStorage.getItem('role')
   }
 
-  public getUserFirstName(): string | null {
-    return localStorage.getItem('firstName')
-  }
-
   public getCurrentUserId(): number {
     return Number(localStorage.getItem('id'));
   }
@@ -66,11 +58,9 @@ export class LocalStorageService {
     localStorage.removeItem('email');
     localStorage.removeItem('firstName');
     localStorage.removeItem('lastName');
-
-    this.currentUser = null;
   }
 
   public getCurrentUser(): string | null {
-    return this.currentUser;
+    return `${localStorage.getItem('firstName')} ${localStorage.getItem('lastName') }`;
   }
 }

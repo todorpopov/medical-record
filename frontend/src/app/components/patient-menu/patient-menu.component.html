@@ -23,7 +23,7 @@
         label="Select the doctor you want to visit"
         [items]="doctors"
         [valueField]="'id'"
-        [displayField]="'firstName'"
+        [displayField]="'fullName'"
         [errorMessage]="doctorsFetchError"
         formControlName="doctorId"
       ></app-dropdown>
