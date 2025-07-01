@@ -86,18 +86,7 @@ export class AuthService {
   }
 
   public fetchPages(page: Page): void {
-    const token = this.localStorageService.getUserToken();
-    let headers = {}
-
-    if (token) {
-      headers = {
-        'Authorization': token
-      }
-    }
-
-    this.httpClient.get<ApiResponse>(`${this.api}/pages/${page}`, {
-      headers: headers,
-    }).subscribe({
+    this.httpClient.get<ApiResponse>(`${this.api}/pages/${page}`).subscribe({
       error: err => {
         this.localStorageService.removeUserAuth();
         this.router.navigate(['/']).catch(err => {console.log(err);});

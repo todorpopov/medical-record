@@ -8,7 +8,7 @@ import {UpdateDiagnosisComponent} from './components/update-diagnosis/update-dia
 import {AdminQueryComponent} from './pages/admin-query/admin-query.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent},
+  { path: '', component: HomeComponent },
   { path: 'login', component: LogInComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent },
