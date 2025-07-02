@@ -77,7 +77,7 @@ export class UsersService {
       body.specialtyId = specialtyId;
     }
 
-    body.generalPractitioner = gp !== null;
+    body.generalPractitioner = gp;
 
     console.log(body)
 
