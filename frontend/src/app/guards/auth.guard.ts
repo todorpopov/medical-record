@@ -5,26 +5,25 @@ import {
   RouterStateSnapshot, UrlTree
 } from '@angular/router';
 import {LocalStorageService} from '../services/local-storage.service';
-import {HttpClient} from '@angular/common/http';
-import {ApiResponse} from '../common/interfaces/api.response';
 import {environment} from '../../environments/environment';
-import {catchError, map, Observable, of} from 'rxjs';
+import {Observable, of} from 'rxjs';
+import {AuthService} from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
   private api: string = environment.apiGateway
 
   constructor(
-    private readonly httpClient: HttpClient,
+    private readonly authService: AuthService,
     private readonly localStorageService: LocalStorageService,
     private readonly router: Router
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
     const page = route.data['page'];
-    const url: string = `${this.api}/pages/${page}`;
 
     const tokenExists = this.localStorageService.isUserLoggedIn()
+
     if (page === 'login' || page === 'register') {
       if (tokenExists) {
         this.localStorageService.removeUserAuth();
@@ -34,11 +33,6 @@ export class AuthGuard implements CanActivate {
       }
     }
 
-    return this.httpClient.get<ApiResponse>(url).pipe(
-      map(response => response.code === 'SUCCESS'),
-      catchError(err => {
-        return of(this.router.parseUrl(''));
-      })
-    );
+    return this.authService.fetchPage(page);
   }
 }

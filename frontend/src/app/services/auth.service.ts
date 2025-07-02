@@ -1,11 +1,11 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {environment} from '../../environments/environment';
-import {Observable} from 'rxjs';
+import {catchError, map, Observable, of} from 'rxjs';
 import {AuthResponse} from '../common/interfaces/auth.response';
 import {LocalStorageService} from './local-storage.service';
 import {ApiResponse} from '../common/interfaces/api.response';
-import {Router} from '@angular/router';
+import {Router, UrlTree} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -84,12 +84,12 @@ export class AuthService {
     this.localStorageService.removeUserAuth();
   }
 
-  // public fetchPages(page: Page): void {
-  //   this.httpClient.get<ApiResponse>(`${this.api}/pages/${page}`).subscribe({
-  //     error: err => {
-  //       this.localStorageService.removeUserAuth();
-  //       this.router.navigate(['/']).catch(err => {console.log(err);});
-  //     }
-  //   })
-  // }
+  public fetchPage(page: string): Observable<boolean | UrlTree> {
+    return this.httpClient.get<ApiResponse>(`${this.api}/pages/${page}`).pipe(
+      map(response => response.code === 'SUCCESS'),
+      catchError(err => {
+        return of(this.router.parseUrl(''));
+      })
+    );
+  }
 }

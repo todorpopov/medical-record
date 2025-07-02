@@ -17,24 +17,6 @@ export class LocalStorageService {
     localStorage.setItem('role', userAuth.role);
   }
 
-  public getUserAuth(): AuthResponse {
-    const token = localStorage.getItem('token');
-    const id = localStorage.getItem('id');
-    const email = localStorage.getItem('email');
-    const firstName = localStorage.getItem('firstName');
-    const lastName = localStorage.getItem('lastName');
-    const role = localStorage.getItem('role');
-
-    return {
-      'token': token !== null ? token : '',
-      'role': role !== null ? role : '',
-      'id': id !== null ? +id : -1,
-      'email': email !== null ? email : '',
-      'firstName': firstName !== null ? firstName : '',
-      'lastName': lastName !== null ? lastName : '',
-    }
-  }
-
   public isUserLoggedIn(): boolean {
     return localStorage.getItem('token') !== null;
   }
